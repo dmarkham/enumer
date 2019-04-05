@@ -11,6 +11,7 @@ env:
   - GO111MODULE=on
 after_success:
 - make build-cli
+- bash <(curl -s https://codecov.io/bash)
 deploy:
   provider: releases
   api_key:
