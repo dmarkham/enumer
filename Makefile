@@ -1,4 +1,8 @@
 
+
+test: 
+	go test -v ./...
+
 build-cli: clean
 	-mkdir -p ./cli/build
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o ./cli/build/enumer.linux-amd64  .
@@ -17,3 +21,5 @@ release:
 
 clean:
 	-rm -r ./cli/build
+
+SHELL = /bin/bash
