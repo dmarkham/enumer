@@ -1,6 +1,28 @@
 language: go
-go:
-  - "1.12.x"
-  - "1.11.x"
+matrix:
+  allow_failures:
+  - go: master
+  include:
+  - go: 1.11.x
+  - go: 1.12.x
+  - go: master
 env:
+  global:
   - GO111MODULE=on
+after_success:
+- make build-cli
+deploy:
+- provider: releases
+  api_key:
+    secure: AUbu2A4D6a7gzbmnJMcOILLMTcRLvC0MyEPQFJw1apRXAMRi4hWDYfmR9L3CdftvyMPyKzhRsCeXk3AuvcjsVN4IPglb/3Uy4Ot52vHfRbMNY6H+dMU/rBq+VFFzFaTzvIYCR9ai9EwhiORVpO1QMip+aATQE2sEQJOVC/uf373wrn+u6TVOiTvskTlR8aCRCW/MibdYzZXiuCdKoPgCqUxAXYStIuc62PX9Y8EP2GZ5N6nCNAlVY64XjStQyi5d19nJzQuvG0x6/JQe99Z39H6yEDWkBMaCPPtP0yPZcwGQ5BxummKLtZP7QM83wSuS3954IhHDFabZc7It36uBu7KuBZZsURAVCnKU54WB0MO17naWxuTClqMxHBes3j9iVGw8BWaNzVORqb+JQ09cytn+BcaoOqvvfovDzmYmqBxT+dy1ZgtLp2cgk+be5mjPC1FvrtIKhqDE+fKqhw+Ogmq7L2F7Oe4WZqGj0iFGbSBODxaRW9T1OylrlUol76Qjd0ylbOQ4i/x3luu5LiRICNXw61IvgTEtmCjt1e3K6flbrGDk7XTCMKKvVekJQsm+oYzSnTVi/p8rT1ZXPfR3X0qtKkbU3T8o3dH/AqfqnUBaE7O5tqNvq+eTqUuoLoRogUpjjLa9IL4a4m+Gn6ZsxdyAPNycFesyIEZd1cupoTg=
+  skip_cleanup: true
+  draft: true
+  on:
+    go: 1.12.x
+    repo: dmarkham/enumer
+    tags: true
+  file:
+  - cli/build/enumer.linux-amd64.tar.gz
+  - cli/build/enumer.darwin-amd64.tar.gz
+  - cli/build/enumer.windows-amd64.exe.tar.gz
+  - cli/build/sha256sum.txt
