@@ -1,7 +1,9 @@
-# Enumer [![GoDoc](https://godoc.org/github.com/alvaroloes/enumer?status.svg)](https://godoc.org/github.com/alvaroloes/enumer) [![Go Report Card](https://goreportcard.com/badge/github.com/alvaroloes/enumer)](https://goreportcard.com/report/github.com/alvaroloes/enumer) [![cover.run go](https://cover.run/go/github.com/alvaroloes/enumer.svg?tag=golang-1.10)](https://cover.run/go/github.com/alvaroloes/enumer?tag=golang-1.10)
+# Enumer [![GoDoc](https://godoc.org/github.com/dmarkham/enumer?status.svg)](https://godoc.org/github.com/dmarkham/enumer) [![Go Report Card](https://goreportcard.com/badge/github.com/dmarkham/enumer)](https://goreportcard.com/report/github.com/dmarkham/enumer)
 
 Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).
-It started as a fork of [Rob Pike’s Stringer tool](https://godoc.org/golang.org/x/tools/cmd/stringer).
+It started as a fork of [Rob Pike’s Stringer tool](https://godoc.org/golang.org/x/tools/cmd/stringer)
+maintained by [Álvaro López Espinosa](https://github.com/alvaroloes/enumer).
+
 
 ## Generated functions and methods
 
@@ -165,5 +167,6 @@ If a prefix is provided via the `addprefix` flag, it will be added to the start 
 
 ## Inspiring projects
 
+- [Álvaro López Espinosa](https://github.com/alvaroloes/enumer)
 - [Stringer](https://godoc.org/golang.org/x/tools/cmd/stringer)
 - [jsonenums](https://github.com/campoy/jsonenums)
