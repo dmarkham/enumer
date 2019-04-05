@@ -1,7 +1,7 @@
 
 
 test: 
-	go test -v ./...
+	go test -race -coverprofile=coverage.txt -covermode=atomic
 
 build-cli: clean
 	-mkdir -p ./cli/build
