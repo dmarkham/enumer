@@ -20,6 +20,7 @@ When Enumer is applied to a type, it will generate:
     from a REST API request... In short, from those places where using the real enum value (an integer) would
     be almost meaningless or hard to trace or use by a human.
   - Function `<Type>Values()`: returns a slice with all the values of the enum
+  - Function `<Type>Strings()`: returns a slice with all the Strings of the enum
   - Method `IsA<Type>()`: returns true only if the current value is among the values of the enum. Useful for validations.
 
 - When the flag `json` is provided, two additional methods will be generated, `MarshalJSON()` and `UnmarshalJSON()`. These make
@@ -30,7 +31,7 @@ When Enumer is applied to a type, it will generate:
   convert the map keys to json (strings). If not, the numeric values will be used instead
 - When the flag `yaml` is provided, two additional methods will be generated, `MarshalYAML()` and `UnmarshalYAML()`. These make
   the enum conform to the `gopkg.in/yaml.v2.Marshaler` and `gopkg.in/yaml.v2.Unmarshaler` interfaces.
-- When the flag `sql` is provided, the methods for implementing the Scanner and Valuer interfaces will be also generated.
+- When the flag `sql` is provided, the methods for implementing the `Scanner` and `Valuer` interfaces.
   Useful when storing the enum in a database.
 
 
@@ -60,6 +61,10 @@ func PillString(s string) (Pill, error) {
 }
 
 func PillValues() []Pill {
+	//...
+}
+
+func PillStrings() []string {
 	//...
 }
 
