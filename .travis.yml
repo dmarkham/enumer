@@ -1,4 +1,5 @@
 language: go
+dist: xenial
 matrix:
   allow_failures:
   - go: master
