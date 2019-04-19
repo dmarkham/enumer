@@ -141,7 +141,7 @@ func main() {
 	}
 
 	// Write to tmpfile first
-	tmpFile, err := ioutil.TempFile("", fmt.Sprintf("%s_enumer_", typs[0]))
+	tmpFile, err := ioutil.TempFile(dir, fmt.Sprintf("%s_enumer_", typs[0]))
 	if err != nil {
 		log.Fatalf("creating temporary file for output: %s", err)
 	}
