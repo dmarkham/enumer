@@ -1438,7 +1438,7 @@ func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, genera
 	if len(tokens) != 3 {
 		t.Fatalf("%s: need type declaration on first line", test.name)
 	}
-	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, generateText, "noop", trimPrefix, prefix)
+	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, generateText, "noop", trimPrefix, prefix, false)
 	got := string(g.format())
 	if got != test.output {
 		// dmp := diffmatchpatch.New()

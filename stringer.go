@@ -53,6 +53,7 @@ var (
 	transformMethod = flag.String("transform", "noop", "enum item name transformation method. Default: noop")
 	trimPrefix      = flag.String("trimprefix", "", "transform each item name by removing a prefix. Default: \"\"")
 	addPrefix       = flag.String("addprefix", "", "transform each item name by adding a prefix. Default: \"\"")
+	linecomment     = flag.Bool("linecomment", false, "use line comment text as printed text when present")
 )
 
 var comments arrayFlags
@@ -127,7 +128,7 @@ func main() {
 
 	// Run generate for each type.
 	for _, typeName := range typs {
-		g.generate(typeName, *json, *yaml, *sql, *text, *transformMethod, *trimPrefix, *addPrefix)
+		g.generate(typeName, *json, *yaml, *sql, *text, *transformMethod, *trimPrefix, *addPrefix, *linecomment)
 	}
 
 	// Format the output.
@@ -397,9 +398,10 @@ func (g *Generator) prefixValueNames(values []Value, prefix string) {
 
 // generate produces the String method for the named type.
 func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeSQL, includeText bool,
-	transformMethod string, trimPrefix string, addPrefix string) {
+	transformMethod string, trimPrefix string, addPrefix string, lineComment bool) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
+		file.lineComment = lineComment
 		// Set the state for this run of the walker.
 		file.typeName = typeName
 		file.values = nil
@@ -603,6 +605,10 @@ func (f *File) genDecl(node ast.Node) bool {
 				signed: info&types.IsUnsigned == 0,
 				str:    value.String(),
 			}
+			if c := vspec.Comment; f.lineComment && c != nil && len(c.List) == 1 {
+				v.name = strings.TrimSpace(c.Text())
+			}
+
 			f.values = append(f.values, v)
 		}
 	}
