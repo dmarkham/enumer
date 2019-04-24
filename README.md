@@ -7,6 +7,40 @@ maintained by [Álvaro López Espinosa](https://github.com/alvaroloes/enumer).
 This was again forked here as (https://github.com/dmarkham/enumer) picking up where Álvaro left off.
 
 
+```
+$ ./enumer --help
+Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).
+Usage of ./enumer:
+        Enumer [flags] -type T [directory]
+        Enumer [flags] -type T files... # Must be a single package
+For more information, see:
+        http://godoc.org/github.com/dmarkham/enumer
+Flags:
+  -addprefix string
+        transform each item name by adding a prefix. Default: ""
+  -comment value
+        comments to include in generated code, can repeat. Default: ""
+  -json
+        if true, json marshaling methods will be generated. Default: false
+  -linecomment
+        use line comment text as printed text when present
+  -output string
+        output file name; default srcdir/<type>_string.go
+  -sql
+        if true, the Scanner and Valuer interface will be implemented.
+  -text
+        if true, text marshaling methods will be generated. Default: false
+  -transform string
+        enum item name transformation method. Default: noop (default "noop")
+  -trimprefix string
+        transform each item name by removing a prefix. Default: ""
+  -type string
+        comma-separated list of type names; must be set
+  -yaml
+        if true, yaml marshaling methods will be generated. Default: false
+```
+
+
 ## Generated functions and methods
 
 When Enumer is applied to a type, it will generate:
@@ -156,9 +190,6 @@ name := MyTypeValue.String() // name => "my_type_value"
 - whitespace
 
 ## How to use
-
-The usage of Enumer is the same as Stringer, so you can refer to the [Stringer docs](https://godoc.org/golang.org/x/tools/cmd/stringer)
-for more information.
 
 There are four boolean flags: `json`, `text`, `yaml` and `sql`. You can use any combination of them (i.e. `enumer -type=Pill -json -text`),
 
