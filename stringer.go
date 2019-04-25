@@ -64,7 +64,7 @@ func init() {
 
 // Usage is a replacement usage function for the flags package.
 func Usage() {
-	_, _ = fmt.Fprintf(os.Stderr, "Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).")
+	_, _ = fmt.Fprintf(os.Stderr, "Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).\n")
 	_, _ = fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
 	_, _ = fmt.Fprintf(os.Stderr, "\tEnumer [flags] -type T [directory]\n")
 	_, _ = fmt.Fprintf(os.Stderr, "\tEnumer [flags] -type T files... # Must be a single package\n")
