@@ -84,6 +84,8 @@ const _DayName = "MondayTuesdayWednesdayThursdayFridaySaturdaySunday"
 
 var _DayIndex = [...]uint8{0, 6, 13, 22, 30, 36, 44, 50}
 
+const _DayLowerName = "mondaytuesdaywednesdaythursdayfridaysaturdaysunday"
+
 func (i Day) String() string {
 	if i < 0 || i >= Day(len(_DayIndex)-1) {
 		return fmt.Sprintf("Day(%d)", i)
@@ -94,13 +96,20 @@ func (i Day) String() string {
 var _DayValues = []Day{0, 1, 2, 3, 4, 5, 6}
 
 var _DayNameToValueMap = map[string]Day{
-	_DayName[0:6]:   0,
-	_DayName[6:13]:  1,
-	_DayName[13:22]: 2,
-	_DayName[22:30]: 3,
-	_DayName[30:36]: 4,
-	_DayName[36:44]: 5,
-	_DayName[44:50]: 6,
+	_DayName[0:6]:        0,
+	_DayLowerName[0:6]:   0,
+	_DayName[6:13]:       1,
+	_DayLowerName[6:13]:  1,
+	_DayName[13:22]:      2,
+	_DayLowerName[13:22]: 2,
+	_DayName[22:30]:      3,
+	_DayLowerName[22:30]: 3,
+	_DayName[30:36]:      4,
+	_DayLowerName[30:36]: 4,
+	_DayName[36:44]:      5,
+	_DayLowerName[36:44]: 5,
+	_DayName[44:50]:      6,
+	_DayLowerName[44:50]: 6,
 }
 
 var _DayNames = []string{
@@ -150,6 +159,8 @@ const _DayName = "DayMondayDayTuesdayDayWednesdayDayThursdayDayFridayDaySaturday
 
 var _DayIndex = [...]uint8{0, 9, 19, 31, 42, 51, 62, 71}
 
+const _DayLowerName = "daymondaydaytuesdaydaywednesdaydaythursdaydayfridaydaysaturdaydaysunday"
+
 func (i Day) String() string {
 	if i < 0 || i >= Day(len(_DayIndex)-1) {
 		return fmt.Sprintf("Day(%d)", i)
@@ -160,13 +171,20 @@ func (i Day) String() string {
 var _DayValues = []Day{0, 1, 2, 3, 4, 5, 6}
 
 var _DayNameToValueMap = map[string]Day{
-	_DayName[0:9]:   0,
-	_DayName[9:19]:  1,
-	_DayName[19:31]: 2,
-	_DayName[31:42]: 3,
-	_DayName[42:51]: 4,
-	_DayName[51:62]: 5,
-	_DayName[62:71]: 6,
+	_DayName[0:9]:        0,
+	_DayLowerName[0:9]:   0,
+	_DayName[9:19]:       1,
+	_DayLowerName[9:19]:  1,
+	_DayName[19:31]:      2,
+	_DayLowerName[19:31]: 2,
+	_DayName[31:42]:      3,
+	_DayLowerName[31:42]: 3,
+	_DayName[42:51]:      4,
+	_DayLowerName[42:51]: 4,
+	_DayName[51:62]:      5,
+	_DayLowerName[51:62]: 5,
+	_DayName[62:71]:      6,
+	_DayLowerName[62:71]: 6,
 }
 
 var _DayNames = []string{
@@ -216,6 +234,8 @@ const _DayName = "NightMondayNightTuesdayNightWednesdayNightThursdayNightFridayN
 
 var _DayIndex = [...]uint8{0, 11, 23, 37, 50, 61, 74, 85}
 
+const _DayLowerName = "nightmondaynighttuesdaynightwednesdaynightthursdaynightfridaynightsaturdaynightsunday"
+
 func (i Day) String() string {
 	if i < 0 || i >= Day(len(_DayIndex)-1) {
 		return fmt.Sprintf("Day(%d)", i)
@@ -226,13 +246,20 @@ func (i Day) String() string {
 var _DayValues = []Day{0, 1, 2, 3, 4, 5, 6}
 
 var _DayNameToValueMap = map[string]Day{
-	_DayName[0:11]:  0,
-	_DayName[11:23]: 1,
-	_DayName[23:37]: 2,
-	_DayName[37:50]: 3,
-	_DayName[50:61]: 4,
-	_DayName[61:74]: 5,
-	_DayName[74:85]: 6,
+	_DayName[0:11]:       0,
+	_DayLowerName[0:11]:  0,
+	_DayName[11:23]:      1,
+	_DayLowerName[11:23]: 1,
+	_DayName[23:37]:      2,
+	_DayLowerName[23:37]: 2,
+	_DayName[37:50]:      3,
+	_DayLowerName[37:50]: 3,
+	_DayName[50:61]:      4,
+	_DayLowerName[50:61]: 4,
+	_DayName[61:74]:      5,
+	_DayLowerName[61:74]: 5,
+	_DayName[74:85]:      6,
+	_DayLowerName[74:85]: 6,
 }
 
 var _DayNames = []string{
@@ -294,6 +321,8 @@ const _NumberName = "OneTwoThree"
 
 var _NumberIndex = [...]uint8{0, 3, 6, 11}
 
+const _NumberLowerName = "onetwothree"
+
 func (i Number) String() string {
 	i -= 1
 	if i < 0 || i >= Number(len(_NumberIndex)-1) {
@@ -305,9 +334,12 @@ func (i Number) String() string {
 var _NumberValues = []Number{1, 2, 3}
 
 var _NumberNameToValueMap = map[string]Number{
-	_NumberName[0:3]:  1,
-	_NumberName[3:6]:  2,
-	_NumberName[6:11]: 3,
+	_NumberName[0:3]:       1,
+	_NumberLowerName[0:3]:  1,
+	_NumberName[3:6]:       2,
+	_NumberLowerName[3:6]:  2,
+	_NumberName[6:11]:      3,
+	_NumberLowerName[6:11]: 3,
 }
 
 var _NumberNames = []string{
@@ -364,9 +396,12 @@ const (
 
 const gapOut = `
 const (
-	_GapName_0 = "TwoThree"
-	_GapName_1 = "FiveSixSevenEightNine"
-	_GapName_2 = "Eleven"
+	_GapName_0      = "TwoThree"
+	_GapLowerName_0 = "twothree"
+	_GapName_1      = "FiveSixSevenEightNine"
+	_GapLowerName_1 = "fivesixseveneightnine"
+	_GapName_2      = "Eleven"
+	_GapLowerName_2 = "eleven"
 )
 
 var (
@@ -393,14 +428,22 @@ func (i Gap) String() string {
 var _GapValues = []Gap{2, 3, 5, 6, 7, 8, 9, 11}
 
 var _GapNameToValueMap = map[string]Gap{
-	_GapName_0[0:3]:   2,
-	_GapName_0[3:8]:   3,
-	_GapName_1[0:4]:   5,
-	_GapName_1[4:7]:   6,
-	_GapName_1[7:12]:  7,
-	_GapName_1[12:17]: 8,
-	_GapName_1[17:21]: 9,
-	_GapName_2[0:6]:   11,
+	_GapName_0[0:3]:        2,
+	_GapLowerName_0[0:3]:   2,
+	_GapName_0[3:8]:        3,
+	_GapLowerName_0[3:8]:   3,
+	_GapName_1[0:4]:        5,
+	_GapLowerName_1[0:4]:   5,
+	_GapName_1[4:7]:        6,
+	_GapLowerName_1[4:7]:   6,
+	_GapName_1[7:12]:       7,
+	_GapLowerName_1[7:12]:  7,
+	_GapName_1[12:17]:      8,
+	_GapLowerName_1[12:17]: 8,
+	_GapName_1[17:21]:      9,
+	_GapLowerName_1[17:21]: 9,
+	_GapName_2[0:6]:        11,
+	_GapLowerName_2[0:6]:   11,
 }
 
 var _GapNames = []string{
@@ -462,6 +505,8 @@ const _NumName = "m_2m_1m0m1m2"
 
 var _NumIndex = [...]uint8{0, 3, 6, 8, 10, 12}
 
+const _NumLowerName = "m_2m_1m0m1m2"
+
 func (i Num) String() string {
 	i -= -2
 	if i < 0 || i >= Num(len(_NumIndex)-1) {
@@ -473,11 +518,16 @@ func (i Num) String() string {
 var _NumValues = []Num{-2, -1, 0, 1, 2}
 
 var _NumNameToValueMap = map[string]Num{
-	_NumName[0:3]:   -2,
-	_NumName[3:6]:   -1,
-	_NumName[6:8]:   0,
-	_NumName[8:10]:  1,
-	_NumName[10:12]: 2,
+	_NumName[0:3]:        -2,
+	_NumLowerName[0:3]:   -2,
+	_NumName[3:6]:        -1,
+	_NumLowerName[3:6]:   -1,
+	_NumName[6:8]:        0,
+	_NumLowerName[6:8]:   0,
+	_NumName[8:10]:       1,
+	_NumLowerName[8:10]:  1,
+	_NumName[10:12]:      2,
+	_NumLowerName[10:12]: 2,
 }
 
 var _NumNames = []string{
@@ -536,8 +586,10 @@ const (
 
 const unumOut = `
 const (
-	_UnumName_0 = "m0m1m2"
-	_UnumName_1 = "m_2m_1"
+	_UnumName_0      = "m0m1m2"
+	_UnumLowerName_0 = "m0m1m2"
+	_UnumName_1      = "m_2m_1"
+	_UnumLowerName_1 = "m_2m_1"
 )
 
 var (
@@ -560,11 +612,16 @@ func (i Unum) String() string {
 var _UnumValues = []Unum{0, 1, 2, 253, 254}
 
 var _UnumNameToValueMap = map[string]Unum{
-	_UnumName_0[0:2]: 0,
-	_UnumName_0[2:4]: 1,
-	_UnumName_0[4:6]: 2,
-	_UnumName_1[0:3]: 253,
-	_UnumName_1[3:6]: 254,
+	_UnumName_0[0:2]:      0,
+	_UnumLowerName_0[0:2]: 0,
+	_UnumName_0[2:4]:      1,
+	_UnumLowerName_0[2:4]: 1,
+	_UnumName_0[4:6]:      2,
+	_UnumLowerName_0[4:6]: 2,
+	_UnumName_1[0:3]:      253,
+	_UnumLowerName_1[0:3]: 253,
+	_UnumName_1[3:6]:      254,
+	_UnumLowerName_1[3:6]: 254,
 }
 
 var _UnumNames = []string{
@@ -630,6 +687,7 @@ const (
 
 const primeOut = `
 const _PrimeName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
+const _PrimeLowerName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
 
 var _PrimeMap = map[Prime]string{
 	2:  _PrimeName[0:2],
@@ -657,19 +715,32 @@ func (i Prime) String() string {
 var _PrimeValues = []Prime{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43}
 
 var _PrimeNameToValueMap = map[string]Prime{
-	_PrimeName[0:2]:   2,
-	_PrimeName[2:4]:   3,
-	_PrimeName[4:6]:   5,
-	_PrimeName[6:8]:   7,
-	_PrimeName[8:11]:  11,
-	_PrimeName[11:14]: 13,
-	_PrimeName[14:17]: 17,
-	_PrimeName[17:20]: 19,
-	_PrimeName[20:23]: 23,
-	_PrimeName[23:26]: 29,
-	_PrimeName[26:29]: 31,
-	_PrimeName[29:32]: 41,
-	_PrimeName[32:35]: 43,
+	_PrimeName[0:2]:        2,
+	_PrimeLowerName[0:2]:   2,
+	_PrimeName[2:4]:        3,
+	_PrimeLowerName[2:4]:   3,
+	_PrimeName[4:6]:        5,
+	_PrimeLowerName[4:6]:   5,
+	_PrimeName[6:8]:        7,
+	_PrimeLowerName[6:8]:   7,
+	_PrimeName[8:11]:       11,
+	_PrimeLowerName[8:11]:  11,
+	_PrimeName[11:14]:      13,
+	_PrimeLowerName[11:14]: 13,
+	_PrimeName[14:17]:      17,
+	_PrimeLowerName[14:17]: 17,
+	_PrimeName[17:20]:      19,
+	_PrimeLowerName[17:20]: 19,
+	_PrimeName[20:23]:      23,
+	_PrimeLowerName[20:23]: 23,
+	_PrimeName[23:26]:      29,
+	_PrimeLowerName[23:26]: 29,
+	_PrimeName[26:29]:      31,
+	_PrimeLowerName[26:29]: 31,
+	_PrimeName[29:32]:      41,
+	_PrimeLowerName[29:32]: 41,
+	_PrimeName[32:35]:      43,
+	_PrimeLowerName[32:35]: 43,
 }
 
 var _PrimeNames = []string{
@@ -736,6 +807,7 @@ const (
 
 const primeJsonOut = `
 const _PrimeName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
+const _PrimeLowerName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
 
 var _PrimeMap = map[Prime]string{
 	2:  _PrimeName[0:2],
@@ -763,19 +835,32 @@ func (i Prime) String() string {
 var _PrimeValues = []Prime{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43}
 
 var _PrimeNameToValueMap = map[string]Prime{
-	_PrimeName[0:2]:   2,
-	_PrimeName[2:4]:   3,
-	_PrimeName[4:6]:   5,
-	_PrimeName[6:8]:   7,
-	_PrimeName[8:11]:  11,
-	_PrimeName[11:14]: 13,
-	_PrimeName[14:17]: 17,
-	_PrimeName[17:20]: 19,
-	_PrimeName[20:23]: 23,
-	_PrimeName[23:26]: 29,
-	_PrimeName[26:29]: 31,
-	_PrimeName[29:32]: 41,
-	_PrimeName[32:35]: 43,
+	_PrimeName[0:2]:        2,
+	_PrimeLowerName[0:2]:   2,
+	_PrimeName[2:4]:        3,
+	_PrimeLowerName[2:4]:   3,
+	_PrimeName[4:6]:        5,
+	_PrimeLowerName[4:6]:   5,
+	_PrimeName[6:8]:        7,
+	_PrimeLowerName[6:8]:   7,
+	_PrimeName[8:11]:       11,
+	_PrimeLowerName[8:11]:  11,
+	_PrimeName[11:14]:      13,
+	_PrimeLowerName[11:14]: 13,
+	_PrimeName[14:17]:      17,
+	_PrimeLowerName[14:17]: 17,
+	_PrimeName[17:20]:      19,
+	_PrimeLowerName[17:20]: 19,
+	_PrimeName[20:23]:      23,
+	_PrimeLowerName[20:23]: 23,
+	_PrimeName[23:26]:      29,
+	_PrimeLowerName[23:26]: 29,
+	_PrimeName[26:29]:      31,
+	_PrimeLowerName[26:29]: 31,
+	_PrimeName[29:32]:      41,
+	_PrimeLowerName[29:32]: 41,
+	_PrimeName[32:35]:      43,
+	_PrimeLowerName[32:35]: 43,
 }
 
 var _PrimeNames = []string{
@@ -860,6 +945,7 @@ const (
 
 const primeTextOut = `
 const _PrimeName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
+const _PrimeLowerName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
 
 var _PrimeMap = map[Prime]string{
 	2:  _PrimeName[0:2],
@@ -887,19 +973,32 @@ func (i Prime) String() string {
 var _PrimeValues = []Prime{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43}
 
 var _PrimeNameToValueMap = map[string]Prime{
-	_PrimeName[0:2]:   2,
-	_PrimeName[2:4]:   3,
-	_PrimeName[4:6]:   5,
-	_PrimeName[6:8]:   7,
-	_PrimeName[8:11]:  11,
-	_PrimeName[11:14]: 13,
-	_PrimeName[14:17]: 17,
-	_PrimeName[17:20]: 19,
-	_PrimeName[20:23]: 23,
-	_PrimeName[23:26]: 29,
-	_PrimeName[26:29]: 31,
-	_PrimeName[29:32]: 41,
-	_PrimeName[32:35]: 43,
+	_PrimeName[0:2]:        2,
+	_PrimeLowerName[0:2]:   2,
+	_PrimeName[2:4]:        3,
+	_PrimeLowerName[2:4]:   3,
+	_PrimeName[4:6]:        5,
+	_PrimeLowerName[4:6]:   5,
+	_PrimeName[6:8]:        7,
+	_PrimeLowerName[6:8]:   7,
+	_PrimeName[8:11]:       11,
+	_PrimeLowerName[8:11]:  11,
+	_PrimeName[11:14]:      13,
+	_PrimeLowerName[11:14]: 13,
+	_PrimeName[14:17]:      17,
+	_PrimeLowerName[14:17]: 17,
+	_PrimeName[17:20]:      19,
+	_PrimeLowerName[17:20]: 19,
+	_PrimeName[20:23]:      23,
+	_PrimeLowerName[20:23]: 23,
+	_PrimeName[23:26]:      29,
+	_PrimeLowerName[23:26]: 29,
+	_PrimeName[26:29]:      31,
+	_PrimeLowerName[26:29]: 31,
+	_PrimeName[29:32]:      41,
+	_PrimeLowerName[29:32]: 41,
+	_PrimeName[32:35]:      43,
+	_PrimeLowerName[32:35]: 43,
 }
 
 var _PrimeNames = []string{
@@ -979,6 +1078,7 @@ const (
 
 const primeYamlOut = `
 const _PrimeName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
+const _PrimeLowerName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
 
 var _PrimeMap = map[Prime]string{
 	2:  _PrimeName[0:2],
@@ -1006,19 +1106,32 @@ func (i Prime) String() string {
 var _PrimeValues = []Prime{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43}
 
 var _PrimeNameToValueMap = map[string]Prime{
-	_PrimeName[0:2]:   2,
-	_PrimeName[2:4]:   3,
-	_PrimeName[4:6]:   5,
-	_PrimeName[6:8]:   7,
-	_PrimeName[8:11]:  11,
-	_PrimeName[11:14]: 13,
-	_PrimeName[14:17]: 17,
-	_PrimeName[17:20]: 19,
-	_PrimeName[20:23]: 23,
-	_PrimeName[23:26]: 29,
-	_PrimeName[26:29]: 31,
-	_PrimeName[29:32]: 41,
-	_PrimeName[32:35]: 43,
+	_PrimeName[0:2]:        2,
+	_PrimeLowerName[0:2]:   2,
+	_PrimeName[2:4]:        3,
+	_PrimeLowerName[2:4]:   3,
+	_PrimeName[4:6]:        5,
+	_PrimeLowerName[4:6]:   5,
+	_PrimeName[6:8]:        7,
+	_PrimeLowerName[6:8]:   7,
+	_PrimeName[8:11]:       11,
+	_PrimeLowerName[8:11]:  11,
+	_PrimeName[11:14]:      13,
+	_PrimeLowerName[11:14]: 13,
+	_PrimeName[14:17]:      17,
+	_PrimeLowerName[14:17]: 17,
+	_PrimeName[17:20]:      19,
+	_PrimeLowerName[17:20]: 19,
+	_PrimeName[20:23]:      23,
+	_PrimeLowerName[20:23]: 23,
+	_PrimeName[23:26]:      29,
+	_PrimeLowerName[23:26]: 29,
+	_PrimeName[26:29]:      31,
+	_PrimeLowerName[26:29]: 31,
+	_PrimeName[29:32]:      41,
+	_PrimeLowerName[29:32]: 41,
+	_PrimeName[32:35]:      43,
+	_PrimeLowerName[32:35]: 43,
 }
 
 var _PrimeNames = []string{
@@ -1103,6 +1216,7 @@ const (
 
 const primeSqlOut = `
 const _PrimeName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
+const _PrimeLowerName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
 
 var _PrimeMap = map[Prime]string{
 	2:  _PrimeName[0:2],
@@ -1130,19 +1244,32 @@ func (i Prime) String() string {
 var _PrimeValues = []Prime{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43}
 
 var _PrimeNameToValueMap = map[string]Prime{
-	_PrimeName[0:2]:   2,
-	_PrimeName[2:4]:   3,
-	_PrimeName[4:6]:   5,
-	_PrimeName[6:8]:   7,
-	_PrimeName[8:11]:  11,
-	_PrimeName[11:14]: 13,
-	_PrimeName[14:17]: 17,
-	_PrimeName[17:20]: 19,
-	_PrimeName[20:23]: 23,
-	_PrimeName[23:26]: 29,
-	_PrimeName[26:29]: 31,
-	_PrimeName[29:32]: 41,
-	_PrimeName[32:35]: 43,
+	_PrimeName[0:2]:        2,
+	_PrimeLowerName[0:2]:   2,
+	_PrimeName[2:4]:        3,
+	_PrimeLowerName[2:4]:   3,
+	_PrimeName[4:6]:        5,
+	_PrimeLowerName[4:6]:   5,
+	_PrimeName[6:8]:        7,
+	_PrimeLowerName[6:8]:   7,
+	_PrimeName[8:11]:       11,
+	_PrimeLowerName[8:11]:  11,
+	_PrimeName[11:14]:      13,
+	_PrimeLowerName[11:14]: 13,
+	_PrimeName[14:17]:      17,
+	_PrimeLowerName[14:17]: 17,
+	_PrimeName[17:20]:      19,
+	_PrimeLowerName[17:20]: 19,
+	_PrimeName[20:23]:      23,
+	_PrimeLowerName[20:23]: 23,
+	_PrimeName[23:26]:      29,
+	_PrimeLowerName[23:26]: 29,
+	_PrimeName[26:29]:      31,
+	_PrimeLowerName[26:29]: 31,
+	_PrimeName[29:32]:      41,
+	_PrimeLowerName[29:32]: 41,
+	_PrimeName[32:35]:      43,
+	_PrimeLowerName[32:35]: 43,
 }
 
 var _PrimeNames = []string{
@@ -1238,6 +1365,7 @@ const (
 
 const primeJsonAndSqlOut = `
 const _PrimeName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
+const _PrimeLowerName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
 
 var _PrimeMap = map[Prime]string{
 	2:  _PrimeName[0:2],
@@ -1265,19 +1393,32 @@ func (i Prime) String() string {
 var _PrimeValues = []Prime{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43}
 
 var _PrimeNameToValueMap = map[string]Prime{
-	_PrimeName[0:2]:   2,
-	_PrimeName[2:4]:   3,
-	_PrimeName[4:6]:   5,
-	_PrimeName[6:8]:   7,
-	_PrimeName[8:11]:  11,
-	_PrimeName[11:14]: 13,
-	_PrimeName[14:17]: 17,
-	_PrimeName[17:20]: 19,
-	_PrimeName[20:23]: 23,
-	_PrimeName[23:26]: 29,
-	_PrimeName[26:29]: 31,
-	_PrimeName[29:32]: 41,
-	_PrimeName[32:35]: 43,
+	_PrimeName[0:2]:        2,
+	_PrimeLowerName[0:2]:   2,
+	_PrimeName[2:4]:        3,
+	_PrimeLowerName[2:4]:   3,
+	_PrimeName[4:6]:        5,
+	_PrimeLowerName[4:6]:   5,
+	_PrimeName[6:8]:        7,
+	_PrimeLowerName[6:8]:   7,
+	_PrimeName[8:11]:       11,
+	_PrimeLowerName[8:11]:  11,
+	_PrimeName[11:14]:      13,
+	_PrimeLowerName[11:14]: 13,
+	_PrimeName[14:17]:      17,
+	_PrimeLowerName[14:17]: 17,
+	_PrimeName[17:20]:      19,
+	_PrimeLowerName[17:20]: 19,
+	_PrimeName[20:23]:      23,
+	_PrimeLowerName[20:23]: 23,
+	_PrimeName[23:26]:      29,
+	_PrimeLowerName[23:26]: 29,
+	_PrimeName[26:29]:      31,
+	_PrimeLowerName[26:29]: 31,
+	_PrimeName[29:32]:      41,
+	_PrimeLowerName[29:32]: 41,
+	_PrimeName[32:35]:      43,
+	_PrimeLowerName[32:35]: 43,
 }
 
 var _PrimeNames = []string{
@@ -1441,11 +1582,12 @@ func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, genera
 	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, generateText, "noop", trimPrefix, prefix, false)
 	got := string(g.format())
 	if got != test.output {
-		// dmp := diffmatchpatch.New()
-
-		// diffs := dmp.DiffMain(got, test.output, false)
-
-		// t.Errorf(dmp.DiffPrettyText(diffs))
+		// Use this to help build a golden text when changes are needed
+		//goldenFile := fmt.Sprintf("./goldendata/%v-%v-%v-%v-%v-%v-%v-%v-%v-%v.golden", test.name, tokens[1], generateJSON, generateYAML, generateSQL, generateText, "noop", trimPrefix, prefix, false)
+		//err = ioutil.WriteFile(goldenFile, []byte(got), 0644)
+		//if err != nil {
+		//	t.Error(err)
+		//}
 		t.Errorf("%s: got\n====\n%s====\nexpected\n====%s", test.name, got, test.output)
 	}
 }
