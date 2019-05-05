@@ -52,7 +52,7 @@ When Enumer is applied to a type, it will generate:
   - Function `<Type>String(s string)`: returns the enum value from its string representation. This is useful
     when you need to read enum values from command line arguments, from a configuration file, or
     from a REST API request... In short, from those places where using the real enum value (an integer) would
-    be almost meaningless or hard to trace or use by a human.
+    be almost meaningless or hard to trace or use by a human. `s` string is Case Insensitive.
   - Function `<Type>Values()`: returns a slice with all the values of the enum
   - Function `<Type>Strings()`: returns a slice with all the Strings of the enum
   - Method `IsA<Type>()`: returns true only if the current value is among the values of the enum. Useful for validations.
@@ -124,7 +124,7 @@ var aspirinString string = Aspirin.String()
 fmt.Println("I need ", Paracetamol) // Will print "I need Paracetamol"
 
 // Convert a string with the enum name to the corresponding enum value
-pill, err := PillString("Ibuprofen")
+pill, err := PillString("Ibuprofen") // "ibuprofen" will also work.
 if err != nil {
     fmt.Println("Unrecognized pill: ", err)
     return
