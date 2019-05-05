@@ -99,6 +99,7 @@ func (g *Generator) printValueMap(runs [][]Value, typeName string, runsThreshold
 
 		for _, value := range values {
 			g.Printf("\t_%sName%s[%d:%d]: %s,\n", typeName, runID, n, n+len(value.name), &value)
+			g.Printf("\t_%sLowerName%s[%d:%d]: %s,\n", typeName, runID, n, n+len(value.name), &value)
 			n += len(value.name)
 		}
 	}

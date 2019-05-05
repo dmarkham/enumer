@@ -640,6 +640,8 @@ func (g *Generator) declareIndexAndNameVars(runs [][]Value, typeName string) {
 		index, n := g.createIndexAndNameDecl(run, typeName, fmt.Sprintf("_%d", i))
 		indexes = append(indexes, index)
 		names = append(names, n)
+		_, n = g.createLowerIndexAndNameDecl(run, typeName, fmt.Sprintf("_%d", i))
+		names = append(names, n)
 	}
 	g.Printf("const (\n")
 	for _, n := range names {
@@ -658,6 +660,31 @@ func (g *Generator) declareIndexAndNameVar(run []Value, typeName string) {
 	index, n := g.createIndexAndNameDecl(run, typeName, "")
 	g.Printf("const %s\n", n)
 	g.Printf("var %s\n", index)
+	index, n = g.createLowerIndexAndNameDecl(run, typeName, "")
+	g.Printf("const %s\n", n)
+	//g.Printf("var %s\n", index)
+}
+
+// createIndexAndNameDecl returns the pair of declarations for the run. The caller will add "const" and "var".
+func (g *Generator) createLowerIndexAndNameDecl(run []Value, typeName string, suffix string) (string, string) {
+	b := new(bytes.Buffer)
+	indexes := make([]int, len(run))
+	for i := range run {
+		b.WriteString(strings.ToLower(run[i].name))
+		indexes[i] = b.Len()
+	}
+	nameConst := fmt.Sprintf("_%sLowerName%s = %q", typeName, suffix, b.String())
+	nameLen := b.Len()
+	b.Reset()
+	_, _ = fmt.Fprintf(b, "_%sLowerIndex%s = [...]uint%d{0, ", typeName, suffix, usize(nameLen))
+	for i, v := range indexes {
+		if i > 0 {
+			_, _ = fmt.Fprintf(b, ", ")
+		}
+		_, _ = fmt.Fprintf(b, "%d", v)
+	}
+	_, _ = fmt.Fprintf(b, "}")
+	return b.String(), nameConst
 }
 
 // createIndexAndNameDecl returns the pair of declarations for the run. The caller will add "const" and "var".
@@ -688,6 +715,13 @@ func (g *Generator) declareNameVars(runs [][]Value, typeName string, suffix stri
 	for _, run := range runs {
 		for i := range run {
 			g.Printf("%s", run[i].name)
+		}
+	}
+	g.Printf("\"\n")
+	g.Printf("const _%sLowerName%s = \"", typeName, suffix)
+	for _, run := range runs {
+		for i := range run {
+			g.Printf("%s", strings.ToLower(run[i].name))
 		}
 	}
 	g.Printf("\"\n")

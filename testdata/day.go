@@ -30,10 +30,24 @@ func main() {
 	ck(Sunday, "Sunday")
 	ck(-127, "Day(-127)")
 	ck(127, "Day(127)")
+	ckDayString(Sunday, "Sunday")
+	ckDayString(Sunday, "sunday")
+
 }
 
 func ck(day Day, str string) {
 	if fmt.Sprint(day) != str {
 		panic("day.go: " + str)
+	}
+}
+
+func ckDayString(day Day, str string) {
+	d, err := DayString(str)
+	if err != nil {
+		panic("day.go: " + err.Error())
+	}
+	if d != day {
+		panic("day.go: " + str)
+
 	}
 }
