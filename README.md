@@ -59,6 +59,9 @@ When Enumer is applied to a type, it will generate:
 
 - When the flag `json` is provided, two additional methods will be generated, `MarshalJSON()` and `UnmarshalJSON()`. These make
   the enum conform to the `json.Marshaler` and `json.Unmarshaler` interfaces. Very useful to use it in JSON APIs.
+- When the flag `bson` is provided, two additional methods will be generated, `MarshalBSONValue()` and `UnmarshalBSONValue()`. These make
+  the enum conform to the `go.mongodb.org/mongo-driver/bson.ValueMarshaler` and `go.mongodb.org/mongo-driver/bson.ValueUnmarshaler` interfaces. 
+  This can be used when inserting and retrieving enums from MongoDB.
 - When the flag `text` is provided, two additional methods will be generated, `MarshalText()` and `UnmarshalText()`. These make
   the enum conform to the `encoding.TextMarshaler` and `encoding.TextUnmarshaler` interfaces.
   **Note:** If you use your enum values as keys in a map and you encode the map as _JSON_, you need this flag set to true to properly
@@ -191,7 +194,7 @@ name := MyTypeValue.String() // name => "my_type_value"
 
 ## How to use
 
-There are four boolean flags: `json`, `text`, `yaml` and `sql`. You can use any combination of them (i.e. `enumer -type=Pill -json -text`),
+There are five boolean flags: `json`, `bson`, `text`, `yaml` and `sql`. You can use any combination of them (i.e. `enumer -type=Pill -json -text`),
 
 For enum string representation transformation the `transform` and `trimprefix` flags
 were added (i.e. `enumer -type=MyType -json -transform=snake`).
