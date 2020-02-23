@@ -1,8 +1,8 @@
 module github.com/dmarkham/enumer
 
 require (
-	github.com/pascaldekloe/name v0.0.0-20180628100202-0fd16699aae1
-	golang.org/x/tools v0.0.0-20190404132500-923d25813098
+	github.com/pascaldekloe/name v1.0.0
+	golang.org/x/tools v0.0.0-20200221224223-e1da425f72fd
 )
 
 go 1.13
