@@ -26,5 +26,6 @@ coverage.txt
 *.prof
 
 .idea
+.vscode
 
 enumer

@@ -415,7 +415,9 @@ func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeS
 		log.Fatalf("no values defined for type %s", typeName)
 	}
 
-	g.trimValueNames(values, trimPrefix)
+	for _, prefix := range strings.Split(trimPrefix, ",") {
+		g.trimValueNames(values, prefix)
+	}
 
 	g.transformValueNames(values, transformMethod)
 

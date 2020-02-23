@@ -56,6 +56,10 @@ var goldenTrimPrefix = []Golden{
 	{"trim prefix", trimPrefixIn, dayOut},
 }
 
+var goldenTrimPrefixMultiple = []Golden{
+	{"trim multiple prefixes", trimPrefixMultipleIn, dayNightOut},
+}
+
 var goldenWithPrefix = []Golden{
 	{"with prefix", dayIn, prefixedDayOut},
 }
@@ -80,6 +84,81 @@ const (
 `
 
 const dayOut = `
+const _DayName = "MondayTuesdayWednesdayThursdayFridaySaturdaySunday"
+
+var _DayIndex = [...]uint8{0, 6, 13, 22, 30, 36, 44, 50}
+
+const _DayLowerName = "mondaytuesdaywednesdaythursdayfridaysaturdaysunday"
+
+func (i Day) String() string {
+	if i < 0 || i >= Day(len(_DayIndex)-1) {
+		return fmt.Sprintf("Day(%d)", i)
+	}
+	return _DayName[_DayIndex[i]:_DayIndex[i+1]]
+}
+
+var _DayValues = []Day{0, 1, 2, 3, 4, 5, 6}
+
+var _DayNameToValueMap = map[string]Day{
+	_DayName[0:6]:        0,
+	_DayLowerName[0:6]:   0,
+	_DayName[6:13]:       1,
+	_DayLowerName[6:13]:  1,
+	_DayName[13:22]:      2,
+	_DayLowerName[13:22]: 2,
+	_DayName[22:30]:      3,
+	_DayLowerName[22:30]: 3,
+	_DayName[30:36]:      4,
+	_DayLowerName[30:36]: 4,
+	_DayName[36:44]:      5,
+	_DayLowerName[36:44]: 5,
+	_DayName[44:50]:      6,
+	_DayLowerName[44:50]: 6,
+}
+
+var _DayNames = []string{
+	_DayName[0:6],
+	_DayName[6:13],
+	_DayName[13:22],
+	_DayName[22:30],
+	_DayName[30:36],
+	_DayName[36:44],
+	_DayName[44:50],
+}
+
+// DayString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func DayString(s string) (Day, error) {
+	if val, ok := _DayNameToValueMap[s]; ok {
+		return val, nil
+	}
+	return 0, fmt.Errorf("%s does not belong to Day values", s)
+}
+
+// DayValues returns all values of the enum
+func DayValues() []Day {
+	return _DayValues
+}
+
+// DayStrings returns a slice of all String values of the enum
+func DayStrings() []string {
+	strs := make([]string, len(_DayNames))
+	copy(strs, _DayNames)
+	return strs
+}
+
+// IsADay returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Day) IsADay() bool {
+	for _, v := range _DayValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}
+`
+
+const dayNightOut = `
 const _DayName = "MondayTuesdayWednesdayThursdayFridaySaturdaySunday"
 
 var _DayIndex = [...]uint8{0, 6, 13, 22, 30, 36, 44, 50}
@@ -1522,6 +1601,18 @@ const (
 )
 `
 
+const trimPrefixMultipleIn = `type Day int
+const (
+	DayMonday Day = iota
+	NightTuesday
+	DayWednesday
+	NightThursday
+	DayFriday
+	NightSaturday
+	DaySunday
+)
+`
+
 func TestGolden(t *testing.T) {
 	for _, test := range golden {
 		runGoldenTest(t, test, false, false, false, false, "", "")
@@ -1543,6 +1634,9 @@ func TestGolden(t *testing.T) {
 	}
 	for _, test := range goldenTrimPrefix {
 		runGoldenTest(t, test, false, false, false, false, "Day", "")
+	}
+	for _, test := range goldenTrimPrefixMultiple {
+		runGoldenTest(t, test, false, false, false, false, "Day,Night", "")
 	}
 	for _, test := range goldenWithPrefix {
 		runGoldenTest(t, test, false, false, false, false, "", "Day")
