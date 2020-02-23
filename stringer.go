@@ -508,7 +508,8 @@ func (g *Generator) format() []byte {
 
 // Value represents a declared constant.
 type Value struct {
-	name string // The name of the constant after transformation (i.e. camel case => snake case)
+	originalName string // The name of the constant before transformation
+	name         string // The name of the constant after transformation (i.e. camel case => snake case)
 	// The value is stored as a bit pattern alone. The boolean tells us
 	// whether to interpret it as an int64 or a uint64; the only place
 	// this matters is when sorting.
@@ -602,10 +603,11 @@ func (f *File) genDecl(node ast.Node) bool {
 				u64 = uint64(i64)
 			}
 			v := Value{
-				name:   n.Name,
-				value:  u64,
-				signed: info&types.IsUnsigned == 0,
-				str:    value.String(),
+				originalName: n.Name,
+				name:         n.Name,
+				value:        u64,
+				signed:       info&types.IsUnsigned == 0,
+				str:          value.String(),
 			}
 			if c := vspec.Comment; f.lineComment && c != nil && len(c.List) == 1 {
 				v.name = strings.TrimSpace(c.Text())
