@@ -34,38 +34,38 @@ var golden = []Golden{
 }
 
 var goldenJSON = []Golden{
-	{"prime", primeJsonIn, primeJsonOut},
+	{"primeJson", primeJsonIn, primeJsonOut},
 }
 var goldenText = []Golden{
-	{"prime", primeTextIn, primeTextOut},
+	{"primeText", primeTextIn, primeTextOut},
 }
 
 var goldenYAML = []Golden{
-	{"prime", primeYamlIn, primeYamlOut},
+	{"primeYaml", primeYamlIn, primeYamlOut},
 }
 
 var goldenSQL = []Golden{
-	{"prime", primeSqlIn, primeSqlOut},
+	{"primeSql", primeSqlIn, primeSqlOut},
 }
 
 var goldenJSONAndSQL = []Golden{
-	{"prime", primeJsonAndSqlIn, primeJsonAndSqlOut},
+	{"primeJsonAndSql", primeJsonAndSqlIn, primeJsonAndSqlOut},
 }
 
 var goldenTrimPrefix = []Golden{
-	{"trim prefix", trimPrefixIn, dayOut},
+	{"trimPrefix", trimPrefixIn, trimPrefixOut},
 }
 
 var goldenTrimPrefixMultiple = []Golden{
-	{"trim multiple prefixes", trimPrefixMultipleIn, dayNightOut},
+	{"trimPrefixMultiple", trimPrefixMultipleIn, dayNightOut},
 }
 
 var goldenWithPrefix = []Golden{
-	{"with prefix", dayIn, prefixedDayOut},
+	{"dayWithPrefix", dayIn, prefixedDayOut},
 }
 
 var goldenTrimAndAddPrefix = []Golden{
-	{"trim and add prefix", trimPrefixIn, trimmedPrefixedDayOut},
+	{"dayTrimAndPrefix", trimPrefixIn, trimmedPrefixedDayOut},
 }
 
 // Each example starts with "type XXX [u]int", with a single space separating them.
@@ -82,6 +82,93 @@ const (
 	Sunday
 )
 `
+const trimPrefixOut = `
+const _DayName = "MondayTuesdayWednesdayThursdayFridaySaturdaySunday"
+
+var _DayIndex = [...]uint8{0, 6, 13, 22, 30, 36, 44, 50}
+
+const _DayLowerName = "mondaytuesdaywednesdaythursdayfridaysaturdaysunday"
+
+func (i Day) String() string {
+	if i < 0 || i >= Day(len(_DayIndex)-1) {
+		return fmt.Sprintf("Day(%d)", i)
+	}
+	return _DayName[_DayIndex[i]:_DayIndex[i+1]]
+}
+
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _DayNoOp() {
+	var x [1]struct{}
+	_ = x[DayMonday-(0)]
+	_ = x[DayTuesday-(1)]
+	_ = x[DayWednesday-(2)]
+	_ = x[DayThursday-(3)]
+	_ = x[DayFriday-(4)]
+	_ = x[DaySaturday-(5)]
+	_ = x[DaySunday-(6)]
+}
+
+var _DayValues = []Day{DayMonday, DayTuesday, DayWednesday, DayThursday, DayFriday, DaySaturday, DaySunday}
+
+var _DayNameToValueMap = map[string]Day{
+	_DayName[0:6]:        DayMonday,
+	_DayLowerName[0:6]:   DayMonday,
+	_DayName[6:13]:       DayTuesday,
+	_DayLowerName[6:13]:  DayTuesday,
+	_DayName[13:22]:      DayWednesday,
+	_DayLowerName[13:22]: DayWednesday,
+	_DayName[22:30]:      DayThursday,
+	_DayLowerName[22:30]: DayThursday,
+	_DayName[30:36]:      DayFriday,
+	_DayLowerName[30:36]: DayFriday,
+	_DayName[36:44]:      DaySaturday,
+	_DayLowerName[36:44]: DaySaturday,
+	_DayName[44:50]:      DaySunday,
+	_DayLowerName[44:50]: DaySunday,
+}
+
+var _DayNames = []string{
+	_DayName[0:6],
+	_DayName[6:13],
+	_DayName[13:22],
+	_DayName[22:30],
+	_DayName[30:36],
+	_DayName[36:44],
+	_DayName[44:50],
+}
+
+// DayString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func DayString(s string) (Day, error) {
+	if val, ok := _DayNameToValueMap[s]; ok {
+		return val, nil
+	}
+	return 0, fmt.Errorf("%s does not belong to Day values", s)
+}
+
+// DayValues returns all values of the enum
+func DayValues() []Day {
+	return _DayValues
+}
+
+// DayStrings returns a slice of all String values of the enum
+func DayStrings() []string {
+	strs := make([]string, len(_DayNames))
+	copy(strs, _DayNames)
+	return strs
+}
+
+// IsADay returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Day) IsADay() bool {
+	for _, v := range _DayValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}
+`
 
 const dayOut = `
 const _DayName = "MondayTuesdayWednesdayThursdayFridaySaturdaySunday"
@@ -97,23 +184,36 @@ func (i Day) String() string {
 	return _DayName[_DayIndex[i]:_DayIndex[i+1]]
 }
 
-var _DayValues = []Day{0, 1, 2, 3, 4, 5, 6}
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _DayNoOp() {
+	var x [1]struct{}
+	_ = x[Monday-(0)]
+	_ = x[Tuesday-(1)]
+	_ = x[Wednesday-(2)]
+	_ = x[Thursday-(3)]
+	_ = x[Friday-(4)]
+	_ = x[Saturday-(5)]
+	_ = x[Sunday-(6)]
+}
+
+var _DayValues = []Day{Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday}
 
 var _DayNameToValueMap = map[string]Day{
-	_DayName[0:6]:        0,
-	_DayLowerName[0:6]:   0,
-	_DayName[6:13]:       1,
-	_DayLowerName[6:13]:  1,
-	_DayName[13:22]:      2,
-	_DayLowerName[13:22]: 2,
-	_DayName[22:30]:      3,
-	_DayLowerName[22:30]: 3,
-	_DayName[30:36]:      4,
-	_DayLowerName[30:36]: 4,
-	_DayName[36:44]:      5,
-	_DayLowerName[36:44]: 5,
-	_DayName[44:50]:      6,
-	_DayLowerName[44:50]: 6,
+	_DayName[0:6]:        Monday,
+	_DayLowerName[0:6]:   Monday,
+	_DayName[6:13]:       Tuesday,
+	_DayLowerName[6:13]:  Tuesday,
+	_DayName[13:22]:      Wednesday,
+	_DayLowerName[13:22]: Wednesday,
+	_DayName[22:30]:      Thursday,
+	_DayLowerName[22:30]: Thursday,
+	_DayName[30:36]:      Friday,
+	_DayLowerName[30:36]: Friday,
+	_DayName[36:44]:      Saturday,
+	_DayLowerName[36:44]: Saturday,
+	_DayName[44:50]:      Sunday,
+	_DayLowerName[44:50]: Sunday,
 }
 
 var _DayNames = []string{
@@ -172,23 +272,36 @@ func (i Day) String() string {
 	return _DayName[_DayIndex[i]:_DayIndex[i+1]]
 }
 
-var _DayValues = []Day{0, 1, 2, 3, 4, 5, 6}
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _DayNoOp() {
+	var x [1]struct{}
+	_ = x[DayMonday-(0)]
+	_ = x[NightTuesday-(1)]
+	_ = x[DayWednesday-(2)]
+	_ = x[NightThursday-(3)]
+	_ = x[DayFriday-(4)]
+	_ = x[NightSaturday-(5)]
+	_ = x[DaySunday-(6)]
+}
+
+var _DayValues = []Day{DayMonday, NightTuesday, DayWednesday, NightThursday, DayFriday, NightSaturday, DaySunday}
 
 var _DayNameToValueMap = map[string]Day{
-	_DayName[0:6]:        0,
-	_DayLowerName[0:6]:   0,
-	_DayName[6:13]:       1,
-	_DayLowerName[6:13]:  1,
-	_DayName[13:22]:      2,
-	_DayLowerName[13:22]: 2,
-	_DayName[22:30]:      3,
-	_DayLowerName[22:30]: 3,
-	_DayName[30:36]:      4,
-	_DayLowerName[30:36]: 4,
-	_DayName[36:44]:      5,
-	_DayLowerName[36:44]: 5,
-	_DayName[44:50]:      6,
-	_DayLowerName[44:50]: 6,
+	_DayName[0:6]:        DayMonday,
+	_DayLowerName[0:6]:   DayMonday,
+	_DayName[6:13]:       NightTuesday,
+	_DayLowerName[6:13]:  NightTuesday,
+	_DayName[13:22]:      DayWednesday,
+	_DayLowerName[13:22]: DayWednesday,
+	_DayName[22:30]:      NightThursday,
+	_DayLowerName[22:30]: NightThursday,
+	_DayName[30:36]:      DayFriday,
+	_DayLowerName[30:36]: DayFriday,
+	_DayName[36:44]:      NightSaturday,
+	_DayLowerName[36:44]: NightSaturday,
+	_DayName[44:50]:      DaySunday,
+	_DayLowerName[44:50]: DaySunday,
 }
 
 var _DayNames = []string{
@@ -247,23 +360,36 @@ func (i Day) String() string {
 	return _DayName[_DayIndex[i]:_DayIndex[i+1]]
 }
 
-var _DayValues = []Day{0, 1, 2, 3, 4, 5, 6}
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _DayNoOp() {
+	var x [1]struct{}
+	_ = x[Monday-(0)]
+	_ = x[Tuesday-(1)]
+	_ = x[Wednesday-(2)]
+	_ = x[Thursday-(3)]
+	_ = x[Friday-(4)]
+	_ = x[Saturday-(5)]
+	_ = x[Sunday-(6)]
+}
+
+var _DayValues = []Day{Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday}
 
 var _DayNameToValueMap = map[string]Day{
-	_DayName[0:9]:        0,
-	_DayLowerName[0:9]:   0,
-	_DayName[9:19]:       1,
-	_DayLowerName[9:19]:  1,
-	_DayName[19:31]:      2,
-	_DayLowerName[19:31]: 2,
-	_DayName[31:42]:      3,
-	_DayLowerName[31:42]: 3,
-	_DayName[42:51]:      4,
-	_DayLowerName[42:51]: 4,
-	_DayName[51:62]:      5,
-	_DayLowerName[51:62]: 5,
-	_DayName[62:71]:      6,
-	_DayLowerName[62:71]: 6,
+	_DayName[0:9]:        Monday,
+	_DayLowerName[0:9]:   Monday,
+	_DayName[9:19]:       Tuesday,
+	_DayLowerName[9:19]:  Tuesday,
+	_DayName[19:31]:      Wednesday,
+	_DayLowerName[19:31]: Wednesday,
+	_DayName[31:42]:      Thursday,
+	_DayLowerName[31:42]: Thursday,
+	_DayName[42:51]:      Friday,
+	_DayLowerName[42:51]: Friday,
+	_DayName[51:62]:      Saturday,
+	_DayLowerName[51:62]: Saturday,
+	_DayName[62:71]:      Sunday,
+	_DayLowerName[62:71]: Sunday,
 }
 
 var _DayNames = []string{
@@ -322,23 +448,36 @@ func (i Day) String() string {
 	return _DayName[_DayIndex[i]:_DayIndex[i+1]]
 }
 
-var _DayValues = []Day{0, 1, 2, 3, 4, 5, 6}
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _DayNoOp() {
+	var x [1]struct{}
+	_ = x[DayMonday-(0)]
+	_ = x[DayTuesday-(1)]
+	_ = x[DayWednesday-(2)]
+	_ = x[DayThursday-(3)]
+	_ = x[DayFriday-(4)]
+	_ = x[DaySaturday-(5)]
+	_ = x[DaySunday-(6)]
+}
+
+var _DayValues = []Day{DayMonday, DayTuesday, DayWednesday, DayThursday, DayFriday, DaySaturday, DaySunday}
 
 var _DayNameToValueMap = map[string]Day{
-	_DayName[0:11]:       0,
-	_DayLowerName[0:11]:  0,
-	_DayName[11:23]:      1,
-	_DayLowerName[11:23]: 1,
-	_DayName[23:37]:      2,
-	_DayLowerName[23:37]: 2,
-	_DayName[37:50]:      3,
-	_DayLowerName[37:50]: 3,
-	_DayName[50:61]:      4,
-	_DayLowerName[50:61]: 4,
-	_DayName[61:74]:      5,
-	_DayLowerName[61:74]: 5,
-	_DayName[74:85]:      6,
-	_DayLowerName[74:85]: 6,
+	_DayName[0:11]:       DayMonday,
+	_DayLowerName[0:11]:  DayMonday,
+	_DayName[11:23]:      DayTuesday,
+	_DayLowerName[11:23]: DayTuesday,
+	_DayName[23:37]:      DayWednesday,
+	_DayLowerName[23:37]: DayWednesday,
+	_DayName[37:50]:      DayThursday,
+	_DayLowerName[37:50]: DayThursday,
+	_DayName[50:61]:      DayFriday,
+	_DayLowerName[50:61]: DayFriday,
+	_DayName[61:74]:      DaySaturday,
+	_DayLowerName[61:74]: DaySaturday,
+	_DayName[74:85]:      DaySunday,
+	_DayLowerName[74:85]: DaySunday,
 }
 
 var _DayNames = []string{
@@ -410,15 +549,24 @@ func (i Number) String() string {
 	return _NumberName[_NumberIndex[i]:_NumberIndex[i+1]]
 }
 
-var _NumberValues = []Number{1, 2, 3}
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _NumberNoOp() {
+	var x [1]struct{}
+	_ = x[One-(1)]
+	_ = x[Two-(2)]
+	_ = x[Three-(3)]
+}
+
+var _NumberValues = []Number{One, Two, Three}
 
 var _NumberNameToValueMap = map[string]Number{
-	_NumberName[0:3]:       1,
-	_NumberLowerName[0:3]:  1,
-	_NumberName[3:6]:       2,
-	_NumberLowerName[3:6]:  2,
-	_NumberName[6:11]:      3,
-	_NumberLowerName[6:11]: 3,
+	_NumberName[0:3]:       One,
+	_NumberLowerName[0:3]:  One,
+	_NumberName[3:6]:       Two,
+	_NumberLowerName[3:6]:  Two,
+	_NumberName[6:11]:      Three,
+	_NumberLowerName[6:11]: Three,
 }
 
 var _NumberNames = []string{
@@ -504,25 +652,39 @@ func (i Gap) String() string {
 	}
 }
 
-var _GapValues = []Gap{2, 3, 5, 6, 7, 8, 9, 11}
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _GapNoOp() {
+	var x [1]struct{}
+	_ = x[Two-(2)]
+	_ = x[Three-(3)]
+	_ = x[Five-(5)]
+	_ = x[Six-(6)]
+	_ = x[Seven-(7)]
+	_ = x[Eight-(8)]
+	_ = x[Nine-(9)]
+	_ = x[Eleven-(11)]
+}
+
+var _GapValues = []Gap{Two, Three, Five, Six, Seven, Eight, Nine, Eleven}
 
 var _GapNameToValueMap = map[string]Gap{
-	_GapName_0[0:3]:        2,
-	_GapLowerName_0[0:3]:   2,
-	_GapName_0[3:8]:        3,
-	_GapLowerName_0[3:8]:   3,
-	_GapName_1[0:4]:        5,
-	_GapLowerName_1[0:4]:   5,
-	_GapName_1[4:7]:        6,
-	_GapLowerName_1[4:7]:   6,
-	_GapName_1[7:12]:       7,
-	_GapLowerName_1[7:12]:  7,
-	_GapName_1[12:17]:      8,
-	_GapLowerName_1[12:17]: 8,
-	_GapName_1[17:21]:      9,
-	_GapLowerName_1[17:21]: 9,
-	_GapName_2[0:6]:        11,
-	_GapLowerName_2[0:6]:   11,
+	_GapName_0[0:3]:        Two,
+	_GapLowerName_0[0:3]:   Two,
+	_GapName_0[3:8]:        Three,
+	_GapLowerName_0[3:8]:   Three,
+	_GapName_1[0:4]:        Five,
+	_GapLowerName_1[0:4]:   Five,
+	_GapName_1[4:7]:        Six,
+	_GapLowerName_1[4:7]:   Six,
+	_GapName_1[7:12]:       Seven,
+	_GapLowerName_1[7:12]:  Seven,
+	_GapName_1[12:17]:      Eight,
+	_GapLowerName_1[12:17]: Eight,
+	_GapName_1[17:21]:      Nine,
+	_GapLowerName_1[17:21]: Nine,
+	_GapName_2[0:6]:        Eleven,
+	_GapLowerName_2[0:6]:   Eleven,
 }
 
 var _GapNames = []string{
@@ -594,19 +756,30 @@ func (i Num) String() string {
 	return _NumName[_NumIndex[i]:_NumIndex[i+1]]
 }
 
-var _NumValues = []Num{-2, -1, 0, 1, 2}
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _NumNoOp() {
+	var x [1]struct{}
+	_ = x[m_2-(-2)]
+	_ = x[m_1-(-1)]
+	_ = x[m0-(0)]
+	_ = x[m1-(1)]
+	_ = x[m2-(2)]
+}
+
+var _NumValues = []Num{m_2, m_1, m0, m1, m2}
 
 var _NumNameToValueMap = map[string]Num{
-	_NumName[0:3]:        -2,
-	_NumLowerName[0:3]:   -2,
-	_NumName[3:6]:        -1,
-	_NumLowerName[3:6]:   -1,
-	_NumName[6:8]:        0,
-	_NumLowerName[6:8]:   0,
-	_NumName[8:10]:       1,
-	_NumLowerName[8:10]:  1,
-	_NumName[10:12]:      2,
-	_NumLowerName[10:12]: 2,
+	_NumName[0:3]:        m_2,
+	_NumLowerName[0:3]:   m_2,
+	_NumName[3:6]:        m_1,
+	_NumLowerName[3:6]:   m_1,
+	_NumName[6:8]:        m0,
+	_NumLowerName[6:8]:   m0,
+	_NumName[8:10]:       m1,
+	_NumLowerName[8:10]:  m1,
+	_NumName[10:12]:      m2,
+	_NumLowerName[10:12]: m2,
 }
 
 var _NumNames = []string{
@@ -688,19 +861,30 @@ func (i Unum) String() string {
 	}
 }
 
-var _UnumValues = []Unum{0, 1, 2, 253, 254}
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _UnumNoOp() {
+	var x [1]struct{}
+	_ = x[m0-(0)]
+	_ = x[m1-(1)]
+	_ = x[m2-(2)]
+	_ = x[m_2-(253)]
+	_ = x[m_1-(254)]
+}
+
+var _UnumValues = []Unum{m0, m1, m2, m_2, m_1}
 
 var _UnumNameToValueMap = map[string]Unum{
-	_UnumName_0[0:2]:      0,
-	_UnumLowerName_0[0:2]: 0,
-	_UnumName_0[2:4]:      1,
-	_UnumLowerName_0[2:4]: 1,
-	_UnumName_0[4:6]:      2,
-	_UnumLowerName_0[4:6]: 2,
-	_UnumName_1[0:3]:      253,
-	_UnumLowerName_1[0:3]: 253,
-	_UnumName_1[3:6]:      254,
-	_UnumLowerName_1[3:6]: 254,
+	_UnumName_0[0:2]:      m0,
+	_UnumLowerName_0[0:2]: m0,
+	_UnumName_0[2:4]:      m1,
+	_UnumLowerName_0[2:4]: m1,
+	_UnumName_0[4:6]:      m2,
+	_UnumLowerName_0[4:6]: m2,
+	_UnumName_1[0:3]:      m_2,
+	_UnumLowerName_1[0:3]: m_2,
+	_UnumName_1[3:6]:      m_1,
+	_UnumLowerName_1[3:6]: m_1,
 }
 
 var _UnumNames = []string{
@@ -791,35 +975,54 @@ func (i Prime) String() string {
 	return fmt.Sprintf("Prime(%d)", i)
 }
 
-var _PrimeValues = []Prime{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43}
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _PrimeNoOp() {
+	var x [1]struct{}
+	_ = x[p2-(2)]
+	_ = x[p3-(3)]
+	_ = x[p5-(5)]
+	_ = x[p7-(7)]
+	_ = x[p11-(11)]
+	_ = x[p13-(13)]
+	_ = x[p17-(17)]
+	_ = x[p19-(19)]
+	_ = x[p23-(23)]
+	_ = x[p29-(29)]
+	_ = x[p37-(31)]
+	_ = x[p41-(41)]
+	_ = x[p43-(43)]
+}
+
+var _PrimeValues = []Prime{p2, p3, p5, p7, p11, p13, p17, p19, p23, p29, p37, p41, p43}
 
 var _PrimeNameToValueMap = map[string]Prime{
-	_PrimeName[0:2]:        2,
-	_PrimeLowerName[0:2]:   2,
-	_PrimeName[2:4]:        3,
-	_PrimeLowerName[2:4]:   3,
-	_PrimeName[4:6]:        5,
-	_PrimeLowerName[4:6]:   5,
-	_PrimeName[6:8]:        7,
-	_PrimeLowerName[6:8]:   7,
-	_PrimeName[8:11]:       11,
-	_PrimeLowerName[8:11]:  11,
-	_PrimeName[11:14]:      13,
-	_PrimeLowerName[11:14]: 13,
-	_PrimeName[14:17]:      17,
-	_PrimeLowerName[14:17]: 17,
-	_PrimeName[17:20]:      19,
-	_PrimeLowerName[17:20]: 19,
-	_PrimeName[20:23]:      23,
-	_PrimeLowerName[20:23]: 23,
-	_PrimeName[23:26]:      29,
-	_PrimeLowerName[23:26]: 29,
-	_PrimeName[26:29]:      31,
-	_PrimeLowerName[26:29]: 31,
-	_PrimeName[29:32]:      41,
-	_PrimeLowerName[29:32]: 41,
-	_PrimeName[32:35]:      43,
-	_PrimeLowerName[32:35]: 43,
+	_PrimeName[0:2]:        p2,
+	_PrimeLowerName[0:2]:   p2,
+	_PrimeName[2:4]:        p3,
+	_PrimeLowerName[2:4]:   p3,
+	_PrimeName[4:6]:        p5,
+	_PrimeLowerName[4:6]:   p5,
+	_PrimeName[6:8]:        p7,
+	_PrimeLowerName[6:8]:   p7,
+	_PrimeName[8:11]:       p11,
+	_PrimeLowerName[8:11]:  p11,
+	_PrimeName[11:14]:      p13,
+	_PrimeLowerName[11:14]: p13,
+	_PrimeName[14:17]:      p17,
+	_PrimeLowerName[14:17]: p17,
+	_PrimeName[17:20]:      p19,
+	_PrimeLowerName[17:20]: p19,
+	_PrimeName[20:23]:      p23,
+	_PrimeLowerName[20:23]: p23,
+	_PrimeName[23:26]:      p29,
+	_PrimeLowerName[23:26]: p29,
+	_PrimeName[26:29]:      p37,
+	_PrimeLowerName[26:29]: p37,
+	_PrimeName[29:32]:      p41,
+	_PrimeLowerName[29:32]: p41,
+	_PrimeName[32:35]:      p43,
+	_PrimeLowerName[32:35]: p43,
 }
 
 var _PrimeNames = []string{
@@ -911,35 +1114,54 @@ func (i Prime) String() string {
 	return fmt.Sprintf("Prime(%d)", i)
 }
 
-var _PrimeValues = []Prime{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43}
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _PrimeNoOp() {
+	var x [1]struct{}
+	_ = x[p2-(2)]
+	_ = x[p3-(3)]
+	_ = x[p5-(5)]
+	_ = x[p7-(7)]
+	_ = x[p11-(11)]
+	_ = x[p13-(13)]
+	_ = x[p17-(17)]
+	_ = x[p19-(19)]
+	_ = x[p23-(23)]
+	_ = x[p29-(29)]
+	_ = x[p37-(31)]
+	_ = x[p41-(41)]
+	_ = x[p43-(43)]
+}
+
+var _PrimeValues = []Prime{p2, p3, p5, p7, p11, p13, p17, p19, p23, p29, p37, p41, p43}
 
 var _PrimeNameToValueMap = map[string]Prime{
-	_PrimeName[0:2]:        2,
-	_PrimeLowerName[0:2]:   2,
-	_PrimeName[2:4]:        3,
-	_PrimeLowerName[2:4]:   3,
-	_PrimeName[4:6]:        5,
-	_PrimeLowerName[4:6]:   5,
-	_PrimeName[6:8]:        7,
-	_PrimeLowerName[6:8]:   7,
-	_PrimeName[8:11]:       11,
-	_PrimeLowerName[8:11]:  11,
-	_PrimeName[11:14]:      13,
-	_PrimeLowerName[11:14]: 13,
-	_PrimeName[14:17]:      17,
-	_PrimeLowerName[14:17]: 17,
-	_PrimeName[17:20]:      19,
-	_PrimeLowerName[17:20]: 19,
-	_PrimeName[20:23]:      23,
-	_PrimeLowerName[20:23]: 23,
-	_PrimeName[23:26]:      29,
-	_PrimeLowerName[23:26]: 29,
-	_PrimeName[26:29]:      31,
-	_PrimeLowerName[26:29]: 31,
-	_PrimeName[29:32]:      41,
-	_PrimeLowerName[29:32]: 41,
-	_PrimeName[32:35]:      43,
-	_PrimeLowerName[32:35]: 43,
+	_PrimeName[0:2]:        p2,
+	_PrimeLowerName[0:2]:   p2,
+	_PrimeName[2:4]:        p3,
+	_PrimeLowerName[2:4]:   p3,
+	_PrimeName[4:6]:        p5,
+	_PrimeLowerName[4:6]:   p5,
+	_PrimeName[6:8]:        p7,
+	_PrimeLowerName[6:8]:   p7,
+	_PrimeName[8:11]:       p11,
+	_PrimeLowerName[8:11]:  p11,
+	_PrimeName[11:14]:      p13,
+	_PrimeLowerName[11:14]: p13,
+	_PrimeName[14:17]:      p17,
+	_PrimeLowerName[14:17]: p17,
+	_PrimeName[17:20]:      p19,
+	_PrimeLowerName[17:20]: p19,
+	_PrimeName[20:23]:      p23,
+	_PrimeLowerName[20:23]: p23,
+	_PrimeName[23:26]:      p29,
+	_PrimeLowerName[23:26]: p29,
+	_PrimeName[26:29]:      p37,
+	_PrimeLowerName[26:29]: p37,
+	_PrimeName[29:32]:      p41,
+	_PrimeLowerName[29:32]: p41,
+	_PrimeName[32:35]:      p43,
+	_PrimeLowerName[32:35]: p43,
 }
 
 var _PrimeNames = []string{
@@ -1049,35 +1271,54 @@ func (i Prime) String() string {
 	return fmt.Sprintf("Prime(%d)", i)
 }
 
-var _PrimeValues = []Prime{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43}
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _PrimeNoOp() {
+	var x [1]struct{}
+	_ = x[p2-(2)]
+	_ = x[p3-(3)]
+	_ = x[p5-(5)]
+	_ = x[p7-(7)]
+	_ = x[p11-(11)]
+	_ = x[p13-(13)]
+	_ = x[p17-(17)]
+	_ = x[p19-(19)]
+	_ = x[p23-(23)]
+	_ = x[p29-(29)]
+	_ = x[p37-(31)]
+	_ = x[p41-(41)]
+	_ = x[p43-(43)]
+}
+
+var _PrimeValues = []Prime{p2, p3, p5, p7, p11, p13, p17, p19, p23, p29, p37, p41, p43}
 
 var _PrimeNameToValueMap = map[string]Prime{
-	_PrimeName[0:2]:        2,
-	_PrimeLowerName[0:2]:   2,
-	_PrimeName[2:4]:        3,
-	_PrimeLowerName[2:4]:   3,
-	_PrimeName[4:6]:        5,
-	_PrimeLowerName[4:6]:   5,
-	_PrimeName[6:8]:        7,
-	_PrimeLowerName[6:8]:   7,
-	_PrimeName[8:11]:       11,
-	_PrimeLowerName[8:11]:  11,
-	_PrimeName[11:14]:      13,
-	_PrimeLowerName[11:14]: 13,
-	_PrimeName[14:17]:      17,
-	_PrimeLowerName[14:17]: 17,
-	_PrimeName[17:20]:      19,
-	_PrimeLowerName[17:20]: 19,
-	_PrimeName[20:23]:      23,
-	_PrimeLowerName[20:23]: 23,
-	_PrimeName[23:26]:      29,
-	_PrimeLowerName[23:26]: 29,
-	_PrimeName[26:29]:      31,
-	_PrimeLowerName[26:29]: 31,
-	_PrimeName[29:32]:      41,
-	_PrimeLowerName[29:32]: 41,
-	_PrimeName[32:35]:      43,
-	_PrimeLowerName[32:35]: 43,
+	_PrimeName[0:2]:        p2,
+	_PrimeLowerName[0:2]:   p2,
+	_PrimeName[2:4]:        p3,
+	_PrimeLowerName[2:4]:   p3,
+	_PrimeName[4:6]:        p5,
+	_PrimeLowerName[4:6]:   p5,
+	_PrimeName[6:8]:        p7,
+	_PrimeLowerName[6:8]:   p7,
+	_PrimeName[8:11]:       p11,
+	_PrimeLowerName[8:11]:  p11,
+	_PrimeName[11:14]:      p13,
+	_PrimeLowerName[11:14]: p13,
+	_PrimeName[14:17]:      p17,
+	_PrimeLowerName[14:17]: p17,
+	_PrimeName[17:20]:      p19,
+	_PrimeLowerName[17:20]: p19,
+	_PrimeName[20:23]:      p23,
+	_PrimeLowerName[20:23]: p23,
+	_PrimeName[23:26]:      p29,
+	_PrimeLowerName[23:26]: p29,
+	_PrimeName[26:29]:      p37,
+	_PrimeLowerName[26:29]: p37,
+	_PrimeName[29:32]:      p41,
+	_PrimeLowerName[29:32]: p41,
+	_PrimeName[32:35]:      p43,
+	_PrimeLowerName[32:35]: p43,
 }
 
 var _PrimeNames = []string{
@@ -1182,35 +1423,54 @@ func (i Prime) String() string {
 	return fmt.Sprintf("Prime(%d)", i)
 }
 
-var _PrimeValues = []Prime{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43}
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _PrimeNoOp() {
+	var x [1]struct{}
+	_ = x[p2-(2)]
+	_ = x[p3-(3)]
+	_ = x[p5-(5)]
+	_ = x[p7-(7)]
+	_ = x[p11-(11)]
+	_ = x[p13-(13)]
+	_ = x[p17-(17)]
+	_ = x[p19-(19)]
+	_ = x[p23-(23)]
+	_ = x[p29-(29)]
+	_ = x[p37-(31)]
+	_ = x[p41-(41)]
+	_ = x[p43-(43)]
+}
+
+var _PrimeValues = []Prime{p2, p3, p5, p7, p11, p13, p17, p19, p23, p29, p37, p41, p43}
 
 var _PrimeNameToValueMap = map[string]Prime{
-	_PrimeName[0:2]:        2,
-	_PrimeLowerName[0:2]:   2,
-	_PrimeName[2:4]:        3,
-	_PrimeLowerName[2:4]:   3,
-	_PrimeName[4:6]:        5,
-	_PrimeLowerName[4:6]:   5,
-	_PrimeName[6:8]:        7,
-	_PrimeLowerName[6:8]:   7,
-	_PrimeName[8:11]:       11,
-	_PrimeLowerName[8:11]:  11,
-	_PrimeName[11:14]:      13,
-	_PrimeLowerName[11:14]: 13,
-	_PrimeName[14:17]:      17,
-	_PrimeLowerName[14:17]: 17,
-	_PrimeName[17:20]:      19,
-	_PrimeLowerName[17:20]: 19,
-	_PrimeName[20:23]:      23,
-	_PrimeLowerName[20:23]: 23,
-	_PrimeName[23:26]:      29,
-	_PrimeLowerName[23:26]: 29,
-	_PrimeName[26:29]:      31,
-	_PrimeLowerName[26:29]: 31,
-	_PrimeName[29:32]:      41,
-	_PrimeLowerName[29:32]: 41,
-	_PrimeName[32:35]:      43,
-	_PrimeLowerName[32:35]: 43,
+	_PrimeName[0:2]:        p2,
+	_PrimeLowerName[0:2]:   p2,
+	_PrimeName[2:4]:        p3,
+	_PrimeLowerName[2:4]:   p3,
+	_PrimeName[4:6]:        p5,
+	_PrimeLowerName[4:6]:   p5,
+	_PrimeName[6:8]:        p7,
+	_PrimeLowerName[6:8]:   p7,
+	_PrimeName[8:11]:       p11,
+	_PrimeLowerName[8:11]:  p11,
+	_PrimeName[11:14]:      p13,
+	_PrimeLowerName[11:14]: p13,
+	_PrimeName[14:17]:      p17,
+	_PrimeLowerName[14:17]: p17,
+	_PrimeName[17:20]:      p19,
+	_PrimeLowerName[17:20]: p19,
+	_PrimeName[20:23]:      p23,
+	_PrimeLowerName[20:23]: p23,
+	_PrimeName[23:26]:      p29,
+	_PrimeLowerName[23:26]: p29,
+	_PrimeName[26:29]:      p37,
+	_PrimeLowerName[26:29]: p37,
+	_PrimeName[29:32]:      p41,
+	_PrimeLowerName[29:32]: p41,
+	_PrimeName[32:35]:      p43,
+	_PrimeLowerName[32:35]: p43,
 }
 
 var _PrimeNames = []string{
@@ -1320,35 +1580,54 @@ func (i Prime) String() string {
 	return fmt.Sprintf("Prime(%d)", i)
 }
 
-var _PrimeValues = []Prime{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43}
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _PrimeNoOp() {
+	var x [1]struct{}
+	_ = x[p2-(2)]
+	_ = x[p3-(3)]
+	_ = x[p5-(5)]
+	_ = x[p7-(7)]
+	_ = x[p11-(11)]
+	_ = x[p13-(13)]
+	_ = x[p17-(17)]
+	_ = x[p19-(19)]
+	_ = x[p23-(23)]
+	_ = x[p29-(29)]
+	_ = x[p37-(31)]
+	_ = x[p41-(41)]
+	_ = x[p43-(43)]
+}
+
+var _PrimeValues = []Prime{p2, p3, p5, p7, p11, p13, p17, p19, p23, p29, p37, p41, p43}
 
 var _PrimeNameToValueMap = map[string]Prime{
-	_PrimeName[0:2]:        2,
-	_PrimeLowerName[0:2]:   2,
-	_PrimeName[2:4]:        3,
-	_PrimeLowerName[2:4]:   3,
-	_PrimeName[4:6]:        5,
-	_PrimeLowerName[4:6]:   5,
-	_PrimeName[6:8]:        7,
-	_PrimeLowerName[6:8]:   7,
-	_PrimeName[8:11]:       11,
-	_PrimeLowerName[8:11]:  11,
-	_PrimeName[11:14]:      13,
-	_PrimeLowerName[11:14]: 13,
-	_PrimeName[14:17]:      17,
-	_PrimeLowerName[14:17]: 17,
-	_PrimeName[17:20]:      19,
-	_PrimeLowerName[17:20]: 19,
-	_PrimeName[20:23]:      23,
-	_PrimeLowerName[20:23]: 23,
-	_PrimeName[23:26]:      29,
-	_PrimeLowerName[23:26]: 29,
-	_PrimeName[26:29]:      31,
-	_PrimeLowerName[26:29]: 31,
-	_PrimeName[29:32]:      41,
-	_PrimeLowerName[29:32]: 41,
-	_PrimeName[32:35]:      43,
-	_PrimeLowerName[32:35]: 43,
+	_PrimeName[0:2]:        p2,
+	_PrimeLowerName[0:2]:   p2,
+	_PrimeName[2:4]:        p3,
+	_PrimeLowerName[2:4]:   p3,
+	_PrimeName[4:6]:        p5,
+	_PrimeLowerName[4:6]:   p5,
+	_PrimeName[6:8]:        p7,
+	_PrimeLowerName[6:8]:   p7,
+	_PrimeName[8:11]:       p11,
+	_PrimeLowerName[8:11]:  p11,
+	_PrimeName[11:14]:      p13,
+	_PrimeLowerName[11:14]: p13,
+	_PrimeName[14:17]:      p17,
+	_PrimeLowerName[14:17]: p17,
+	_PrimeName[17:20]:      p19,
+	_PrimeLowerName[17:20]: p19,
+	_PrimeName[20:23]:      p23,
+	_PrimeLowerName[20:23]: p23,
+	_PrimeName[23:26]:      p29,
+	_PrimeLowerName[23:26]: p29,
+	_PrimeName[26:29]:      p37,
+	_PrimeLowerName[26:29]: p37,
+	_PrimeName[29:32]:      p41,
+	_PrimeLowerName[29:32]: p41,
+	_PrimeName[32:35]:      p43,
+	_PrimeLowerName[32:35]: p43,
 }
 
 var _PrimeNames = []string{
@@ -1469,35 +1748,54 @@ func (i Prime) String() string {
 	return fmt.Sprintf("Prime(%d)", i)
 }
 
-var _PrimeValues = []Prime{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43}
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _PrimeNoOp() {
+	var x [1]struct{}
+	_ = x[p2-(2)]
+	_ = x[p3-(3)]
+	_ = x[p5-(5)]
+	_ = x[p7-(7)]
+	_ = x[p11-(11)]
+	_ = x[p13-(13)]
+	_ = x[p17-(17)]
+	_ = x[p19-(19)]
+	_ = x[p23-(23)]
+	_ = x[p29-(29)]
+	_ = x[p37-(31)]
+	_ = x[p41-(41)]
+	_ = x[p43-(43)]
+}
+
+var _PrimeValues = []Prime{p2, p3, p5, p7, p11, p13, p17, p19, p23, p29, p37, p41, p43}
 
 var _PrimeNameToValueMap = map[string]Prime{
-	_PrimeName[0:2]:        2,
-	_PrimeLowerName[0:2]:   2,
-	_PrimeName[2:4]:        3,
-	_PrimeLowerName[2:4]:   3,
-	_PrimeName[4:6]:        5,
-	_PrimeLowerName[4:6]:   5,
-	_PrimeName[6:8]:        7,
-	_PrimeLowerName[6:8]:   7,
-	_PrimeName[8:11]:       11,
-	_PrimeLowerName[8:11]:  11,
-	_PrimeName[11:14]:      13,
-	_PrimeLowerName[11:14]: 13,
-	_PrimeName[14:17]:      17,
-	_PrimeLowerName[14:17]: 17,
-	_PrimeName[17:20]:      19,
-	_PrimeLowerName[17:20]: 19,
-	_PrimeName[20:23]:      23,
-	_PrimeLowerName[20:23]: 23,
-	_PrimeName[23:26]:      29,
-	_PrimeLowerName[23:26]: 29,
-	_PrimeName[26:29]:      31,
-	_PrimeLowerName[26:29]: 31,
-	_PrimeName[29:32]:      41,
-	_PrimeLowerName[29:32]: 41,
-	_PrimeName[32:35]:      43,
-	_PrimeLowerName[32:35]: 43,
+	_PrimeName[0:2]:        p2,
+	_PrimeLowerName[0:2]:   p2,
+	_PrimeName[2:4]:        p3,
+	_PrimeLowerName[2:4]:   p3,
+	_PrimeName[4:6]:        p5,
+	_PrimeLowerName[4:6]:   p5,
+	_PrimeName[6:8]:        p7,
+	_PrimeLowerName[6:8]:   p7,
+	_PrimeName[8:11]:       p11,
+	_PrimeLowerName[8:11]:  p11,
+	_PrimeName[11:14]:      p13,
+	_PrimeLowerName[11:14]: p13,
+	_PrimeName[14:17]:      p17,
+	_PrimeLowerName[14:17]: p17,
+	_PrimeName[17:20]:      p19,
+	_PrimeLowerName[17:20]: p19,
+	_PrimeName[20:23]:      p23,
+	_PrimeLowerName[20:23]: p23,
+	_PrimeName[23:26]:      p29,
+	_PrimeLowerName[23:26]: p29,
+	_PrimeName[26:29]:      p37,
+	_PrimeLowerName[26:29]: p37,
+	_PrimeName[29:32]:      p41,
+	_PrimeLowerName[29:32]: p41,
+	_PrimeName[32:35]:      p43,
+	_PrimeLowerName[32:35]: p43,
 }
 
 var _PrimeNames = []string{
@@ -1677,7 +1975,7 @@ func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, genera
 	got := string(g.format())
 	if got != test.output {
 		// Use this to help build a golden text when changes are needed
-		//goldenFile := fmt.Sprintf("./goldendata/%v-%v-%v-%v-%v-%v-%v-%v-%v-%v.golden", test.name, tokens[1], generateJSON, generateYAML, generateSQL, generateText, "noop", trimPrefix, prefix, false)
+		//goldenFile := fmt.Sprintf("./goldendata/%v.golden", test.name)
 		//err = ioutil.WriteFile(goldenFile, []byte(got), 0644)
 		//if err != nil {
 		//	t.Error(err)

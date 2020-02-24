@@ -445,6 +445,7 @@ func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeS
 	default:
 		g.buildMap(runs, typeName)
 	}
+	g.buildNoOpOrderChangeDetect(runs, typeName)
 
 	g.buildBasicExtras(runs, typeName, runsThreshold)
 	if includeJSON {
@@ -508,7 +509,8 @@ func (g *Generator) format() []byte {
 
 // Value represents a declared constant.
 type Value struct {
-	name string // The name of the constant after transformation (i.e. camel case => snake case)
+	originalName string // The name of the constant before transformation
+	name         string // The name of the constant after transformation (i.e. camel case => snake case)
 	// The value is stored as a bit pattern alone. The boolean tells us
 	// whether to interpret it as an int64 or a uint64; the only place
 	// this matters is when sorting.
@@ -602,10 +604,11 @@ func (f *File) genDecl(node ast.Node) bool {
 				u64 = uint64(i64)
 			}
 			v := Value{
-				name:   n.Name,
-				value:  u64,
-				signed: info&types.IsUnsigned == 0,
-				str:    value.String(),
+				originalName: n.Name,
+				name:         n.Name,
+				value:        u64,
+				signed:       info&types.IsUnsigned == 0,
+				str:          value.String(),
 			}
 			if c := vspec.Comment; f.lineComment && c != nil && len(c.List) == 1 {
 				v.name = strings.TrimSpace(c.Text())
@@ -815,6 +818,24 @@ func (g *Generator) buildMap(runs [][]Value, typeName string) {
 	}
 	g.Printf("}\n\n")
 	g.Printf(stringMap, typeName)
+}
+
+// buildNoOpOrderChangeDetect try to let the compiler and the user know if the order/value of the ENUMS have changed.
+func (g *Generator) buildNoOpOrderChangeDetect(runs [][]Value, typeName string) {
+	g.Printf("\n")
+
+	g.Printf(`
+	// An "invalid array index" compiler error signifies that the constant values have changed.
+	// Re-run the stringer command to generate them again.
+	`)
+	g.Printf("func _%sNoOp (){ ", typeName)
+	g.Printf("\n var x [1]struct{}\n")
+	for _, values := range runs {
+		for _, value := range values {
+			g.Printf("\t_ = x[%s-(%s)]\n", value.originalName, value.str)
+		}
+	}
+	g.Printf("}\n\n")
 }
 
 // Argument to format is the type name.

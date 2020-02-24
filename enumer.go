@@ -61,7 +61,7 @@ func (g *Generator) buildBasicExtras(runs [][]Value, typeName string, runsThresh
 	g.Printf("\nvar _%sValues = []%s{", typeName, typeName)
 	for _, values := range runs {
 		for _, value := range values {
-			g.Printf("\t%s, ", value.str)
+			g.Printf("\t%s, ", value.originalName)
 		}
 	}
 	g.Printf("}\n\n")
@@ -98,8 +98,8 @@ func (g *Generator) printValueMap(runs [][]Value, typeName string, runsThreshold
 		}
 
 		for _, value := range values {
-			g.Printf("\t_%sName%s[%d:%d]: %s,\n", typeName, runID, n, n+len(value.name), &value)
-			g.Printf("\t_%sLowerName%s[%d:%d]: %s,\n", typeName, runID, n, n+len(value.name), &value)
+			g.Printf("\t_%sName%s[%d:%d]: %s,\n", typeName, runID, n, n+len(value.name), value.originalName)
+			g.Printf("\t_%sLowerName%s[%d:%d]: %s,\n", typeName, runID, n, n+len(value.name), value.originalName)
 			n += len(value.name)
 		}
 	}
