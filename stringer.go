@@ -445,6 +445,7 @@ func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeS
 	default:
 		g.buildMap(runs, typeName)
 	}
+	g.buildNoOpOrderChangeDetect(runs, typeName)
 
 	g.buildBasicExtras(runs, typeName, runsThreshold)
 	if includeJSON {
@@ -817,6 +818,24 @@ func (g *Generator) buildMap(runs [][]Value, typeName string) {
 	}
 	g.Printf("}\n\n")
 	g.Printf(stringMap, typeName)
+}
+
+// buildNoOpOrderChangeDetect try to let the compiler and the user know if the order/value of the ENUMS have changed.
+func (g *Generator) buildNoOpOrderChangeDetect(runs [][]Value, typeName string) {
+	g.Printf("\n")
+
+	g.Printf(`
+	// An "invalid array index" compiler error signifies that the constant values have changed.
+	// Re-run the stringer command to generate them again.
+	`)
+	g.Printf("func _%sNoOp (){ ", typeName)
+	g.Printf("\n var x [1]struct{}\n")
+	for _, values := range runs {
+		for _, value := range values {
+			g.Printf("\t_ = x[%s-(%s)]\n", value.originalName, value.str)
+		}
+	}
+	g.Printf("}\n\n")
 }
 
 // Argument to format is the type name.
