@@ -157,7 +157,7 @@ func (g *Generator) buildJSONMethods(runs [][]Value, typeName string, runsThresh
 const cqlMethods = `
 // MarshalCQL implements the gocql.Marshaler interface for %[1]s
 func (i %[1]s) MarshalCQL() ([]byte, error) {
-	return []byte(e.String()), nil
+	return []byte(i.String()), nil
 }
 
 // UnmarshalCQL implements the gocql.Unmarshaler interface for %[1]s
