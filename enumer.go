@@ -156,7 +156,7 @@ func (g *Generator) buildJSONMethods(runs [][]Value, typeName string, runsThresh
 //	[1]: type name
 const cqlMethods = `
 // MarshalCQL implements the gocql.Marshaler interface for %[1]s
-func (i %[1]s) MarshalCQL() ([]byte, error) {
+func (i %[1]s) MarshalCQL(info gocql.TypeInfo) ([]byte, error) {
 	return []byte(i.String()), nil
 }
 

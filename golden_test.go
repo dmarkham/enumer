@@ -1846,7 +1846,7 @@ func (i Prime) IsAPrime() bool {
 }
 
 // MarshalCQL implements the gocql.Marshaler interface for Prime
-func (i Prime) MarshalCQL() ([]byte, error) {
+func (i Prime) MarshalCQL(info gocql.TypeInfo) ([]byte, error) {
 	return []byte(i.String()), nil
 }
 
