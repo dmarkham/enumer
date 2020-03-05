@@ -1682,14 +1682,16 @@ func (i *Prime) Scan(value interface{}) error {
 		return nil
 	}
 
-	str, ok := value.(string)
-	if !ok {
-		bytes, ok := value.([]byte)
-		if !ok {
-			return fmt.Errorf("value is not a byte slice")
-		}
-
-		str = string(bytes[:])
+	var str string
+	switch v := value.(type) {
+	case []byte:
+		str = string(b)
+	case string:
+		str = v
+	case fmt.Stringer:
+		str = v.String()
+	default:
+		return fmt.Errorf("invalid value of Prime: %[1]T(%[1]v)", value)
 	}
 
 	val, err := PrimeString(str)
@@ -1867,14 +1869,16 @@ func (i *Prime) Scan(value interface{}) error {
 		return nil
 	}
 
-	str, ok := value.(string)
-	if !ok {
-		bytes, ok := value.([]byte)
-		if !ok {
-			return fmt.Errorf("value is not a byte slice")
-		}
-
-		str = string(bytes[:])
+	var str string
+	switch v := value.(type) {
+	case []byte:
+		str = string(b)
+	case string:
+		str = v
+	case fmt.Stringer:
+		str = v.String()
+	default:
+		return fmt.Errorf("invalid value of Prime: %[1]T(%[1]v)", value)
 	}
 
 	val, err := PrimeString(str)
