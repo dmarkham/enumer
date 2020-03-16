@@ -1685,7 +1685,7 @@ func (i *Prime) Scan(value interface{}) error {
 	var str string
 	switch v := value.(type) {
 	case []byte:
-		str = string(b)
+		str = string(v)
 	case string:
 		str = v
 	case fmt.Stringer:
@@ -1872,7 +1872,7 @@ func (i *Prime) Scan(value interface{}) error {
 	var str string
 	switch v := value.(type) {
 	case []byte:
-		str = string(b)
+		str = string(v)
 	case string:
 		str = v
 	case fmt.Stringer:

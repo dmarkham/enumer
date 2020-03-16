@@ -15,7 +15,7 @@ const scanMethod = `func (i *%[1]s) Scan(value interface{}) error {
 	var str string
 	switch v := value.(type) {
 	case []byte:
-		str = string(b)
+		str = string(v)
 	case string:
 		str = v
 	case fmt.Stringer:
