@@ -46,6 +46,7 @@ func (af *arrayFlags) Set(value string) error {
 var (
 	typeNames       = flag.String("type", "", "comma-separated list of type names; must be set")
 	sql             = flag.Bool("sql", false, "if true, the Scanner and Valuer interface will be implemented.")
+	cql             = flag.Bool("cql", false, "if true, gocql marshaling methods will be generated. Default: false")
 	json            = flag.Bool("json", false, "if true, json marshaling methods will be generated. Default: false")
 	yaml            = flag.Bool("yaml", false, "if true, yaml marshaling methods will be generated. Default: false")
 	text            = flag.Bool("text", false, "if true, text marshaling methods will be generated. Default: false")
@@ -121,6 +122,9 @@ func main() {
 	if *sql {
 		g.Printf("\t\"database/sql/driver\"\n")
 	}
+	if *cql {
+		g.Printf("\t\"github.com/gocql/gocql\"\n")
+	}
 	if *json {
 		g.Printf("\t\"encoding/json\"\n")
 	}
@@ -128,7 +132,7 @@ func main() {
 
 	// Run generate for each type.
 	for _, typeName := range typs {
-		g.generate(typeName, *json, *yaml, *sql, *text, *transformMethod, *trimPrefix, *addPrefix, *linecomment)
+		g.generate(typeName, *json, *yaml, *sql, *cql, *text, *transformMethod, *trimPrefix, *addPrefix, *linecomment)
 	}
 
 	// Format the output.
@@ -397,7 +401,7 @@ func (g *Generator) prefixValueNames(values []Value, prefix string) {
 }
 
 // generate produces the String method for the named type.
-func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeSQL, includeText bool,
+func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeSQL, includeCQL, includeText bool,
 	transformMethod string, trimPrefix string, addPrefix string, lineComment bool) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
@@ -459,6 +463,9 @@ func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeS
 	}
 	if includeSQL {
 		g.addValueAndScanMethod(typeName)
+	}
+	if includeCQL {
+		g.buildCQLMethods(runs, typeName, runsThreshold)
 	}
 }
 

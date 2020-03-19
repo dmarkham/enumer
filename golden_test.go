@@ -48,6 +48,10 @@ var goldenSQL = []Golden{
 	{"primeSql", primeSqlIn, primeSqlOut},
 }
 
+var goldenCQL = []Golden{
+	{"primeCql", primeCqlIn, primeCqlOut},
+}
+
 var goldenJSONAndSQL = []Golden{
 	{"primeJsonAndSql", primeJsonAndSqlIn, primeJsonAndSqlOut},
 }
@@ -1704,6 +1708,158 @@ func (i *Prime) Scan(value interface{}) error {
 }
 `
 
+const primeCqlIn = `type Prime int
+const (
+	p2 Prime = 2
+	p3 Prime = 3
+	p5 Prime = 5
+	p7 Prime = 7
+	p77 Prime = 7 // Duplicate; note that p77 doesn't appear below.
+	p11 Prime = 11
+	p13 Prime = 13
+	p17 Prime = 17
+	p19 Prime = 19
+	p23 Prime = 23
+	p29 Prime = 29
+	p37 Prime = 31
+	p41 Prime = 41
+	p43 Prime = 43
+)
+`
+
+const primeCqlOut = `
+const _PrimeName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
+const _PrimeLowerName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
+
+var _PrimeMap = map[Prime]string{
+	2:  _PrimeName[0:2],
+	3:  _PrimeName[2:4],
+	5:  _PrimeName[4:6],
+	7:  _PrimeName[6:8],
+	11: _PrimeName[8:11],
+	13: _PrimeName[11:14],
+	17: _PrimeName[14:17],
+	19: _PrimeName[17:20],
+	23: _PrimeName[20:23],
+	29: _PrimeName[23:26],
+	31: _PrimeName[26:29],
+	41: _PrimeName[29:32],
+	43: _PrimeName[32:35],
+}
+
+func (i Prime) String() string {
+	if str, ok := _PrimeMap[i]; ok {
+		return str
+	}
+	return fmt.Sprintf("Prime(%d)", i)
+}
+
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _PrimeNoOp() {
+	var x [1]struct{}
+	_ = x[p2-(2)]
+	_ = x[p3-(3)]
+	_ = x[p5-(5)]
+	_ = x[p7-(7)]
+	_ = x[p11-(11)]
+	_ = x[p13-(13)]
+	_ = x[p17-(17)]
+	_ = x[p19-(19)]
+	_ = x[p23-(23)]
+	_ = x[p29-(29)]
+	_ = x[p37-(31)]
+	_ = x[p41-(41)]
+	_ = x[p43-(43)]
+}
+
+var _PrimeValues = []Prime{p2, p3, p5, p7, p11, p13, p17, p19, p23, p29, p37, p41, p43}
+
+var _PrimeNameToValueMap = map[string]Prime{
+	_PrimeName[0:2]:        p2,
+	_PrimeLowerName[0:2]:   p2,
+	_PrimeName[2:4]:        p3,
+	_PrimeLowerName[2:4]:   p3,
+	_PrimeName[4:6]:        p5,
+	_PrimeLowerName[4:6]:   p5,
+	_PrimeName[6:8]:        p7,
+	_PrimeLowerName[6:8]:   p7,
+	_PrimeName[8:11]:       p11,
+	_PrimeLowerName[8:11]:  p11,
+	_PrimeName[11:14]:      p13,
+	_PrimeLowerName[11:14]: p13,
+	_PrimeName[14:17]:      p17,
+	_PrimeLowerName[14:17]: p17,
+	_PrimeName[17:20]:      p19,
+	_PrimeLowerName[17:20]: p19,
+	_PrimeName[20:23]:      p23,
+	_PrimeLowerName[20:23]: p23,
+	_PrimeName[23:26]:      p29,
+	_PrimeLowerName[23:26]: p29,
+	_PrimeName[26:29]:      p37,
+	_PrimeLowerName[26:29]: p37,
+	_PrimeName[29:32]:      p41,
+	_PrimeLowerName[29:32]: p41,
+	_PrimeName[32:35]:      p43,
+	_PrimeLowerName[32:35]: p43,
+}
+
+var _PrimeNames = []string{
+	_PrimeName[0:2],
+	_PrimeName[2:4],
+	_PrimeName[4:6],
+	_PrimeName[6:8],
+	_PrimeName[8:11],
+	_PrimeName[11:14],
+	_PrimeName[14:17],
+	_PrimeName[17:20],
+	_PrimeName[20:23],
+	_PrimeName[23:26],
+	_PrimeName[26:29],
+	_PrimeName[29:32],
+	_PrimeName[32:35],
+}
+
+// PrimeString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func PrimeString(s string) (Prime, error) {
+	if val, ok := _PrimeNameToValueMap[s]; ok {
+		return val, nil
+	}
+	return 0, fmt.Errorf("%s does not belong to Prime values", s)
+}
+
+// PrimeValues returns all values of the enum
+func PrimeValues() []Prime {
+	return _PrimeValues
+}
+
+// PrimeStrings returns a slice of all String values of the enum
+func PrimeStrings() []string {
+	strs := make([]string, len(_PrimeNames))
+	copy(strs, _PrimeNames)
+	return strs
+}
+
+// IsAPrime returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Prime) IsAPrime() bool {
+	_, ok := _PrimeMap[i]
+	return ok
+}
+
+// MarshalCQL implements the gocql.Marshaler interface for Prime
+func (i Prime) MarshalCQL(info gocql.TypeInfo) ([]byte, error) {
+	return []byte(i.String()), nil
+}
+
+// UnmarshalCQL implements the gocql.Unmarshaler interface for Prime
+func (i *Prime) UnmarshalCQL(info gocql.TypeInfo, data []byte) error {
+	var err error
+	*i, err = PrimeString(string(data))
+	return err
+}
+`
+
 const primeJsonAndSqlIn = `type Prime int
 const (
 	p2 Prime = 2
@@ -1917,38 +2073,41 @@ const (
 
 func TestGolden(t *testing.T) {
 	for _, test := range golden {
-		runGoldenTest(t, test, false, false, false, false, "", "")
+		runGoldenTest(t, test, false, false, false, false, false, "", "")
 	}
 	for _, test := range goldenJSON {
-		runGoldenTest(t, test, true, false, false, false, "", "")
+		runGoldenTest(t, test, true, false, false, false, false, "", "")
 	}
 	for _, test := range goldenText {
-		runGoldenTest(t, test, false, false, false, true, "", "")
+		runGoldenTest(t, test, false, false, false, false, true, "", "")
 	}
 	for _, test := range goldenYAML {
-		runGoldenTest(t, test, false, true, false, false, "", "")
+		runGoldenTest(t, test, false, true, false, false, false, "", "")
 	}
 	for _, test := range goldenSQL {
-		runGoldenTest(t, test, false, false, true, false, "", "")
+		runGoldenTest(t, test, false, false, true, false, false, "", "")
+	}
+	for _, test := range goldenCQL {
+		runGoldenTest(t, test, false, false, false, true, false, "", "")
 	}
 	for _, test := range goldenJSONAndSQL {
-		runGoldenTest(t, test, true, false, true, false, "", "")
+		runGoldenTest(t, test, true, false, true, false, false, "", "")
 	}
 	for _, test := range goldenTrimPrefix {
-		runGoldenTest(t, test, false, false, false, false, "Day", "")
+		runGoldenTest(t, test, false, false, false, false, false, "Day", "")
 	}
 	for _, test := range goldenTrimPrefixMultiple {
-		runGoldenTest(t, test, false, false, false, false, "Day,Night", "")
+		runGoldenTest(t, test, false, false, false, false, false, "Day,Night", "")
 	}
 	for _, test := range goldenWithPrefix {
-		runGoldenTest(t, test, false, false, false, false, "", "Day")
+		runGoldenTest(t, test, false, false, false, false, false, "", "Day")
 	}
 	for _, test := range goldenTrimAndAddPrefix {
-		runGoldenTest(t, test, false, false, false, false, "Day", "Night")
+		runGoldenTest(t, test, false, false, false, false, false, "Day", "Night")
 	}
 }
 
-func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, generateSQL, generateText bool, trimPrefix string, prefix string) {
+func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, generateSQL, generateCQL, generateText bool, trimPrefix string, prefix string) {
 	var g Generator
 	file := test.name + ".go"
 	input := "package test\n" + test.input
@@ -1975,7 +2134,7 @@ func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, genera
 	if len(tokens) != 3 {
 		t.Fatalf("%s: need type declaration on first line", test.name)
 	}
-	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, generateText, "noop", trimPrefix, prefix, false)
+	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, generateCQL, generateText, "noop", trimPrefix, prefix, false)
 	got := string(g.format())
 	if got != test.output {
 		// Use this to help build a golden text when changes are needed

@@ -154,6 +154,26 @@ func (g *Generator) buildJSONMethods(runs [][]Value, typeName string, runsThresh
 
 // Arguments to format are:
 //	[1]: type name
+const cqlMethods = `
+// MarshalCQL implements the gocql.Marshaler interface for %[1]s
+func (i %[1]s) MarshalCQL(info gocql.TypeInfo) ([]byte, error) {
+	return []byte(i.String()), nil
+}
+
+// UnmarshalCQL implements the gocql.Unmarshaler interface for %[1]s
+func (i *%[1]s) UnmarshalCQL(info gocql.TypeInfo, data []byte) error {
+	var err error
+	*i, err = %[1]sString(string(data))
+	return err
+}
+`
+
+func (g *Generator) buildCQLMethods(runs [][]Value, typeName string, runsThreshold int) {
+	g.Printf(cqlMethods, typeName)
+}
+
+// Arguments to format are:
+//	[1]: type name
 const textMethods = `
 // MarshalText implements the encoding.TextMarshaler interface for %[1]s
 func (i %[1]s) MarshalText() ([]byte, error) {

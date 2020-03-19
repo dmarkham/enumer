@@ -28,6 +28,8 @@ Flags:
         output file name; default srcdir/<type>_string.go
   -sql
         if true, the Scanner and Valuer interface will be implemented.
+  -cql
+        if true, cql marshaling methods will be generated. Default: false
   -text
         if true, text marshaling methods will be generated. Default: false
   -transform string
@@ -67,6 +69,8 @@ When Enumer is applied to a type, it will generate:
   the enum conform to the `gopkg.in/yaml.v2.Marshaler` and `gopkg.in/yaml.v2.Unmarshaler` interfaces.
 - When the flag `sql` is provided, the methods for implementing the `Scanner` and `Valuer` interfaces.
   Useful when storing the enum in a database.
+- When the flag `cql` is provided, the methods for implementing the `MarshalCQL` and `UnmarshalCQL` interfaces.
+  Useful when storing the enum in Cassandra, ScyllaDB, YugeByte or any other datastore that speaks CQL.
 
 
 For example, if we have an enum type called `Pill`,
@@ -191,7 +195,7 @@ name := MyTypeValue.String() // name => "my_type_value"
 
 ## How to use
 
-There are four boolean flags: `json`, `text`, `yaml` and `sql`. You can use any combination of them (i.e. `enumer -type=Pill -json -text`),
+There are five boolean flags: `json`, `text`, `yaml` `sql` and `cql`. You can use any combination of them (i.e. `enumer -type=Pill -json -text`),
 
 For enum string representation transformation the `transform` and `trimprefix` flags
 were added (i.e. `enumer -type=MyType -json -transform=snake`).
