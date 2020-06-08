@@ -68,6 +68,10 @@ var goldenTrimAndAddPrefix = []Golden{
 	{"dayTrimAndPrefix", trimPrefixIn, trimmedPrefixedDayOut},
 }
 
+var goldenLinecomment = []Golden{
+	{"dayWithLinecomment", linecommentIn, linecommentOut},
+}
+
 // Each example starts with "type XXX [u]int", with a single space separating them.
 
 // Simple test: enumeration of type int starting at 0.
@@ -1915,40 +1919,143 @@ const (
 )
 `
 
+const linecommentIn = `type Day int
+const (
+	Monday Day = iota // lunes
+	Tuesday
+	Wednesday
+	Thursday
+	Friday // viernes
+	Saturday
+	Sunday
+)
+`
+
+const linecommentOut = `
+const _DayName = "lunesTuesdayWednesdayThursdayviernesSaturdaySunday"
+
+var _DayIndex = [...]uint8{0, 5, 12, 21, 29, 36, 44, 50}
+
+const _DayLowerName = "lunestuesdaywednesdaythursdayviernessaturdaysunday"
+
+func (i Day) String() string {
+	if i < 0 || i >= Day(len(_DayIndex)-1) {
+		return fmt.Sprintf("Day(%d)", i)
+	}
+	return _DayName[_DayIndex[i]:_DayIndex[i+1]]
+}
+
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _DayNoOp() {
+	var x [1]struct{}
+	_ = x[Monday-(0)]
+	_ = x[Tuesday-(1)]
+	_ = x[Wednesday-(2)]
+	_ = x[Thursday-(3)]
+	_ = x[Friday-(4)]
+	_ = x[Saturday-(5)]
+	_ = x[Sunday-(6)]
+}
+
+var _DayValues = []Day{Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday}
+
+var _DayNameToValueMap = map[string]Day{
+	_DayName[0:5]:        Monday,
+	_DayLowerName[0:5]:   Monday,
+	_DayName[5:12]:       Tuesday,
+	_DayLowerName[5:12]:  Tuesday,
+	_DayName[12:21]:      Wednesday,
+	_DayLowerName[12:21]: Wednesday,
+	_DayName[21:29]:      Thursday,
+	_DayLowerName[21:29]: Thursday,
+	_DayName[29:36]:      Friday,
+	_DayLowerName[29:36]: Friday,
+	_DayName[36:44]:      Saturday,
+	_DayLowerName[36:44]: Saturday,
+	_DayName[44:50]:      Sunday,
+	_DayLowerName[44:50]: Sunday,
+}
+
+var _DayNames = []string{
+	_DayName[0:5],
+	_DayName[5:12],
+	_DayName[12:21],
+	_DayName[21:29],
+	_DayName[29:36],
+	_DayName[36:44],
+	_DayName[44:50],
+}
+
+// DayString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func DayString(s string) (Day, error) {
+	if val, ok := _DayNameToValueMap[s]; ok {
+		return val, nil
+	}
+	return 0, fmt.Errorf("%s does not belong to Day values", s)
+}
+
+// DayValues returns all values of the enum
+func DayValues() []Day {
+	return _DayValues
+}
+
+// DayStrings returns a slice of all String values of the enum
+func DayStrings() []string {
+	strs := make([]string, len(_DayNames))
+	copy(strs, _DayNames)
+	return strs
+}
+
+// IsADay returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Day) IsADay() bool {
+	for _, v := range _DayValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}
+`
+
 func TestGolden(t *testing.T) {
 	for _, test := range golden {
-		runGoldenTest(t, test, false, false, false, false, "", "")
+		runGoldenTest(t, test, false, false, false, false, false, "", "")
 	}
 	for _, test := range goldenJSON {
-		runGoldenTest(t, test, true, false, false, false, "", "")
+		runGoldenTest(t, test, true, false, false, false, false, "", "")
 	}
 	for _, test := range goldenText {
-		runGoldenTest(t, test, false, false, false, true, "", "")
+		runGoldenTest(t, test, false, false, false, true, false, "", "")
 	}
 	for _, test := range goldenYAML {
-		runGoldenTest(t, test, false, true, false, false, "", "")
+		runGoldenTest(t, test, false, true, false, false, false, "", "")
 	}
 	for _, test := range goldenSQL {
-		runGoldenTest(t, test, false, false, true, false, "", "")
+		runGoldenTest(t, test, false, false, true, false, false, "", "")
 	}
 	for _, test := range goldenJSONAndSQL {
-		runGoldenTest(t, test, true, false, true, false, "", "")
+		runGoldenTest(t, test, true, false, true, false, false, "", "")
 	}
 	for _, test := range goldenTrimPrefix {
-		runGoldenTest(t, test, false, false, false, false, "Day", "")
+		runGoldenTest(t, test, false, false, false, false, false, "Day", "")
 	}
 	for _, test := range goldenTrimPrefixMultiple {
-		runGoldenTest(t, test, false, false, false, false, "Day,Night", "")
+		runGoldenTest(t, test, false, false, false, false, false, "Day,Night", "")
 	}
 	for _, test := range goldenWithPrefix {
-		runGoldenTest(t, test, false, false, false, false, "", "Day")
+		runGoldenTest(t, test, false, false, false, false, false, "", "Day")
 	}
 	for _, test := range goldenTrimAndAddPrefix {
-		runGoldenTest(t, test, false, false, false, false, "Day", "Night")
+		runGoldenTest(t, test, false, false, false, false, false, "Day", "Night")
+	}
+	for _, test := range goldenLinecomment {
+		runGoldenTest(t, test, false, false, false, false, true, "", "")
 	}
 }
 
-func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, generateSQL, generateText bool, trimPrefix string, prefix string) {
+func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, generateSQL, generateText, linecomment bool, trimPrefix string, prefix string) {
 	var g Generator
 	file := test.name + ".go"
 	input := "package test\n" + test.input
@@ -1975,7 +2082,7 @@ func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, genera
 	if len(tokens) != 3 {
 		t.Fatalf("%s: need type declaration on first line", test.name)
 	}
-	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, generateText, "noop", trimPrefix, prefix, false)
+	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, generateText, "noop", trimPrefix, prefix, linecomment)
 	got := string(g.format())
 	if got != test.output {
 		// Use this to help build a golden text when changes are needed
