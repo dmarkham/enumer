@@ -377,8 +377,17 @@ func (g *Generator) transformValueNames(values []Value, transformMethod string) 
 		return
 	}
 
-	for i := range values {
-		values[i].name = fn(values[i].name)
+	for i, v := range values {
+		after := fn(v.name)
+		// If the original one was "" or the one before the transformation
+		// was "" (most commonly if linecomment defines it as empty) we
+		// do not care if it's empty.
+		// But if any of them was not empty before then it means that
+		// the transformed emptied the value
+		if v.originalName != "" && v.name != "" && after == "" {
+			log.Fatalf("transformation of %q (%s) got an empty result", v.name, v.originalName)
+		}
+		values[i].name = after
 	}
 }
 
