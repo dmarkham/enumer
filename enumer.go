@@ -163,6 +163,9 @@ func (i %[1]s) MarshalCQL(info gocql.TypeInfo) ([]byte, error) {
 // UnmarshalCQL implements the gocql.Unmarshaler interface for %[1]s
 func (i *%[1]s) UnmarshalCQL(info gocql.TypeInfo, data []byte) error {
 	var err error
+	if data == nil || len(data) == 0 {
+		return nil
+	}
 	*i, err = %[1]sString(string(data))
 	return err
 }
