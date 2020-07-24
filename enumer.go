@@ -7,6 +7,7 @@ import "fmt"
 const stringNameToValueMethod = `// %[1]sString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func %[1]sString(s string) (%[1]s, error) {
+	s = strings.ToLower(s)
 	if val, ok := _%[1]sNameToValueMap[s]; ok {
 		return val, nil
 	}

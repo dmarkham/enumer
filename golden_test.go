@@ -145,6 +145,7 @@ var _DayNames = []string{
 // DayString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func DayString(s string) (Day, error) {
+	s = strings.ToLower(s)
 	if val, ok := _DayNameToValueMap[s]; ok {
 		return val, nil
 	}
@@ -233,6 +234,7 @@ var _DayNames = []string{
 // DayString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func DayString(s string) (Day, error) {
+	s = strings.ToLower(s)
 	if val, ok := _DayNameToValueMap[s]; ok {
 		return val, nil
 	}
@@ -321,6 +323,7 @@ var _DayNames = []string{
 // DayString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func DayString(s string) (Day, error) {
+	s = strings.ToLower(s)
 	if val, ok := _DayNameToValueMap[s]; ok {
 		return val, nil
 	}
@@ -409,6 +412,7 @@ var _DayNames = []string{
 // DayString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func DayString(s string) (Day, error) {
+	s = strings.ToLower(s)
 	if val, ok := _DayNameToValueMap[s]; ok {
 		return val, nil
 	}
@@ -497,6 +501,7 @@ var _DayNames = []string{
 // DayString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func DayString(s string) (Day, error) {
+	s = strings.ToLower(s)
 	if val, ok := _DayNameToValueMap[s]; ok {
 		return val, nil
 	}
@@ -582,6 +587,7 @@ var _NumberNames = []string{
 // NumberString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func NumberString(s string) (Number, error) {
+	s = strings.ToLower(s)
 	if val, ok := _NumberNameToValueMap[s]; ok {
 		return val, nil
 	}
@@ -705,6 +711,7 @@ var _GapNames = []string{
 // GapString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func GapString(s string) (Gap, error) {
+	s = strings.ToLower(s)
 	if val, ok := _GapNameToValueMap[s]; ok {
 		return val, nil
 	}
@@ -797,6 +804,7 @@ var _NumNames = []string{
 // NumString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func NumString(s string) (Num, error) {
+	s = strings.ToLower(s)
 	if val, ok := _NumNameToValueMap[s]; ok {
 		return val, nil
 	}
@@ -902,6 +910,7 @@ var _UnumNames = []string{
 // UnumString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func UnumString(s string) (Unum, error) {
+	s = strings.ToLower(s)
 	if val, ok := _UnumNameToValueMap[s]; ok {
 		return val, nil
 	}
@@ -1048,6 +1057,7 @@ var _PrimeNames = []string{
 // PrimeString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
+	s = strings.ToLower(s)
 	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
 	}
@@ -1187,6 +1197,7 @@ var _PrimeNames = []string{
 // PrimeString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
+	s = strings.ToLower(s)
 	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
 	}
@@ -1344,6 +1355,7 @@ var _PrimeNames = []string{
 // PrimeString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
+	s = strings.ToLower(s)
 	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
 	}
@@ -1496,6 +1508,7 @@ var _PrimeNames = []string{
 // PrimeString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
+	s = strings.ToLower(s)
 	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
 	}
@@ -1653,6 +1666,7 @@ var _PrimeNames = []string{
 // PrimeString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
+	s = strings.ToLower(s)
 	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
 	}
@@ -1823,6 +1837,7 @@ var _PrimeNames = []string{
 // PrimeString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
+	s = strings.ToLower(s)
 	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
 	}
@@ -1990,6 +2005,7 @@ var _DayNames = []string{
 // DayString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func DayString(s string) (Day, error) {
+	s = strings.ToLower(s)
 	if val, ok := _DayNameToValueMap[s]; ok {
 		return val, nil
 	}
