@@ -10,6 +10,10 @@ func %[1]sString(s string) (%[1]s, error) {
 	if val, ok := _%[1]sNameToValueMap[s]; ok {
 		return val, nil
 	}
+	s = strings.ToLower(s)
+	if val, ok := _%[1]sNameToValueMap[s]; ok {
+		return val, nil
+	}
 	return 0, fmt.Errorf("%%s does not belong to %[1]s values", s)
 }
 `
