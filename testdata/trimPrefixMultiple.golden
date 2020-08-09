@@ -1,0 +1,90 @@
+
+const _DayName = "MondayTuesdayWednesdayThursdayFridaySaturdaySunday"
+
+var _DayIndex = [...]uint8{0, 6, 13, 22, 30, 36, 44, 50}
+
+const _DayLowerName = "mondaytuesdaywednesdaythursdayfridaysaturdaysunday"
+
+func (i Day) String() string {
+	if i < 0 || i >= Day(len(_DayIndex)-1) {
+		return fmt.Sprintf("Day(%d)", i)
+	}
+	return _DayName[_DayIndex[i]:_DayIndex[i+1]]
+}
+
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _DayNoOp() {
+	var x [1]struct{}
+	_ = x[DayMonday-(0)]
+	_ = x[NightTuesday-(1)]
+	_ = x[DayWednesday-(2)]
+	_ = x[NightThursday-(3)]
+	_ = x[DayFriday-(4)]
+	_ = x[NightSaturday-(5)]
+	_ = x[DaySunday-(6)]
+}
+
+var _DayValues = []Day{DayMonday, NightTuesday, DayWednesday, NightThursday, DayFriday, NightSaturday, DaySunday}
+
+var _DayNameToValueMap = map[string]Day{
+	_DayName[0:6]:        DayMonday,
+	_DayLowerName[0:6]:   DayMonday,
+	_DayName[6:13]:       NightTuesday,
+	_DayLowerName[6:13]:  NightTuesday,
+	_DayName[13:22]:      DayWednesday,
+	_DayLowerName[13:22]: DayWednesday,
+	_DayName[22:30]:      NightThursday,
+	_DayLowerName[22:30]: NightThursday,
+	_DayName[30:36]:      DayFriday,
+	_DayLowerName[30:36]: DayFriday,
+	_DayName[36:44]:      NightSaturday,
+	_DayLowerName[36:44]: NightSaturday,
+	_DayName[44:50]:      DaySunday,
+	_DayLowerName[44:50]: DaySunday,
+}
+
+var _DayNames = []string{
+	_DayName[0:6],
+	_DayName[6:13],
+	_DayName[13:22],
+	_DayName[22:30],
+	_DayName[30:36],
+	_DayName[36:44],
+	_DayName[44:50],
+}
+
+// DayString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func DayString(s string) (Day, error) {
+	if val, ok := _DayNameToValueMap[s]; ok {
+		return val, nil
+	}
+	s = strings.ToLower(s)
+	if val, ok := _DayNameToValueMap[s]; ok {
+		return val, nil
+	}
+	return 0, fmt.Errorf("%s does not belong to Day values", s)
+}
+
+// DayValues returns all values of the enum
+func DayValues() []Day {
+	return _DayValues
+}
+
+// DayStrings returns a slice of all String values of the enum
+func DayStrings() []string {
+	strs := make([]string, len(_DayNames))
+	copy(strs, _DayNames)
+	return strs
+}
+
+// IsADay returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Day) IsADay() bool {
+	for _, v := range _DayValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}

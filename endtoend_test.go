@@ -65,7 +65,6 @@ func TestEndToEnd(t *testing.T) {
 	// Generate, compile, and run the test programs.
 	for _, name := range names {
 		if !strings.HasSuffix(name, ".go") {
-			t.Errorf("%s is not a Go file", name)
 			continue
 		}
 		if name == "cgo.go" && !build.Default.CgoEnabled {
