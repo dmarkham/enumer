@@ -48,6 +48,10 @@ var goldenSQL = []Golden{
 	{"primeSql", primeSqlIn},
 }
 
+var goldenGQLGen = []Golden{
+	{"primeGQLGen", primeGQLGenIn},
+}
+
 var goldenJSONAndSQL = []Golden{
 	{"primeJsonAndSql", primeJsonAndSqlIn},
 }
@@ -235,6 +239,25 @@ const (
 )
 `
 
+const primeGQLGenIn = `type Prime int
+const (
+       p2 Prime = 2
+       p3 Prime = 3
+       p5 Prime = 5
+       p7 Prime = 7
+       p77 Prime = 7 // Duplicate; note that p77 doesn't appear below.
+       p11 Prime = 11
+       p13 Prime = 13
+       p17 Prime = 17
+       p19 Prime = 19
+       p23 Prime = 23
+       p29 Prime = 29
+       p37 Prime = 31
+       p41 Prime = 41
+       p43 Prime = 43
+)
+`
+
 const primeJsonAndSqlIn = `type Prime int
 const (
 	p2 Prime = 2
@@ -292,41 +315,47 @@ const (
 
 func TestGolden(t *testing.T) {
 	for _, test := range golden {
-		runGoldenTest(t, test, false, false, false, false, false, "", "")
+		runGoldenTest(t, test, false, false, false, false, false, false, "", "")
 	}
 	for _, test := range goldenJSON {
-		runGoldenTest(t, test, true, false, false, false, false, "", "")
+		runGoldenTest(t, test, true, false, false, false, false, false, "", "")
 	}
 	for _, test := range goldenText {
-		runGoldenTest(t, test, false, false, false, true, false, "", "")
+		runGoldenTest(t, test, false, false, false, true, false, false, "", "")
 	}
 	for _, test := range goldenYAML {
-		runGoldenTest(t, test, false, true, false, false, false, "", "")
+		runGoldenTest(t, test, false, true, false, false, false, false, "", "")
 	}
 	for _, test := range goldenSQL {
-		runGoldenTest(t, test, false, false, true, false, false, "", "")
+		runGoldenTest(t, test, false, false, true, false, false, false, "", "")
 	}
 	for _, test := range goldenJSONAndSQL {
-		runGoldenTest(t, test, true, false, true, false, false, "", "")
+		runGoldenTest(t, test, true, false, true, false, false, false, "", "")
+	}
+	for _, test := range goldenGQLGen {
+		runGoldenTest(t, test, false, false, false, false, false, true, "", "")
 	}
 	for _, test := range goldenTrimPrefix {
-		runGoldenTest(t, test, false, false, false, false, false, "Day", "")
+		runGoldenTest(t, test, false, false, false, false, false, false, "Day", "")
 	}
 	for _, test := range goldenTrimPrefixMultiple {
-		runGoldenTest(t, test, false, false, false, false, false, "Day,Night", "")
+		runGoldenTest(t, test, false, false, false, false, false, false, "Day,Night", "")
 	}
 	for _, test := range goldenWithPrefix {
-		runGoldenTest(t, test, false, false, false, false, false, "", "Day")
+		runGoldenTest(t, test, false, false, false, false, false, false, "", "Day")
 	}
 	for _, test := range goldenTrimAndAddPrefix {
-		runGoldenTest(t, test, false, false, false, false, false, "Day", "Night")
+		runGoldenTest(t, test, false, false, false, false, false, false, "Day", "Night")
 	}
 	for _, test := range goldenLinecomment {
-		runGoldenTest(t, test, false, false, false, false, true, "", "")
+		runGoldenTest(t, test, false, false, false, false, true, false, "", "")
 	}
 }
 
-func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, generateSQL, generateText, linecomment bool, trimPrefix string, prefix string) {
+func runGoldenTest(t *testing.T, test Golden,
+	generateJSON, generateYAML, generateSQL, generateText, linecomment, generateGQLGen bool,
+	trimPrefix string, prefix string) {
+
 	var g Generator
 	file := test.name + ".go"
 	input := "package test\n" + test.input
@@ -353,7 +382,7 @@ func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, genera
 	if len(tokens) != 3 {
 		t.Fatalf("%s: need type declaration on first line", test.name)
 	}
-	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, generateText, "noop", trimPrefix, prefix, linecomment)
+	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, generateText, generateGQLGen, "noop", trimPrefix, prefix, linecomment)
 	got := string(g.format())
 	if got != loadGolden(test.name) {
 		// Use this to help build a golden text when changes are needed
