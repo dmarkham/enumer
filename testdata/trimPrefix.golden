@@ -60,8 +60,8 @@ func DayString(s string) (Day, error) {
 	if val, ok := _DayNameToValueMap[s]; ok {
 		return val, nil
 	}
-	s = strings.ToLower(s)
-	if val, ok := _DayNameToValueMap[s]; ok {
+
+	if val, ok := _DayNameToValueMap[strings.ToLower(s)]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Day values", s)

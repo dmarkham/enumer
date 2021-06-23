@@ -63,8 +63,8 @@ func UnumString(s string) (Unum, error) {
 	if val, ok := _UnumNameToValueMap[s]; ok {
 		return val, nil
 	}
-	s = strings.ToLower(s)
-	if val, ok := _UnumNameToValueMap[s]; ok {
+
+	if val, ok := _UnumNameToValueMap[strings.ToLower(s)]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Unum values", s)
