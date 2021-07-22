@@ -53,8 +53,8 @@ func NumString(s string) (Num, error) {
 	if val, ok := _NumNameToValueMap[s]; ok {
 		return val, nil
 	}
-	s = strings.ToLower(s)
-	if val, ok := _NumNameToValueMap[s]; ok {
+
+	if val, ok := _NumNameToValueMap[strings.ToLower(s)]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Num values", s)
