@@ -7,6 +7,7 @@ maintained by [Álvaro López Espinosa](https://github.com/alvaroloes/enumer).
 This was again forked here as (https://github.com/dmarkham/enumer) picking up where Álvaro left off.
 
 
+
 ```
 $ ./enumer --help
 Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).
