@@ -790,8 +790,6 @@ const stringOneRun = `func (i %[1]s) String() string {
 // 	[2]: lowest defined value for type, as a string
 // 	[3]: size of index element (8 for uint8 etc.)
 // 	[4]: less than zero check (for signed types)
-/*
- */
 const stringOneRunWithOffset = `func (i %[1]s) String() string {
 	i -= %[2]s
 	if %[4]si >= %[1]s(len(_%[1]sIndex)-1) {
