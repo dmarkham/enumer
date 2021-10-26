@@ -12,6 +12,10 @@ func (i Day) String() string {
 	return _DayName[_DayIndex[i]:_DayIndex[i+1]]
 }
 
+func (Day) Values() []string {
+	return DayStrings()
+}
+
 // An "invalid array index" compiler error signifies that the constant values have changed.
 // Re-run the stringer command to generate them again.
 func _DayNoOp() {

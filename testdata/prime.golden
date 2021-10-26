@@ -25,6 +25,10 @@ func (i Prime) String() string {
 	return fmt.Sprintf("Prime(%d)", i)
 }
 
+func (Prime) Values() []string {
+	return PrimeStrings()
+}
+
 // An "invalid array index" compiler error signifies that the constant values have changed.
 // Re-run the stringer command to generate them again.
 func _PrimeNoOp() {

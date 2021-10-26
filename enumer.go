@@ -58,6 +58,18 @@ func (i %[1]s) IsA%[1]s() bool {
 }
 `
 
+// Arguments to format are:
+//	[1]: type name
+const altStringValuesMethod = `func (%[1]s) Values() []string {
+	return %[1]sStrings()
+}
+`
+
+func (g *Generator) buildAltStringValuesMethod(typeName string) {
+	g.Printf("\n")
+	g.Printf(altStringValuesMethod, typeName)
+}
+
 func (g *Generator) buildBasicExtras(runs [][]Value, typeName string, runsThreshold int) {
 	// At this moment, either "g.declareIndexAndNameVars()" or "g.declareNameVars()" has been called
 

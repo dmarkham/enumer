@@ -13,6 +13,10 @@ func (i Number) String() string {
 	return _NumberName[_NumberIndex[i]:_NumberIndex[i+1]]
 }
 
+func (Number) Values() []string {
+	return NumberStrings()
+}
+
 // An "invalid array index" compiler error signifies that the constant values have changed.
 // Re-run the stringer command to generate them again.
 func _NumberNoOp() {

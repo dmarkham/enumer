@@ -50,6 +50,7 @@ var (
 	yaml            = flag.Bool("yaml", false, "if true, yaml marshaling methods will be generated. Default: false")
 	text            = flag.Bool("text", false, "if true, text marshaling methods will be generated. Default: false")
 	gqlgen          = flag.Bool("gqlgen", false, "if true, GraphQL marshaling methods for gqlgen will be generated. Default: false")
+	altValuesFunc   = flag.Bool("values", false, "if true, alternative string values method will be generated. Default: false")
 	output          = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
 	transformMethod = flag.String("transform", "noop", "enum item name transformation method. Default: noop")
 	trimPrefix      = flag.String("trimprefix", "", "transform each item name by removing a prefix. Default: \"\"")
@@ -134,7 +135,7 @@ func main() {
 
 	// Run generate for each type.
 	for _, typeName := range typs {
-		g.generate(typeName, *json, *yaml, *sql, *text, *gqlgen, *transformMethod, *trimPrefix, *addPrefix, *linecomment)
+		g.generate(typeName, *json, *yaml, *sql, *text, *gqlgen, *transformMethod, *trimPrefix, *addPrefix, *linecomment, *altValuesFunc)
 	}
 
 	// Format the output.
@@ -414,7 +415,7 @@ func (g *Generator) prefixValueNames(values []Value, prefix string) {
 // generate produces the String method for the named type.
 func (g *Generator) generate(typeName string,
 	includeJSON, includeYAML, includeSQL, includeText, includeGQLGen bool,
-	transformMethod string, trimPrefix string, addPrefix string, lineComment bool) {
+	transformMethod string, trimPrefix string, addPrefix string, lineComment bool, includeValuesMethod bool) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
 		file.lineComment = lineComment
@@ -461,6 +462,10 @@ func (g *Generator) generate(typeName string,
 	default:
 		g.buildMap(runs, typeName)
 	}
+	if includeValuesMethod {
+		g.buildAltStringValuesMethod(typeName)
+	}
+
 	g.buildNoOpOrderChangeDetect(runs, typeName)
 
 	g.buildBasicExtras(runs, typeName, runsThreshold)
@@ -785,8 +790,6 @@ const stringOneRun = `func (i %[1]s) String() string {
 // 	[2]: lowest defined value for type, as a string
 // 	[3]: size of index element (8 for uint8 etc.)
 // 	[4]: less than zero check (for signed types)
-/*
- */
 const stringOneRunWithOffset = `func (i %[1]s) String() string {
 	i -= %[2]s
 	if %[4]si >= %[1]s(len(_%[1]sIndex)-1) {

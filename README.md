@@ -205,6 +205,8 @@ it is transformed). If a name doesn't have the prefix it will be passed unchange
 
 If a prefix is provided via the `addprefix` flag, it will be added to the start of each name (after trimming and after transforming).
 
+The boolean flag `values` will additionally create an alternative string values method `Values() []string` to fullfill the `EnumValues` interface of [ent](https://entgo.io/docs/schema-fields/#enum-fields).
+
 ## Inspiring projects
 
 - [Álvaro López Espinosa](https://github.com/alvaroloes/enumer)

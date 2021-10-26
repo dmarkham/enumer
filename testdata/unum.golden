@@ -23,6 +23,10 @@ func (i Unum) String() string {
 	}
 }
 
+func (Unum) Values() []string {
+	return UnumStrings()
+}
+
 // An "invalid array index" compiler error signifies that the constant values have changed.
 // Re-run the stringer command to generate them again.
 func _UnumNoOp() {
