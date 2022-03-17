@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-//go:generate go run github.com/dmarkham/enumer -type=Pill -json
+//go:generate go run github.com/igormiku/enumer -type=Pill -json
 type Pill int
 
 const (
