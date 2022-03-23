@@ -4,9 +4,8 @@ matrix:
   allow_failures:
   - go: master
   include:
-  - go: 1.15.x
-  - go: 1.16.x
-  - go: master
+  - go: 1.17.x
+  - go: 1.18.x
 env:
   global:
   - GO111MODULE=on
@@ -24,6 +23,6 @@ deploy:
   - cli/build/enumer.windows-amd64.exe.tar.gz
   - cli/build/sha256sum.txt
   on:
-    go: 1.16.x
+    go: 1.17.x
     repo: dmarkham/enumer
     tags: true
