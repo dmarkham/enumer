@@ -193,6 +193,12 @@ name := MyTypeValue.String() // name => "my_type_value"
 
 ## How to use
 
+For a module-aware repo with `enumer` in the `go.mod` file, generation can be called by adding the following to a `.go` source file:
+
+```golang
+//go:generate go run github.com/dmarkham/enumer -type=YOURTYPE
+```
+
 There are four boolean flags: `json`, `text`, `yaml` and `sql`. You can use any combination of them (i.e. `enumer -type=Pill -json -text`),
 
 For enum string representation transformation the `transform` and `trimprefix` flags
