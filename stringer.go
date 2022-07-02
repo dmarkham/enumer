@@ -343,6 +343,14 @@ func (g *Generator) transformValueNames(values []Value, transformMethod string) 
 		fn = func(s string) string {
 			return strings.ToUpper(name.Delimit(s, '-'))
 		}
+	case "dot":
+		fn = func(s string) string {
+			return strings.ToLower(name.Delimit(s, '.'))
+		}
+	case "dot_upper", "dot-upper":
+		fn = func(s string) string {
+			return strings.ToUpper(name.Delimit(s, '.'))
+		}
 	case "upper":
 		fn = func(s string) string {
 			return strings.ToUpper(s)
