@@ -20,6 +20,7 @@ deploy:
   file:
   - cli/build/enumer.linux-amd64.tar.gz
   - cli/build/enumer.darwin-amd64.tar.gz
+  - cli/build/enumer.darwin-arm64.tar.gz
   - cli/build/enumer.windows-amd64.exe.tar.gz
   - cli/build/sha256sum.txt
   on:
