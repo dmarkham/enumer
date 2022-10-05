@@ -15,10 +15,8 @@ import (
 	"go/ast"
 	exact "go/constant"
 	"go/format"
-	"go/importer"
 	"go/token"
 	"go/types"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -27,6 +25,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"golang.org/x/tools/go/packages"
 
 	"github.com/pascaldekloe/name"
@@ -102,10 +102,8 @@ func main() {
 
 	if len(args) == 1 && isDirectory(args[0]) {
 		dir = args[0]
-		// g.parsePackageDir(args[0])
 	} else {
 		dir = filepath.Dir(args[0])
-		// g.parsePackageFiles(args)
 	}
 
 	g.parsePackage(args, []string{})
@@ -135,7 +133,19 @@ func main() {
 
 	// Run generate for each type.
 	for _, typeName := range typs {
-		g.generate(typeName, *json, *yaml, *sql, *text, *gqlgen, *transformMethod, *trimPrefix, *addPrefix, *linecomment, *altValuesFunc)
+		g.generate(generateParams{
+			AddPrefix:           *addPrefix,
+			IncludeGQLGen:       *gqlgen,
+			IncludeJSON:         *json,
+			IncludeSQL:          *sql,
+			IncludeText:         *text,
+			IncludeValuesMethod: *altValuesFunc,
+			IncludeYAML:         *yaml,
+			LineComment:         *linecomment,
+			TransformMethod:     *transformMethod,
+			TrimPrefix:          *trimPrefix,
+			TypeName:            typeName,
+		})
 	}
 
 	// Format the output.
@@ -149,7 +159,7 @@ func main() {
 	}
 
 	// Write to tmpfile first
-	tmpFile, err := ioutil.TempFile(dir, fmt.Sprintf("%s_enumer_", typs[0]))
+	tmpFile, err := os.CreateTemp(dir, fmt.Sprintf("%s_enumer_", typs[0]))
 	if err != nil {
 		log.Fatalf("creating temporary file for output: %s", err)
 	}
@@ -196,58 +206,24 @@ type File struct {
 	// These fields are reset for each type being generated.
 	typeName    string  // Name of the constant type.
 	values      []Value // Accumulator for constant values of that type.
-	trimPrefix  string
 	lineComment bool
 }
 
 // Package holds information about a Go package
 type Package struct {
-	dir      string
-	name     string
-	defs     map[*ast.Ident]types.Object
-	files    []*File
-	typesPkg *types.Package
+	name  string
+	defs  map[*ast.Ident]types.Object
+	files []*File
 }
-
-// // parsePackageDir parses the package residing in the directory.
-// func (g *Generator) parsePackageDir(directory string) {
-// 	pkg, err := build.Default.ImportDir(directory, 0)
-// 	if err != nil {
-// 		log.Fatalf("cannot process directory %s: %s", directory, err)
-// 	}
-// 	var names []string
-// 	names = append(names, pkg.GoFiles...)
-// 	names = append(names, pkg.CgoFiles...)
-// 	// TODO: Need to think about constants in test files. Maybe write type_string_test.go
-// 	// in a separate pass? For later.
-// 	// names = append(names, pkg.TestGoFiles...) // These are also in the "foo" package.
-// 	names = append(names, pkg.SFiles...)
-// 	names = prefixDirectory(directory, names)
-// 	g.parsePackage(directory, names, nil)
-// }
-//
-// // parsePackageFiles parses the package occupying the named files.
-// func (g *Generator) parsePackageFiles(names []string) {
-// 	g.parsePackage(".", names, nil)
-// }
-
-// // prefixDirectory places the directory name on the beginning of each name in the list.
-// func prefixDirectory(directory string, names []string) []string {
-// 	if directory == "." {
-// 		return names
-// 	}
-// 	ret := make([]string, len(names))
-// 	for i, n := range names {
-// 		ret[i] = filepath.Join(directory, n)
-// 	}
-// 	return ret
-// }
 
 // parsePackage analyzes the single package constructed from the patterns and tags.
 // parsePackage exits if there is an error.
 func (g *Generator) parsePackage(patterns []string, tags []string) {
 	cfg := &packages.Config{
-		Mode: packages.LoadSyntax,
+		Mode: packages.NeedName |
+			packages.NeedTypes |
+			packages.NeedSyntax |
+			packages.NeedTypesInfo,
 		// TODO: Need to think about constants in test files. Maybe write type_string_test.go
 		// in a separate pass? For later.
 		Tests: false,
@@ -276,52 +252,6 @@ func (g *Generator) addPackage(pkg *packages.Package) {
 			pkg:  g.pkg,
 		}
 	}
-}
-
-// parsePackage analyzes the single package constructed from the named files.
-// If text is non-nil, it is a string to be used instead of the content of the file,
-// to be used for testing. parsePackage exits if there is an error.
-// func (g *Generator) parsePackagee(directory string, names []string, text interface{}) {
-// 	var files []*File
-// 	var astFiles []*ast.File
-// 	g.pkg = new(Package)
-// 	fs := token.NewFileSet()
-// 	for _, n := range names {
-// 		if !strings.HasSuffix(n, ".go") {
-// 			continue
-// 		}
-// 		parsedFile, err := parser.ParseFile(fs, n, text, 0)
-// 		if err != nil {
-// 			log.Fatalf("parsing package: %s: %s", n, err)
-// 		}
-// 		astFiles = append(astFiles, parsedFile)
-// 		files = append(files, &File{
-// 			file: parsedFile,
-// 			pkg:  g.pkg,
-// 		})
-// 	}
-// 	if len(astFiles) == 0 {
-// 		log.Fatalf("%s: no buildable Go files", directory)
-// 	}
-// 	g.pkg.name = astFiles[0].Name.Name
-// 	g.pkg.files = files
-// 	g.pkg.dir = directory
-// 	// Type check the package.
-// 	g.pkg.check(fs, astFiles)
-// }
-
-// check type-checks the package. The package must be OK to proceed.
-func (pkg *Package) check(fs *token.FileSet, astFiles []*ast.File) {
-	pkg.defs = make(map[*ast.Ident]types.Object)
-	config := types.Config{Importer: importer.Default(), FakeImportC: true}
-	info := &types.Info{
-		Defs: pkg.defs,
-	}
-	typesPkg, err := config.Check(pkg.dir, fs, astFiles, info)
-	if err != nil {
-		log.Fatalf("checking package: %s", err)
-	}
-	pkg.typesPkg = typesPkg
 }
 
 func (g *Generator) transformValueNames(values []Value, transformMethod string) {
@@ -353,11 +283,11 @@ func (g *Generator) transformValueNames(values []Value, transformMethod string) 
 		}
 	case "title":
 		fn = func(s string) string {
-			return strings.Title(s)
+			return cases.Title(language.English).String(s)
 		}
 	case "title-lower":
 		fn = func(s string) string {
-			title := []rune(strings.Title(s))
+			title := []rune(cases.Title(language.English).String(s))
 			title[0] = unicode.ToLower(title[0])
 			return string(title)
 		}
@@ -412,15 +342,27 @@ func (g *Generator) prefixValueNames(values []Value, prefix string) {
 	}
 }
 
+type generateParams struct {
+	AddPrefix           string
+	IncludeGQLGen       bool
+	IncludeJSON         bool
+	IncludeSQL          bool
+	IncludeText         bool
+	IncludeValuesMethod bool
+	IncludeYAML         bool
+	LineComment         bool
+	TransformMethod     string
+	TrimPrefix          string
+	TypeName            string
+}
+
 // generate produces the String method for the named type.
-func (g *Generator) generate(typeName string,
-	includeJSON, includeYAML, includeSQL, includeText, includeGQLGen bool,
-	transformMethod string, trimPrefix string, addPrefix string, lineComment bool, includeValuesMethod bool) {
+func (g *Generator) generate(params generateParams) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
-		file.lineComment = lineComment
+		file.lineComment = params.LineComment
 		// Set the state for this run of the walker.
-		file.typeName = typeName
+		file.typeName = params.TypeName
 		file.values = nil
 		if file.file != nil {
 			ast.Inspect(file.file, file.genDecl)
@@ -429,16 +371,16 @@ func (g *Generator) generate(typeName string,
 	}
 
 	if len(values) == 0 {
-		log.Fatalf("no values defined for type %s", typeName)
+		log.Fatalf("no values defined for type %s", params.TypeName)
 	}
 
-	for _, prefix := range strings.Split(trimPrefix, ",") {
+	for _, prefix := range strings.Split(params.TrimPrefix, ",") {
 		g.trimValueNames(values, prefix)
 	}
 
-	g.transformValueNames(values, transformMethod)
+	g.transformValueNames(values, params.TransformMethod)
 
-	g.prefixValueNames(values, addPrefix)
+	g.prefixValueNames(values, params.AddPrefix)
 
 	runs := splitIntoRuns(values)
 	// The decision of which pattern to use depends on the number of
@@ -456,33 +398,33 @@ func (g *Generator) generate(typeName string,
 	const runsThreshold = 10
 	switch {
 	case len(runs) == 1:
-		g.buildOneRun(runs, typeName)
+		g.buildOneRun(runs, params.TypeName)
 	case len(runs) <= runsThreshold:
-		g.buildMultipleRuns(runs, typeName)
+		g.buildMultipleRuns(runs, params.TypeName)
 	default:
-		g.buildMap(runs, typeName)
+		g.buildMap(runs, params.TypeName)
 	}
-	if includeValuesMethod {
-		g.buildAltStringValuesMethod(typeName)
+	if params.IncludeValuesMethod {
+		g.buildAltStringValuesMethod(params.TypeName)
 	}
 
-	g.buildNoOpOrderChangeDetect(runs, typeName)
+	g.buildNoOpOrderChangeDetect(runs, params.TypeName)
 
-	g.buildBasicExtras(runs, typeName, runsThreshold)
-	if includeJSON {
-		g.buildJSONMethods(runs, typeName, runsThreshold)
+	g.buildBasicExtras(runs, params.TypeName, runsThreshold)
+	if params.IncludeJSON {
+		g.buildJSONMethods(runs, params.TypeName, runsThreshold)
 	}
-	if includeText {
-		g.buildTextMethods(runs, typeName, runsThreshold)
+	if params.IncludeText {
+		g.buildTextMethods(runs, params.TypeName, runsThreshold)
 	}
-	if includeYAML {
-		g.buildYAMLMethods(runs, typeName, runsThreshold)
+	if params.IncludeYAML {
+		g.buildYAMLMethods(runs, params.TypeName, runsThreshold)
 	}
-	if includeSQL {
-		g.addValueAndScanMethod(typeName)
+	if params.IncludeSQL {
+		g.addValueAndScanMethod(params.TypeName)
 	}
-	if includeGQLGen {
-		g.buildGQLGenMethods(runs, typeName)
+	if params.IncludeGQLGen {
+		g.buildGQLGenMethods(runs, params.TypeName)
 	}
 }
 
@@ -689,9 +631,8 @@ func (g *Generator) declareIndexAndNameVar(run []Value, typeName string) {
 	index, n := g.createIndexAndNameDecl(run, typeName, "")
 	g.Printf("const %s\n", n)
 	g.Printf("var %s\n", index)
-	index, n = g.createLowerIndexAndNameDecl(run, typeName, "")
+	_, n = g.createLowerIndexAndNameDecl(run, typeName, "")
 	g.Printf("const %s\n", n)
-	//g.Printf("var %s\n", index)
 }
 
 // createIndexAndNameDecl returns the pair of declarations for the run. The caller will add "const" and "var".
@@ -774,9 +715,10 @@ func (g *Generator) buildOneRun(runs [][]Value, typeName string) {
 }
 
 // Arguments to format are:
-// 	[1]: type name
-// 	[2]: size of index element (8 for uint8 etc.)
-// 	[3]: less than zero check (for signed types)
+//
+//	[1]: type name
+//	[2]: size of index element (8 for uint8 etc.)
+//	[3]: less than zero check (for signed types)
 const stringOneRun = `func (i %[1]s) String() string {
 	if %[3]si >= %[1]s(len(_%[1]sIndex)-1) {
 		return fmt.Sprintf("%[1]s(%%d)", i)
@@ -786,10 +728,11 @@ const stringOneRun = `func (i %[1]s) String() string {
 `
 
 // Arguments to format are:
-// 	[1]: type name
-// 	[2]: lowest defined value for type, as a string
-// 	[3]: size of index element (8 for uint8 etc.)
-// 	[4]: less than zero check (for signed types)
+//
+//	[1]: type name
+//	[2]: lowest defined value for type, as a string
+//	[3]: size of index element (8 for uint8 etc.)
+//	[4]: less than zero check (for signed types)
 const stringOneRunWithOffset = `func (i %[1]s) String() string {
 	i -= %[2]s
 	if %[4]si >= %[1]s(len(_%[1]sIndex)-1) {

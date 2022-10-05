@@ -10,7 +10,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -360,7 +360,7 @@ func runGoldenTest(t *testing.T, test Golden,
 	file := test.name + ".go"
 	input := "package test\n" + test.input
 
-	dir, err := ioutil.TempDir("", "stringer")
+	dir, err := os.MkdirTemp("", "stringer")
 	if err != nil {
 		t.Error(err)
 	}
@@ -372,7 +372,7 @@ func runGoldenTest(t *testing.T, test Golden,
 	}()
 
 	absFile := filepath.Join(dir, file)
-	err = ioutil.WriteFile(absFile, []byte(input), 0644)
+	err = os.WriteFile(absFile, []byte(input), 0644)
 	if err != nil {
 		t.Error(err)
 	}
@@ -382,12 +382,24 @@ func runGoldenTest(t *testing.T, test Golden,
 	if len(tokens) != 3 {
 		t.Fatalf("%s: need type declaration on first line", test.name)
 	}
-	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, generateText, generateGQLGen, "noop", trimPrefix, prefix, linecomment, generateValuesMethod)
+	g.generate(generateParams{
+		AddPrefix:           prefix,
+		IncludeGQLGen:       generateGQLGen,
+		IncludeJSON:         generateJSON,
+		IncludeSQL:          generateSQL,
+		IncludeText:         generateText,
+		IncludeValuesMethod: generateValuesMethod,
+		IncludeYAML:         generateYAML,
+		LineComment:         linecomment,
+		TransformMethod:     "noop",
+		TrimPrefix:          trimPrefix,
+		TypeName:            tokens[1],
+	})
 	got := string(g.format())
 	if got != loadGolden(test.name) {
 		// Use this to help build a golden text when changes are needed
 		//goldenFile := fmt.Sprintf("./testdata/%v.golden", test.name)
-		//err = ioutil.WriteFile(goldenFile, []byte(got), 0644)
+		//err = os.WriteFile(goldenFile, []byte(got), 0644)
 		//if err != nil {
 		//	t.Error(err)
 		//}
@@ -401,7 +413,7 @@ func loadGolden(name string) string {
 		return ""
 	}
 	defer fh.Close()
-	b, err := ioutil.ReadAll(fh)
+	b, err := io.ReadAll(fh)
 	if err != nil {
 		return ""
 	}
