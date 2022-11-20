@@ -38,6 +38,8 @@ Flags:
         transform each item name by removing a prefix. Default: ""
   -type string
         comma-separated list of type names; must be set
+  -values
+    	if true, alternative string values method will be generated. Default: false
   -yaml
         if true, yaml marshaling methods will be generated. Default: false
 ```
