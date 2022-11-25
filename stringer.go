@@ -15,10 +15,8 @@ import (
 	"go/ast"
 	exact "go/constant"
 	"go/format"
-	"go/importer"
 	"go/token"
 	"go/types"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -27,6 +25,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"golang.org/x/tools/go/packages"
 
 	"github.com/pascaldekloe/name"
@@ -149,7 +149,7 @@ func main() {
 	}
 
 	// Write to tmpfile first
-	tmpFile, err := ioutil.TempFile(dir, fmt.Sprintf("%s_enumer_", typs[0]))
+	tmpFile, err := os.CreateTemp(dir, fmt.Sprintf("%s_enumer_", typs[0]))
 	if err != nil {
 		log.Fatalf("creating temporary file for output: %s", err)
 	}
@@ -196,17 +196,14 @@ type File struct {
 	// These fields are reset for each type being generated.
 	typeName    string  // Name of the constant type.
 	values      []Value // Accumulator for constant values of that type.
-	trimPrefix  string
 	lineComment bool
 }
 
 // Package holds information about a Go package
 type Package struct {
-	dir      string
-	name     string
-	defs     map[*ast.Ident]types.Object
-	files    []*File
-	typesPkg *types.Package
+	name  string
+	defs  map[*ast.Ident]types.Object
+	files []*File
 }
 
 // // parsePackageDir parses the package residing in the directory.
@@ -247,7 +244,7 @@ type Package struct {
 // parsePackage exits if there is an error.
 func (g *Generator) parsePackage(patterns []string, tags []string) {
 	cfg := &packages.Config{
-		Mode: packages.LoadSyntax,
+		Mode: packages.LoadSyntax, //nolint
 		// TODO: Need to think about constants in test files. Maybe write type_string_test.go
 		// in a separate pass? For later.
 		Tests: false,
@@ -310,20 +307,6 @@ func (g *Generator) addPackage(pkg *packages.Package) {
 // 	g.pkg.check(fs, astFiles)
 // }
 
-// check type-checks the package. The package must be OK to proceed.
-func (pkg *Package) check(fs *token.FileSet, astFiles []*ast.File) {
-	pkg.defs = make(map[*ast.Ident]types.Object)
-	config := types.Config{Importer: importer.Default(), FakeImportC: true}
-	info := &types.Info{
-		Defs: pkg.defs,
-	}
-	typesPkg, err := config.Check(pkg.dir, fs, astFiles, info)
-	if err != nil {
-		log.Fatalf("checking package: %s", err)
-	}
-	pkg.typesPkg = typesPkg
-}
-
 func (g *Generator) transformValueNames(values []Value, transformMethod string) {
 	var fn func(src string) string
 	switch transformMethod {
@@ -353,11 +336,11 @@ func (g *Generator) transformValueNames(values []Value, transformMethod string) 
 		}
 	case "title":
 		fn = func(s string) string {
-			return strings.Title(s)
+			return cases.Title(language.English).String(s)
 		}
 	case "title-lower":
 		fn = func(s string) string {
-			title := []rune(strings.Title(s))
+			title := []rune(cases.Title(language.English).String(s))
 			title[0] = unicode.ToLower(title[0])
 			return string(title)
 		}
@@ -689,7 +672,7 @@ func (g *Generator) declareIndexAndNameVar(run []Value, typeName string) {
 	index, n := g.createIndexAndNameDecl(run, typeName, "")
 	g.Printf("const %s\n", n)
 	g.Printf("var %s\n", index)
-	index, n = g.createLowerIndexAndNameDecl(run, typeName, "")
+	_, n = g.createLowerIndexAndNameDecl(run, typeName, "")
 	g.Printf("const %s\n", n)
 	//g.Printf("var %s\n", index)
 }
@@ -774,9 +757,10 @@ func (g *Generator) buildOneRun(runs [][]Value, typeName string) {
 }
 
 // Arguments to format are:
-// 	[1]: type name
-// 	[2]: size of index element (8 for uint8 etc.)
-// 	[3]: less than zero check (for signed types)
+//
+//	[1]: type name
+//	[2]: size of index element (8 for uint8 etc.)
+//	[3]: less than zero check (for signed types)
 const stringOneRun = `func (i %[1]s) String() string {
 	if %[3]si >= %[1]s(len(_%[1]sIndex)-1) {
 		return fmt.Sprintf("%[1]s(%%d)", i)
@@ -786,10 +770,11 @@ const stringOneRun = `func (i %[1]s) String() string {
 `
 
 // Arguments to format are:
-// 	[1]: type name
-// 	[2]: lowest defined value for type, as a string
-// 	[3]: size of index element (8 for uint8 etc.)
-// 	[4]: less than zero check (for signed types)
+//
+//	[1]: type name
+//	[2]: lowest defined value for type, as a string
+//	[3]: size of index element (8 for uint8 etc.)
+//	[4]: less than zero check (for signed types)
 const stringOneRunWithOffset = `func (i %[1]s) String() string {
 	i -= %[2]s
 	if %[4]si >= %[1]s(len(_%[1]sIndex)-1) {

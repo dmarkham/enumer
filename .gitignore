@@ -29,3 +29,4 @@ coverage.txt
 .vscode
 
 enumer
+coverage.*
