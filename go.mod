@@ -2,6 +2,7 @@ module github.com/dmarkham/enumer
 
 require (
 	github.com/pascaldekloe/name v1.0.0
+	golang.org/x/text v0.3.7
 	golang.org/x/tools v0.1.12
 )
 
