@@ -18,11 +18,16 @@ var _PrimeMap = map[Prime]string{
 	43: _PrimeName[32:35],
 }
 
-func (i Prime) String() string {
+func (i Prime) string() (string, error) {
 	if str, ok := _PrimeMap[i]; ok {
-		return str
+		return str, nil
 	}
-	return fmt.Sprintf("Prime(%d)", i)
+	return "", fmt.Errorf("value is out of enum range")
+}
+
+func (i Prime) String() string {
+	str, _ := i.string()
+	return str
 }
 
 // An "invalid array index" compiler error signifies that the constant values have changed.
