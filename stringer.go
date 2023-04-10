@@ -780,7 +780,7 @@ func (g *Generator) buildOneRun(runs [][]Value, typeName string) {
 //	[3]: less than zero check (for signed types)
 const stringOneRun = `func (i %[1]s) string() (string, error) {
 	if %[3]si >= %[1]s(len(_%[1]sIndex)-1) {
-		return fmt.Sprintf("%[1]s(%%d)", i), fmt.Errorf("value is out of enum range")
+		return "", fmt.Errorf("value is out of enum range")
 	}
 	return _%[1]sName[_%[1]sIndex[i]:_%[1]sIndex[i+1]], nil
 }
@@ -800,7 +800,7 @@ func (i %[1]s) String() string {
 const stringOneRunWithOffset = `func(i %[1]s) string() (string, error) {
 	i -= %[2]s
 	if %[4]si >= %[1]s(len(_%[1]sIndex)-1) {
-		return fmt.Sprintf("%[1]s(%%d)", i + %[2]s), fmt.Errorf("value is out of enum range")
+		return "", fmt.Errorf("value is out of enum range")
 	}
 	return _%[1]sName[_%[1]sIndex[i] : _%[1]sIndex[i+1]], nil
 }
@@ -832,7 +832,7 @@ func (g *Generator) buildMultipleRuns(runs [][]Value, typeName string) {
 			typeName, i, typeName, i, typeName, i)
 	}
 	g.Printf("\tdefault:\n")
-	g.Printf("\t\treturn fmt.Sprintf(\"%s(%%d)\", i)\n")
+	g.Printf("\t\treturn \"\"\n")
 	g.Printf("\t}\n")
 	g.Printf("}\n")
 }
@@ -877,7 +877,7 @@ const stringMap = `func (i %[1]s) string() (string, error) {
 	if str, ok := _%[1]sMap[i]; ok {
 		return str, nil
 	}
-	return fmt.Sprintf("%[1]s(%%d)", i), fmt.Errorf("value is out of enum range") 
+	return "", fmt.Errorf("value is out of enum range") 
 }
 
 func (i %[1]s) String() string {
