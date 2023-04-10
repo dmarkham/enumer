@@ -774,28 +774,40 @@ func (g *Generator) buildOneRun(runs [][]Value, typeName string) {
 }
 
 // Arguments to format are:
-// 	[1]: type name
-// 	[2]: size of index element (8 for uint8 etc.)
-// 	[3]: less than zero check (for signed types)
-const stringOneRun = `func (i %[1]s) String() string {
+//
+//	[1]: type name
+//	[2]: size of index element (8 for uint8 etc.)
+//	[3]: less than zero check (for signed types)
+const stringOneRun = `func (i %[1]s) string() (string, error) {
 	if %[3]si >= %[1]s(len(_%[1]sIndex)-1) {
-		return fmt.Sprintf("%[1]s(%%d)", i)
+		return fmt.Sprintf("%[1]s(%%d)", i), fmt.Errorf("value is out of enum range")
 	}
-	return _%[1]sName[_%[1]sIndex[i]:_%[1]sIndex[i+1]]
+	return _%[1]sName[_%[1]sIndex[i]:_%[1]sIndex[i+1]], nil
+}
+
+func (i %[1]s) String() string {
+	val, _ := i.string()
+	return val
 }
 `
 
 // Arguments to format are:
-// 	[1]: type name
-// 	[2]: lowest defined value for type, as a string
-// 	[3]: size of index element (8 for uint8 etc.)
-// 	[4]: less than zero check (for signed types)
-const stringOneRunWithOffset = `func (i %[1]s) String() string {
+//
+//	[1]: type name
+//	[2]: lowest defined value for type, as a string
+//	[3]: size of index element (8 for uint8 etc.)
+//	[4]: less than zero check (for signed types)
+const stringOneRunWithOffset = `func(i %[1]s) string() (string, error) {
 	i -= %[2]s
 	if %[4]si >= %[1]s(len(_%[1]sIndex)-1) {
-		return fmt.Sprintf("%[1]s(%%d)", i + %[2]s)
+		return fmt.Sprintf("%[1]s(%%d)", i + %[2]s), fmt.Errorf("value is out of enum range")
 	}
-	return _%[1]sName[_%[1]sIndex[i] : _%[1]sIndex[i+1]]
+	return _%[1]sName[_%[1]sIndex[i] : _%[1]sIndex[i+1]], nil
+}
+
+func (i %[1]s) String() string {
+	val, _ := i.string()
+	return val
 }
 `
 
@@ -820,7 +832,7 @@ func (g *Generator) buildMultipleRuns(runs [][]Value, typeName string) {
 			typeName, i, typeName, i, typeName, i)
 	}
 	g.Printf("\tdefault:\n")
-	g.Printf("\t\treturn fmt.Sprintf(\"%s(%%d)\", i)\n", typeName)
+	g.Printf("\t\treturn fmt.Sprintf(\"%s(%%d)\", i)\n")
 	g.Printf("\t}\n")
 	g.Printf("}\n")
 }
@@ -861,10 +873,15 @@ func (g *Generator) buildNoOpOrderChangeDetect(runs [][]Value, typeName string) 
 }
 
 // Argument to format is the type name.
-const stringMap = `func (i %[1]s) String() string {
+const stringMap = `func (i %[1]s) string() (string, error) {
 	if str, ok := _%[1]sMap[i]; ok {
-		return str
+		return str, nil
 	}
-	return fmt.Sprintf("%[1]s(%%d)", i)
+	return fmt.Sprintf("%[1]s(%%d)", i), fmt.Errorf("value is out of enum range") 
+}
+
+func (i %[1]s) String() string {
+	str, _ := i.string()
+	return str
 }
 `
