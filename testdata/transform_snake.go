@@ -14,8 +14,8 @@ func main() {
 	ck(SnakeCaseValueOne, "snake_case_value_one")
 	ck(SnakeCaseValueTwo, "snake_case_value_two")
 	ck(SnakeCaseValueThree, "snake_case_value_three")
-	ck(-127, "SnakeCaseValue(-127)")
-	ck(127, "SnakeCaseValue(127)")
+	ck(-127, "")
+	ck(127, "")
 }
 
 func ck(value SnakeCaseValue, str string) {
