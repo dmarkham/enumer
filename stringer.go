@@ -785,7 +785,6 @@ func (g *Generator) buildOneRun(runs [][]Value, typeName string) {
 }
 
 // Arguments to format are:
-//
 //	[1]: type name
 //	[2]: size of index element (8 for uint8 etc.)
 //	[3]: less than zero check (for signed types)
@@ -798,7 +797,6 @@ const stringOneRun = `func (i %[1]s) String() string {
 `
 
 // Arguments to format are:
-//
 //	[1]: type name
 //	[2]: lowest defined value for type, as a string
 //	[3]: size of index element (8 for uint8 etc.)
