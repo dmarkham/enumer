@@ -3,6 +3,7 @@ package main
 import "fmt"
 
 // Arguments to format are:
+//
 //	[1]: type name
 const stringNameToValueMethod = `// %[1]sString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
@@ -19,6 +20,7 @@ func %[1]sString(s string) (%[1]s, error) {
 `
 
 // Arguments to format are:
+//
 //	[1]: type name
 const stringValuesMethod = `// %[1]sValues returns all values of the enum
 func %[1]sValues() []%[1]s {
@@ -27,6 +29,7 @@ func %[1]sValues() []%[1]s {
 `
 
 // Arguments to format are:
+//
 //	[1]: type name
 const stringsMethod = `// %[1]sStrings returns a slice of all String values of the enum
 func %[1]sStrings() []string {
@@ -37,6 +40,7 @@ func %[1]sStrings() []string {
 `
 
 // Arguments to format are:
+//
 //	[1]: type name
 const stringBelongsMethodLoop = `// IsA%[1]s returns "true" if the value is listed in the enum definition. "false" otherwise
 func (i %[1]s) IsA%[1]s() bool {
@@ -50,6 +54,7 @@ func (i %[1]s) IsA%[1]s() bool {
 `
 
 // Arguments to format are:
+//
 //	[1]: type name
 const stringBelongsMethodSet = `// IsA%[1]s returns "true" if the value is listed in the enum definition. "false" otherwise
 func (i %[1]s) IsA%[1]s() bool {
@@ -59,6 +64,7 @@ func (i %[1]s) IsA%[1]s() bool {
 `
 
 // Arguments to format are:
+//
 //	[1]: type name
 const altStringValuesMethod = `func (%[1]s) Values() []string {
 	return %[1]sStrings()
@@ -144,6 +150,7 @@ func (g *Generator) printNamesSlice(runs [][]Value, typeName string, runsThresho
 }
 
 // Arguments to format are:
+//
 //	[1]: type name
 const jsonMethods = `
 // MarshalJSON implements the json.Marshaler interface for %[1]s
@@ -169,6 +176,7 @@ func (g *Generator) buildJSONMethods(runs [][]Value, typeName string, runsThresh
 }
 
 // Arguments to format are:
+//
 //	[1]: type name
 const textMethods = `
 // MarshalText implements the encoding.TextMarshaler interface for %[1]s
@@ -189,6 +197,7 @@ func (g *Generator) buildTextMethods(runs [][]Value, typeName string, runsThresh
 }
 
 // Arguments to format are:
+//
 //	[1]: type name
 const yamlMethods = `
 // MarshalYAML implements a YAML Marshaler for %[1]s
@@ -211,4 +220,55 @@ func (i *%[1]s) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 func (g *Generator) buildYAMLMethods(runs [][]Value, typeName string, runsThreshold int) {
 	g.Printf(yamlMethods, typeName)
+}
+
+// Arguments to format are:
+//
+//	[1]: type name
+const xmlMethods = `
+// MarshalXML implements a XML Marshaller for %[1]s
+func (i %[1]s) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return e.EncodeElement(i.String(), start) 
+}
+
+// UnmarshalXML implements a XML Unmarshaler for %[1]s
+func (i *%[1]s) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var s string
+	var err error
+	if err = d.DecodeElement(&s, &start); err != nil {
+		return err
+	}
+
+	*i, err = %[1]sString(s)
+	return err
+}
+`
+
+func (g *Generator) buildXMLMethods(runs [][]Value, typeName string, runsThreshold int) {
+	g.Printf(xmlMethods, typeName)
+}
+
+// Arguments to format are:
+//
+//	[1]: type name
+const xmlAttrMethods = `
+// MarshalXMLAttr implements a XML Attribute Marshaller for %[1]s
+func (i %[1]s) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	return xml.Attr{
+		Name: name,
+		Value: i.String(),
+	}, nil
+}
+
+// UnmarshalXMLAttr implements a XML Attribute Unmarshaler for %[1]s
+func (i *%[1]s) UnmarshalXMLAttr(attr xml.Attr) error {
+	var err error
+
+	*i, err = %[1]sString(attr.Value)
+	return err
+}
+`
+
+func (g *Generator) buildXMLAttrMethods(runs [][]Value, typeName string, runsThreshold int) {
+	g.Printf(xmlAttrMethods, typeName)
 }

@@ -42,6 +42,10 @@ Flags:
     	if true, alternative string values method will be generated. Default: false
   -yaml
         if true, yaml marshaling methods will be generated. Default: false
+  -xml
+        if true, xml marshaling methods will be generated. Default: false
+  -xmlattr
+        if true, xml attribute marshaling methods will be generated. Default: false
 ```
 
 
@@ -71,7 +75,10 @@ When Enumer is applied to a type, it will generate:
   the enum conform to the `gopkg.in/yaml.v2.Marshaler` and `gopkg.in/yaml.v2.Unmarshaler` interfaces.
 - When the flag `sql` is provided, the methods for implementing the `Scanner` and `Valuer` interfaces.
   Useful when storing the enum in a database.
-
+- When the flag `xml` is provided two additional methods will be generated, `MarshalXML()` and `UnmarshalXML()`. These make
+  the enum conform to the `encoding/xml.Marshaler` and `encoding/xml.Unmarshaler` interfaces.
+- When the flag `xmlattr` is provided two additional methods will be generated, `MarshalXML()` and `UnmarshalXML()`. These make
+  the enum conform to the `encoding/xml.MarshalerAttr` and `encoding/xml.UnmarshalerAttr` interfaces.
 
 For example, if we have an enum type called `Pill`,
 
@@ -201,7 +208,7 @@ For a module-aware repo with `enumer` in the `go.mod` file, generation can be ca
 //go:generate go run github.com/dmarkham/enumer -type=YOURTYPE
 ```
 
-There are four boolean flags: `json`, `text`, `yaml` and `sql`. You can use any combination of them (i.e. `enumer -type=Pill -json -text`),
+There are six boolean flags: `json`, `text`, `yaml`, `xml`, `xmlattr` and `sql`. You can use any combination of them (i.e. `enumer -type=Pill -json -text`),
 
 For enum string representation transformation the `transform` and `trimprefix` flags
 were added (i.e. `enumer -type=MyType -json -transform=snake`).
@@ -213,7 +220,7 @@ it is transformed). If a name doesn't have the prefix it will be passed unchange
 
 If a prefix is provided via the `addprefix` flag, it will be added to the start of each name (after trimming and after transforming).
 
-The boolean flag `values` will additionally create an alternative string values method `Values() []string` to fullfill the `EnumValues` interface of [ent](https://entgo.io/docs/schema-fields/#enum-fields).
+The boolean flag `values` will additionally create an alternative string values method `Values() []string` to fulfill the `EnumValues` interface of [ent](https://entgo.io/docs/schema-fields/#enum-fields).
 
 ## Inspiring projects
 
