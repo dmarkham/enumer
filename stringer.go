@@ -24,7 +24,6 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
-	"unicode"
 	"unicode/utf8"
 
 	"golang.org/x/tools/go/packages"
@@ -357,12 +356,7 @@ func (g *Generator) transformValueNames(values []Value, transformMethod string) 
 		}
 	case "title-lower":
 		fn = func(s string) string {
-			if len(s) == 0 {
-				return s
-			}
-			title := []rune(strings.Title(s))
-			title[0] = unicode.ToLower(title[0])
-			return string(title)
+			return name.CamelCase(s, false)
 		}
 	case "first":
 		fn = func(s string) string {
