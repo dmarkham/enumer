@@ -50,6 +50,7 @@ var (
 	yaml            = flag.Bool("yaml", false, "if true, yaml marshaling methods will be generated. Default: false")
 	text            = flag.Bool("text", false, "if true, text marshaling methods will be generated. Default: false")
 	gqlgen          = flag.Bool("gqlgen", false, "if true, GraphQL marshaling methods for gqlgen will be generated. Default: false")
+	dynamodbav      = flag.Bool("dynamodbav", false, "if true, DynamoDB attribute values marshaling methods will be generated. Default: false")
 	altValuesFunc   = flag.Bool("values", false, "if true, alternative string values method will be generated. Default: false")
 	output          = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
 	transformMethod = flag.String("transform", "noop", "enum item name transformation method. Default: noop")
@@ -131,11 +132,14 @@ func main() {
 		g.Printf("\t\"io\"\n")
 		g.Printf("\t\"strconv\"\n")
 	}
+	if *dynamodbav {
+		g.Printf("\t\"github.com/aws/aws-sdk-go-v2/service/dynamodb/types\"\n")
+	}
 	g.Printf(")\n")
 
 	// Run generate for each type.
 	for _, typeName := range typs {
-		g.generate(typeName, *json, *yaml, *sql, *text, *gqlgen, *transformMethod, *trimPrefix, *addPrefix, *linecomment, *altValuesFunc)
+		g.generate(typeName, *json, *yaml, *sql, *text, *gqlgen, *dynamodbav, *transformMethod, *trimPrefix, *addPrefix, *linecomment, *altValuesFunc)
 	}
 
 	// Format the output.
@@ -414,7 +418,7 @@ func (g *Generator) prefixValueNames(values []Value, prefix string) {
 
 // generate produces the String method for the named type.
 func (g *Generator) generate(typeName string,
-	includeJSON, includeYAML, includeSQL, includeText, includeGQLGen bool,
+	includeJSON, includeYAML, includeSQL, includeText, includeGQLGen bool, includeDynamodbav bool,
 	transformMethod string, trimPrefix string, addPrefix string, lineComment bool, includeValuesMethod bool) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
@@ -483,6 +487,9 @@ func (g *Generator) generate(typeName string,
 	}
 	if includeGQLGen {
 		g.buildGQLGenMethods(runs, typeName)
+	}
+	if includeDynamodbav {
+		g.buildDynamodbAvMethods(runs, typeName)
 	}
 }
 
@@ -774,9 +781,10 @@ func (g *Generator) buildOneRun(runs [][]Value, typeName string) {
 }
 
 // Arguments to format are:
-// 	[1]: type name
-// 	[2]: size of index element (8 for uint8 etc.)
-// 	[3]: less than zero check (for signed types)
+//
+//	[1]: type name
+//	[2]: size of index element (8 for uint8 etc.)
+//	[3]: less than zero check (for signed types)
 const stringOneRun = `func (i %[1]s) String() string {
 	if %[3]si >= %[1]s(len(_%[1]sIndex)-1) {
 		return fmt.Sprintf("%[1]s(%%d)", i)
@@ -786,10 +794,11 @@ const stringOneRun = `func (i %[1]s) String() string {
 `
 
 // Arguments to format are:
-// 	[1]: type name
-// 	[2]: lowest defined value for type, as a string
-// 	[3]: size of index element (8 for uint8 etc.)
-// 	[4]: less than zero check (for signed types)
+//
+//	[1]: type name
+//	[2]: lowest defined value for type, as a string
+//	[3]: size of index element (8 for uint8 etc.)
+//	[4]: less than zero check (for signed types)
 const stringOneRunWithOffset = `func (i %[1]s) String() string {
 	i -= %[2]s
 	if %[4]si >= %[1]s(len(_%[1]sIndex)-1) {
