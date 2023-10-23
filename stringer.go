@@ -48,6 +48,8 @@ var (
 	sql             = flag.Bool("sql", false, "if true, the Scanner and Valuer interface will be implemented.")
 	json            = flag.Bool("json", false, "if true, json marshaling methods will be generated. Default: false")
 	yaml            = flag.Bool("yaml", false, "if true, yaml marshaling methods will be generated. Default: false")
+	xml             = flag.Bool("xml", false, "if true, xml marshaling methods will be generated. Default: false")
+	xmlAttr         = flag.Bool("xmlattr", false, "if true, xml attribute marshaling methods will be generated. Default: false")
 	text            = flag.Bool("text", false, "if true, text marshaling methods will be generated. Default: false")
 	gqlgen          = flag.Bool("gqlgen", false, "if true, GraphQL marshaling methods for gqlgen will be generated. Default: false")
 	altValuesFunc   = flag.Bool("values", false, "if true, alternative string values method will be generated. Default: false")
@@ -127,6 +129,9 @@ func main() {
 	if *json {
 		g.Printf("\t\"encoding/json\"\n")
 	}
+	if *xml || *xmlAttr {
+		g.Printf("\t\"encoding/xml\"\n")
+	}
 	if *gqlgen {
 		g.Printf("\t\"io\"\n")
 		g.Printf("\t\"strconv\"\n")
@@ -135,7 +140,7 @@ func main() {
 
 	// Run generate for each type.
 	for _, typeName := range typs {
-		g.generate(typeName, *json, *yaml, *sql, *text, *gqlgen, *transformMethod, *trimPrefix, *addPrefix, *linecomment, *altValuesFunc)
+		g.generate(typeName, *json, *yaml, *xml, *xmlAttr, *sql, *text, *gqlgen, *transformMethod, *trimPrefix, *addPrefix, *linecomment, *altValuesFunc)
 	}
 
 	// Format the output.
@@ -414,7 +419,7 @@ func (g *Generator) prefixValueNames(values []Value, prefix string) {
 
 // generate produces the String method for the named type.
 func (g *Generator) generate(typeName string,
-	includeJSON, includeYAML, includeSQL, includeText, includeGQLGen bool,
+	includeJSON, includeYAML, includeXML, includeXMLAttr, includeSQL, includeText, includeGQLGen bool,
 	transformMethod string, trimPrefix string, addPrefix string, lineComment bool, includeValuesMethod bool) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
@@ -477,6 +482,12 @@ func (g *Generator) generate(typeName string,
 	}
 	if includeYAML {
 		g.buildYAMLMethods(runs, typeName, runsThreshold)
+	}
+	if includeXML {
+		g.buildXMLMethods(runs, typeName, runsThreshold)
+	}
+	if includeXMLAttr {
+		g.buildXMLAttrMethods(runs, typeName, runsThreshold)
 	}
 	if includeSQL {
 		g.addValueAndScanMethod(typeName)
@@ -774,9 +785,9 @@ func (g *Generator) buildOneRun(runs [][]Value, typeName string) {
 }
 
 // Arguments to format are:
-// 	[1]: type name
-// 	[2]: size of index element (8 for uint8 etc.)
-// 	[3]: less than zero check (for signed types)
+//	[1]: type name
+//	[2]: size of index element (8 for uint8 etc.)
+//	[3]: less than zero check (for signed types)
 const stringOneRun = `func (i %[1]s) String() string {
 	if %[3]si >= %[1]s(len(_%[1]sIndex)-1) {
 		return fmt.Sprintf("%[1]s(%%d)", i)
@@ -786,10 +797,10 @@ const stringOneRun = `func (i %[1]s) String() string {
 `
 
 // Arguments to format are:
-// 	[1]: type name
-// 	[2]: lowest defined value for type, as a string
-// 	[3]: size of index element (8 for uint8 etc.)
-// 	[4]: less than zero check (for signed types)
+//	[1]: type name
+//	[2]: lowest defined value for type, as a string
+//	[3]: size of index element (8 for uint8 etc.)
+//	[4]: less than zero check (for signed types)
 const stringOneRunWithOffset = `func (i %[1]s) String() string {
 	i -= %[2]s
 	if %[4]si >= %[1]s(len(_%[1]sIndex)-1) {
