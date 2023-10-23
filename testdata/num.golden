@@ -5,12 +5,17 @@ var _NumIndex = [...]uint8{0, 3, 6, 8, 10, 12}
 
 const _NumLowerName = "m_2m_1m0m1m2"
 
-func (i Num) String() string {
+func (i Num) string() (string, error) {
 	i -= -2
 	if i < 0 || i >= Num(len(_NumIndex)-1) {
-		return fmt.Sprintf("Num(%d)", i+-2)
+		return "", fmt.Errorf("value is out of enum range")
 	}
-	return _NumName[_NumIndex[i]:_NumIndex[i+1]]
+	return _NumName[_NumIndex[i]:_NumIndex[i+1]], nil
+}
+
+func (i Num) String() string {
+	val, _ := i.string()
+	return val
 }
 
 func (Num) Values() []string {

@@ -14,8 +14,8 @@ func main() {
 	ck(Male, "m")
 	ck(Female, "f")
 	ck(Unknown, "u")
-	ck(-127, "FirstLowerCaseValue(-127)")
-	ck(127, "FirstLowerCaseValue(127)")
+	ck(-127, "")
+	ck(127, "")
 }
 
 func ck(value FirstLowerCaseValue, str string) {

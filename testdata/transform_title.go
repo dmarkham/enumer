@@ -14,8 +14,8 @@ func main() {
 	ck(titlecasevalueone, "Titlecasevalueone")
 	ck(titlecasevaluetwo, "Titlecasevaluetwo")
 	ck(titlecasevaluethree, "Titlecasevaluethree")
-	ck(-127, "TitleCaseValue(-127)")
-	ck(127, "TitleCaseValue(127)")
+	ck(-127, "")
+	ck(127, "")
 }
 
 func ck(value TitleCaseValue, str string) {

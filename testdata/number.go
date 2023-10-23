@@ -24,7 +24,7 @@ func main() {
 	ck(Two, "Two")
 	ck(Three, "Three")
 	ck(AnotherOne, "One")
-	ck(127, "Number(127)")
+	ck(127, "")
 }
 
 func ck(num Number, str string) {

@@ -20,8 +20,8 @@ func main() {
 	ck(Zero, "Zero")
 	ck(One, "One")
 	ck(Two, "Two")
-	ck(3, "Unum2(3)")
-	ck(255, "Unum2(255)")
+	ck(3, "")
+	ck(255, "")
 }
 
 func ck(unum Unum2, str string) {

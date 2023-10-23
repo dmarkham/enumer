@@ -5,11 +5,16 @@ var _DayIndex = [...]uint8{0, 6, 13, 22, 30, 36, 44, 50}
 
 const _DayLowerName = "mondaytuesdaywednesdaythursdayfridaysaturdaysunday"
 
-func (i Day) String() string {
+func (i Day) string() (string, error) {
 	if i < 0 || i >= Day(len(_DayIndex)-1) {
-		return fmt.Sprintf("Day(%d)", i)
+		return "", fmt.Errorf("value is out of enum range")
 	}
-	return _DayName[_DayIndex[i]:_DayIndex[i+1]]
+	return _DayName[_DayIndex[i]:_DayIndex[i+1]], nil
+}
+
+func (i Day) String() string {
+	val, _ := i.string()
+	return val
 }
 
 // An "invalid array index" compiler error signifies that the constant values have changed.

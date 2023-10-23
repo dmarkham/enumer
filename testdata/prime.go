@@ -29,11 +29,11 @@ const (
 )
 
 func main() {
-	ck(0, "Prime(0)")
-	ck(1, "Prime(1)")
+	ck(0, "")
+	ck(1, "")
 	ck(p2, "p2")
 	ck(p3, "p3")
-	ck(4, "Prime(4)")
+	ck(4, "")
 	ck(p5, "p5")
 	ck(p7, "p7")
 	ck(p77, "p7")
@@ -46,7 +46,7 @@ func main() {
 	ck(p37, "p37")
 	ck(p41, "p41")
 	ck(p43, "p43")
-	ck(44, "Prime(44)")
+	ck(44, "")
 }
 
 func ck(prime Prime, str string) {

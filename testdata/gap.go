@@ -22,19 +22,19 @@ const (
 )
 
 func main() {
-	ck(0, "Gap(0)")
-	ck(1, "Gap(1)")
+	ck(0, "")
+	ck(1, "")
 	ck(Two, "Two")
 	ck(Three, "Three")
-	ck(4, "Gap(4)")
+	ck(4, "")
 	ck(Five, "Five")
 	ck(Six, "Six")
 	ck(Seven, "Seven")
 	ck(Eight, "Eight")
 	ck(Nine, "Nine")
-	ck(10, "Gap(10)")
+	ck(10, "")
 	ck(Eleven, "Eleven")
-	ck(12, "Gap(12)")
+	ck(12, "")
 }
 
 func ck(gap Gap, str string) {

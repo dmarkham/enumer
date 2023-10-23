@@ -25,7 +25,7 @@ func (i Gap) String() string {
 	case i == 11:
 		return _GapName_2
 	default:
-		return fmt.Sprintf("Gap(%d)", i)
+		return ""
 	}
 }
 

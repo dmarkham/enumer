@@ -22,13 +22,13 @@ const (
 )
 
 func main() {
-	ck(^Unum(0)-3, "Unum(252)")
+	ck(^Unum(0)-3, "")
 	ck(m_2, "m_2")
 	ck(m_1, "m_1")
 	ck(m0, "m0")
 	ck(m1, "m1")
 	ck(m2, "m2")
-	ck(3, "Unum(3)")
+	ck(3, "")
 }
 
 func ck(unum Unum, str string) {
