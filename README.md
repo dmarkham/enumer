@@ -3,7 +3,7 @@
 
 Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).
 It started as a fork of [Rob Pike’s Stringer tool](https://godoc.org/golang.org/x/tools/cmd/stringer)
-maintained by [Álvaro López Espinosa](https://github.com/alvaroloes/enumer). 
+maintained by [Álvaro López Espinosa](https://github.com/alvaroloes/enumer).
 This was again forked here as (https://github.com/dmarkham/enumer) picking up where Álvaro left off.
 
 
@@ -40,6 +40,8 @@ Flags:
         comma-separated list of type names; must be set
   -values
     	if true, alternative string values method will be generated. Default: false
+  -validate
+      if true, a `Validate() error` method will be generated. Default: false
   -yaml
         if true, yaml marshaling methods will be generated. Default: false
 ```
