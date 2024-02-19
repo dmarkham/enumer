@@ -40,12 +40,7 @@ func %[1]sStrings() []string {
 //	[1]: type name
 const stringBelongsMethodLoop = `// IsA%[1]s returns "true" if the value is listed in the enum definition. "false" otherwise
 func (i %[1]s) IsA%[1]s() bool {
-	for _, v := range _%[1]sValues {
-		if i == v {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(_%[1]sValues, i)
 }
 `
 
