@@ -30,9 +30,7 @@ func %[1]sValues() []%[1]s {
 //	[1]: type name
 const stringsMethod = `// %[1]sStrings returns a slice of all String values of the enum
 func %[1]sStrings() []string {
-	strs := make([]string, len(_%[1]sNames))
-	copy(strs, _%[1]sNames)
-	return strs
+	return slices.Clone(_%[1]sNames)
 }
 `
 
