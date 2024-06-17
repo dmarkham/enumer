@@ -25,6 +25,8 @@ Flags:
         if true, json marshaling methods will be generated. Default: false
   -linecomment
         use line comment text as printed text when present
+  -tostring
+        if true, ToString function that returns an number-based string will be generated. Default: false
   -output string
         output file name; default srcdir/<type>_string.go
   -sql
@@ -70,6 +72,9 @@ When Enumer is applied to a type, it will generate:
   the enum conform to the `gopkg.in/yaml.v2.Marshaler` and `gopkg.in/yaml.v2.Unmarshaler` interfaces.
 - When the flag `sql` is provided, the methods for implementing the `Scanner` and `Valuer` interfaces.
   Useful when storing the enum in a database.
+- When the flag `tostring` is provided, the methods for implementing the `ToString` interfaces.
+  the `ToString` interface, Instead of an enumerated string, get a defined number-based string.
+
 
 
 For example, if we have an enum type called `Pill`,
