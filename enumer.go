@@ -212,3 +212,52 @@ func (i *%[1]s) UnmarshalYAML(unmarshal func(interface{}) error) error {
 func (g *Generator) buildYAMLMethods(runs [][]Value, typeName string, runsThreshold int) {
 	g.Printf(yamlMethods, typeName)
 }
+
+// Arguments to format are:
+//	[1]: type name
+const xmlMethods = `
+// MarshalXML implements a XML Marshaller for %[1]s
+func (i %[1]s) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return e.EncodeElement(i.String(), start) 
+}
+
+// UnmarshalXML implements a XML Unmarshaler for %[1]s
+func (i *%[1]s) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var s string
+	var err error
+	if err = d.DecodeElement(&s, &start); err != nil {
+		return err
+	}
+
+	*i, err = %[1]sString(s)
+	return err
+}
+`
+
+func (g *Generator) buildXMLMethods(runs [][]Value, typeName string, runsThreshold int) {
+	g.Printf(xmlMethods, typeName)
+}
+
+// Arguments to format are:
+//	[1]: type name
+const xmlAttrMethods = `
+// MarshalXMLAttr implements a XML Attribute Marshaller for %[1]s
+func (i %[1]s) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	return xml.Attr{
+		Name: name,
+		Value: i.String(),
+	}, nil
+}
+
+// UnmarshalXMLAttr implements a XML Attribute Unmarshaler for %[1]s
+func (i *%[1]s) UnmarshalXMLAttr(attr xml.Attr) error {
+	var err error
+
+	*i, err = %[1]sString(attr.Value)
+	return err
+}
+`
+
+func (g *Generator) buildXMLAttrMethods(runs [][]Value, typeName string, runsThreshold int) {
+	g.Printf(xmlAttrMethods, typeName)
+}
