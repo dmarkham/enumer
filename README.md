@@ -19,6 +19,8 @@ Flags:
         transform each item name by adding a prefix. Default: ""
   -comment value
         comments to include in generated code, can repeat. Default: ""
+  -dynamodbav
+        if true, DynamoDB attribute values marshaling methods will be generated. Default: false
   -gqlgen
         if true, GraphQL marshaling methods for gqlgen will be generated. Default: false
   -json

@@ -1,0 +1,140 @@
+
+const _PrimeName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
+const _PrimeLowerName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
+
+var _PrimeMap = map[Prime]string{
+	2:  _PrimeName[0:2],
+	3:  _PrimeName[2:4],
+	5:  _PrimeName[4:6],
+	7:  _PrimeName[6:8],
+	11: _PrimeName[8:11],
+	13: _PrimeName[11:14],
+	17: _PrimeName[14:17],
+	19: _PrimeName[17:20],
+	23: _PrimeName[20:23],
+	29: _PrimeName[23:26],
+	31: _PrimeName[26:29],
+	41: _PrimeName[29:32],
+	43: _PrimeName[32:35],
+}
+
+func (i Prime) String() string {
+	if str, ok := _PrimeMap[i]; ok {
+		return str
+	}
+	return fmt.Sprintf("Prime(%d)", i)
+}
+
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _PrimeNoOp() {
+	var x [1]struct{}
+	_ = x[p2-(2)]
+	_ = x[p3-(3)]
+	_ = x[p5-(5)]
+	_ = x[p7-(7)]
+	_ = x[p11-(11)]
+	_ = x[p13-(13)]
+	_ = x[p17-(17)]
+	_ = x[p19-(19)]
+	_ = x[p23-(23)]
+	_ = x[p29-(29)]
+	_ = x[p37-(31)]
+	_ = x[p41-(41)]
+	_ = x[p43-(43)]
+}
+
+var _PrimeValues = []Prime{p2, p3, p5, p7, p11, p13, p17, p19, p23, p29, p37, p41, p43}
+
+var _PrimeNameToValueMap = map[string]Prime{
+	_PrimeName[0:2]:        p2,
+	_PrimeLowerName[0:2]:   p2,
+	_PrimeName[2:4]:        p3,
+	_PrimeLowerName[2:4]:   p3,
+	_PrimeName[4:6]:        p5,
+	_PrimeLowerName[4:6]:   p5,
+	_PrimeName[6:8]:        p7,
+	_PrimeLowerName[6:8]:   p7,
+	_PrimeName[8:11]:       p11,
+	_PrimeLowerName[8:11]:  p11,
+	_PrimeName[11:14]:      p13,
+	_PrimeLowerName[11:14]: p13,
+	_PrimeName[14:17]:      p17,
+	_PrimeLowerName[14:17]: p17,
+	_PrimeName[17:20]:      p19,
+	_PrimeLowerName[17:20]: p19,
+	_PrimeName[20:23]:      p23,
+	_PrimeLowerName[20:23]: p23,
+	_PrimeName[23:26]:      p29,
+	_PrimeLowerName[23:26]: p29,
+	_PrimeName[26:29]:      p37,
+	_PrimeLowerName[26:29]: p37,
+	_PrimeName[29:32]:      p41,
+	_PrimeLowerName[29:32]: p41,
+	_PrimeName[32:35]:      p43,
+	_PrimeLowerName[32:35]: p43,
+}
+
+var _PrimeNames = []string{
+	_PrimeName[0:2],
+	_PrimeName[2:4],
+	_PrimeName[4:6],
+	_PrimeName[6:8],
+	_PrimeName[8:11],
+	_PrimeName[11:14],
+	_PrimeName[14:17],
+	_PrimeName[17:20],
+	_PrimeName[20:23],
+	_PrimeName[23:26],
+	_PrimeName[26:29],
+	_PrimeName[29:32],
+	_PrimeName[32:35],
+}
+
+// PrimeString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func PrimeString(s string) (Prime, error) {
+	if val, ok := _PrimeNameToValueMap[s]; ok {
+		return val, nil
+	}
+
+	if val, ok := _PrimeNameToValueMap[strings.ToLower(s)]; ok {
+		return val, nil
+	}
+	return 0, fmt.Errorf("%s does not belong to Prime values", s)
+}
+
+// PrimeValues returns all values of the enum
+func PrimeValues() []Prime {
+	return _PrimeValues
+}
+
+// PrimeStrings returns a slice of all String values of the enum
+func PrimeStrings() []string {
+	strs := make([]string, len(_PrimeNames))
+	copy(strs, _PrimeNames)
+	return strs
+}
+
+// IsAPrime returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Prime) IsAPrime() bool {
+	_, ok := _PrimeMap[i]
+	return ok
+}
+
+// MarshalDynamoDBAttributeValue implements the attributevalue.Marshaler interface for Prime
+func (i Prime) MarshalDynamoDBAttributeValue() (types.AttributeValue, error) {
+	return &types.AttributeValueMemberS{Value: i.String()}, nil
+}
+
+// UnmarshalDynamoDBAttributeValue implements the attributevalue.Unmarshaler interface for Prime
+func (i *Prime) UnmarshalDynamoDBAttributeValue(value types.AttributeValue) error {
+	avS, ok := value.(*types.AttributeValueMemberS)
+	if !ok {
+		return fmt.Errorf("Prime should be a AttributeValueMemberS, got %T", value)
+	}
+
+	var err error
+	*i, err = PrimeString(avS.Value)
+	return err
+}
