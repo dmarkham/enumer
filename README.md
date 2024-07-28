@@ -191,6 +191,7 @@ name := MyTypeValue.String() // name => "my_type_value"
 - first-lower (same as first only lower case)
 - first-upper (same as first only upper case)
 - whitespace
+- whitespace-upper (same as whitespace only upper case)
 
 ## How to use
 

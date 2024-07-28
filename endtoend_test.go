@@ -4,6 +4,7 @@
 
 // go command is not available on android
 
+//go:build !android
 // +build !android
 
 package main
@@ -110,6 +111,9 @@ func TestEndToEnd(t *testing.T) {
 		case "transform_whitespace.go":
 			typeName = "WhitespaceSeparatedValue"
 			transformNameMethod = "whitespace"
+		case "transform_whitespace_upper.go":
+			typeName = "WhitespaceUpperSeparatedValue"
+			transformNameMethod = "whitespace-upper"
 		default:
 			typeName = fmt.Sprintf("%c%s", name[0]+'A'-'a', name[1:len(name)-len(".go")])
 			transformNameMethod = "noop"
