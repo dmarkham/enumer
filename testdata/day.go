@@ -28,8 +28,8 @@ func main() {
 	ck(Friday, "Friday")
 	ck(Saturday, "Saturday")
 	ck(Sunday, "Sunday")
-	ck(-127, "Day(-127)")
-	ck(127, "Day(127)")
+	ck(-127, "")
+	ck(127, "")
 	ckDayString(Sunday, "Sunday")
 	ckDayString(Sunday, "sunday")
 

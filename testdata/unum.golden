@@ -19,7 +19,7 @@ func (i Unum) String() string {
 		i -= 253
 		return _UnumName_1[_UnumIndex_1[i]:_UnumIndex_1[i+1]]
 	default:
-		return fmt.Sprintf("Unum(%d)", i)
+		return ""
 	}
 }
 

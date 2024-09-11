@@ -14,8 +14,8 @@ func main() {
 	ck(KebabUpperCaseValueOne, "KEBAB-UPPER-CASE-VALUE-ONE")
 	ck(KebabUpperCaseValueTwo, "KEBAB-UPPER-CASE-VALUE-TWO")
 	ck(KebabUpperCaseValueThree, "KEBAB-UPPER-CASE-VALUE-THREE")
-	ck(-127, "KebabUpperCaseValue(-127)")
-	ck(127, "KebabUpperCaseValue(127)")
+	ck(-127, "")
+	ck(127, "")
 }
 
 func ck(value KebabUpperCaseValue, str string) {
