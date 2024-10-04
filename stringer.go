@@ -53,7 +53,7 @@ var (
 	altValuesFunc   = flag.Bool("values", false, "if true, alternative string values method will be generated. Default: false")
 	output          = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
 	transformMethod = flag.String("transform", "noop", "enum item name transformation method. Default: noop")
-	trimPrefix      = flag.String("trimprefix", "", "transform each item name by removing a prefix. Default: \"\"")
+	trimPrefix      = flag.String("trimprefix", "", "transform each item name by removing a prefix or comma separated list of prefixes. Default: \"\"")
 	addPrefix       = flag.String("addprefix", "", "transform each item name by adding a prefix. Default: \"\"")
 	linecomment     = flag.Bool("linecomment", false, "use line comment text as printed text when present")
 )
@@ -774,9 +774,9 @@ func (g *Generator) buildOneRun(runs [][]Value, typeName string) {
 }
 
 // Arguments to format are:
-// 	[1]: type name
-// 	[2]: size of index element (8 for uint8 etc.)
-// 	[3]: less than zero check (for signed types)
+// [1]: type name
+// [2]: size of index element (8 for uint8 etc.)
+// [3]: less than zero check (for signed types)
 const stringOneRun = `func (i %[1]s) String() string {
 	if %[3]si >= %[1]s(len(_%[1]sIndex)-1) {
 		return fmt.Sprintf("%[1]s(%%d)", i)
@@ -786,10 +786,10 @@ const stringOneRun = `func (i %[1]s) String() string {
 `
 
 // Arguments to format are:
-// 	[1]: type name
-// 	[2]: lowest defined value for type, as a string
-// 	[3]: size of index element (8 for uint8 etc.)
-// 	[4]: less than zero check (for signed types)
+// [1]: type name
+// [2]: lowest defined value for type, as a string
+// [3]: size of index element (8 for uint8 etc.)
+// [4]: less than zero check (for signed types)
 const stringOneRunWithOffset = `func (i %[1]s) String() string {
 	i -= %[2]s
 	if %[4]si >= %[1]s(len(_%[1]sIndex)-1) {
