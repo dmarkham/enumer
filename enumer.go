@@ -20,6 +20,18 @@ func %[1]sString(s string) (%[1]s, error) {
 
 // Arguments to format are:
 //	[1]: type name
+const stringNameToValueMethodCaseSensitive = `// %[1]sString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func %[1]sString(s string) (%[1]s, error) {
+	if val, ok := _%[1]sNameToValueMap[s]; ok {
+		return val, nil
+	}
+	return 0, fmt.Errorf("%%s does not belong to %[1]s values", s)
+}
+`
+
+// Arguments to format are:
+//	[1]: type name
 const stringValuesMethod = `// %[1]sValues returns all values of the enum
 func %[1]sValues() []%[1]s {
 	return _%[1]sValues
@@ -70,7 +82,7 @@ func (g *Generator) buildAltStringValuesMethod(typeName string) {
 	g.Printf(altStringValuesMethod, typeName)
 }
 
-func (g *Generator) buildBasicExtras(runs [][]Value, typeName string, runsThreshold int) {
+func (g *Generator) buildBasicExtras(runs [][]Value, typeName string, runsThreshold int, caseSensitive bool) {
 	// At this moment, either "g.declareIndexAndNameVars()" or "g.declareNameVars()" has been called
 
 	// Print the slice of values
@@ -83,13 +95,17 @@ func (g *Generator) buildBasicExtras(runs [][]Value, typeName string, runsThresh
 	g.Printf("}\n\n")
 
 	// Print the map between name and value
-	g.printValueMap(runs, typeName, runsThreshold)
+	g.printValueMap(runs, typeName, runsThreshold, caseSensitive)
 
 	// Print the slice of names
 	g.printNamesSlice(runs, typeName, runsThreshold)
 
 	// Print the basic extra methods
-	g.Printf(stringNameToValueMethod, typeName)
+	if caseSensitive {
+		g.Printf(stringNameToValueMethodCaseSensitive, typeName)
+	} else {
+		g.Printf(stringNameToValueMethod, typeName)
+	}
 	g.Printf(stringValuesMethod, typeName)
 	g.Printf(stringsMethod, typeName)
 	if len(runs) <= runsThreshold {
@@ -99,7 +115,7 @@ func (g *Generator) buildBasicExtras(runs [][]Value, typeName string, runsThresh
 	}
 }
 
-func (g *Generator) printValueMap(runs [][]Value, typeName string, runsThreshold int) {
+func (g *Generator) printValueMap(runs [][]Value, typeName string, runsThreshold int, caseSensitive bool) {
 	thereAreRuns := len(runs) > 1 && len(runs) <= runsThreshold
 	g.Printf("\nvar _%sNameToValueMap = map[string]%s{\n", typeName, typeName)
 
@@ -115,7 +131,9 @@ func (g *Generator) printValueMap(runs [][]Value, typeName string, runsThreshold
 
 		for _, value := range values {
 			g.Printf("\t_%sName%s[%d:%d]: %s,\n", typeName, runID, n, n+len(value.name), value.originalName)
-			g.Printf("\t_%sLowerName%s[%d:%d]: %s,\n", typeName, runID, n, n+len(value.name), value.originalName)
+			if !caseSensitive {
+				g.Printf("\t_%sLowerName%s[%d:%d]: %s,\n", typeName, runID, n, n+len(value.name), value.originalName)
+			}
 			n += len(value.name)
 		}
 	}
