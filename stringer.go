@@ -56,6 +56,7 @@ var (
 	trimPrefix      = flag.String("trimprefix", "", "transform each item name by removing a prefix or comma separated list of prefixes. Default: \"\"")
 	addPrefix       = flag.String("addprefix", "", "transform each item name by adding a prefix. Default: \"\"")
 	linecomment     = flag.Bool("linecomment", false, "use line comment text as printed text when present")
+	caseSensitive   = flag.Bool("casesensitive", false, "preserve case when creating a value from a string")
 )
 
 var comments arrayFlags
@@ -135,7 +136,7 @@ func main() {
 
 	// Run generate for each type.
 	for _, typeName := range typs {
-		g.generate(typeName, *json, *yaml, *sql, *text, *gqlgen, *transformMethod, *trimPrefix, *addPrefix, *linecomment, *altValuesFunc)
+		g.generate(typeName, *json, *yaml, *sql, *text, *gqlgen, *transformMethod, *trimPrefix, *addPrefix, *linecomment, *altValuesFunc, *caseSensitive)
 	}
 
 	// Format the output.
@@ -415,7 +416,8 @@ func (g *Generator) prefixValueNames(values []Value, prefix string) {
 // generate produces the String method for the named type.
 func (g *Generator) generate(typeName string,
 	includeJSON, includeYAML, includeSQL, includeText, includeGQLGen bool,
-	transformMethod string, trimPrefix string, addPrefix string, lineComment bool, includeValuesMethod bool) {
+	transformMethod string, trimPrefix string, addPrefix string, lineComment bool, includeValuesMethod bool,
+	caseSensitive bool) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
 		file.lineComment = lineComment
@@ -456,11 +458,11 @@ func (g *Generator) generate(typeName string,
 	const runsThreshold = 10
 	switch {
 	case len(runs) == 1:
-		g.buildOneRun(runs, typeName)
+		g.buildOneRun(runs, typeName, caseSensitive)
 	case len(runs) <= runsThreshold:
-		g.buildMultipleRuns(runs, typeName)
+		g.buildMultipleRuns(runs, typeName, caseSensitive)
 	default:
-		g.buildMap(runs, typeName)
+		g.buildMap(runs, typeName, caseSensitive)
 	}
 	if includeValuesMethod {
 		g.buildAltStringValuesMethod(typeName)
@@ -468,7 +470,7 @@ func (g *Generator) generate(typeName string,
 
 	g.buildNoOpOrderChangeDetect(runs, typeName)
 
-	g.buildBasicExtras(runs, typeName, runsThreshold)
+	g.buildBasicExtras(runs, typeName, runsThreshold, caseSensitive)
 	if includeJSON {
 		g.buildJSONMethods(runs, typeName, runsThreshold)
 	}
@@ -663,14 +665,16 @@ func usize(n int) int {
 
 // declareIndexAndNameVars declares the index slices and concatenated names
 // strings representing the runs of values.
-func (g *Generator) declareIndexAndNameVars(runs [][]Value, typeName string) {
+func (g *Generator) declareIndexAndNameVars(runs [][]Value, typeName string, caseSensitive bool) {
 	var indexes, names []string
 	for i, run := range runs {
 		index, n := g.createIndexAndNameDecl(run, typeName, fmt.Sprintf("_%d", i))
 		indexes = append(indexes, index)
 		names = append(names, n)
-		_, n = g.createLowerIndexAndNameDecl(run, typeName, fmt.Sprintf("_%d", i))
-		names = append(names, n)
+		if !caseSensitive {
+			_, n = g.createLowerIndexAndNameDecl(run, typeName, fmt.Sprintf("_%d", i))
+			names = append(names, n)
+		}
 	}
 	g.Printf("const (\n")
 	for _, n := range names {
@@ -685,12 +689,14 @@ func (g *Generator) declareIndexAndNameVars(runs [][]Value, typeName string) {
 }
 
 // declareIndexAndNameVar is the single-run version of declareIndexAndNameVars
-func (g *Generator) declareIndexAndNameVar(run []Value, typeName string) {
+func (g *Generator) declareIndexAndNameVar(run []Value, typeName string, caseSensitive bool) {
 	index, n := g.createIndexAndNameDecl(run, typeName, "")
 	g.Printf("const %s\n", n)
 	g.Printf("var %s\n", index)
-	index, n = g.createLowerIndexAndNameDecl(run, typeName, "")
-	g.Printf("const %s\n", n)
+	if !caseSensitive {
+		index, n = g.createLowerIndexAndNameDecl(run, typeName, "")
+		g.Printf("const %s\n", n)
+	}
 	//g.Printf("var %s\n", index)
 }
 
@@ -739,7 +745,7 @@ func (g *Generator) createIndexAndNameDecl(run []Value, typeName string, suffix 
 }
 
 // declareNameVars declares the concatenated names string representing all the values in the runs.
-func (g *Generator) declareNameVars(runs [][]Value, typeName string, suffix string) {
+func (g *Generator) declareNameVars(runs [][]Value, typeName string, suffix string, caseSensitive bool) {
 	g.Printf("const _%sName%s = \"", typeName, suffix)
 	for _, run := range runs {
 		for i := range run {
@@ -747,20 +753,22 @@ func (g *Generator) declareNameVars(runs [][]Value, typeName string, suffix stri
 		}
 	}
 	g.Printf("\"\n")
-	g.Printf("const _%sLowerName%s = \"", typeName, suffix)
-	for _, run := range runs {
-		for i := range run {
-			g.Printf("%s", strings.ToLower(run[i].name))
+	if !caseSensitive {
+		g.Printf("const _%sLowerName%s = \"", typeName, suffix)
+		for _, run := range runs {
+			for i := range run {
+				g.Printf("%s", strings.ToLower(run[i].name))
+			}
 		}
+		g.Printf("\"\n")
 	}
-	g.Printf("\"\n")
 }
 
 // buildOneRun generates the variables and String method for a single run of contiguous values.
-func (g *Generator) buildOneRun(runs [][]Value, typeName string) {
+func (g *Generator) buildOneRun(runs [][]Value, typeName string, caseSensitive bool) {
 	values := runs[0]
 	g.Printf("\n")
-	g.declareIndexAndNameVar(values, typeName)
+	g.declareIndexAndNameVar(values, typeName, caseSensitive)
 	// The generated code is simple enough to write as a Printf format.
 	lessThanZero := ""
 	if values[0].signed {
@@ -801,9 +809,9 @@ const stringOneRunWithOffset = `func (i %[1]s) String() string {
 
 // buildMultipleRuns generates the variables and String method for multiple runs of contiguous values.
 // For this pattern, a single Printf format won't do.
-func (g *Generator) buildMultipleRuns(runs [][]Value, typeName string) {
+func (g *Generator) buildMultipleRuns(runs [][]Value, typeName string, caseSensitive bool) {
 	g.Printf("\n")
-	g.declareIndexAndNameVars(runs, typeName)
+	g.declareIndexAndNameVars(runs, typeName, caseSensitive)
 	g.Printf("func (i %s) String() string {\n", typeName)
 	g.Printf("\tswitch {\n")
 	for i, values := range runs {
@@ -827,9 +835,9 @@ func (g *Generator) buildMultipleRuns(runs [][]Value, typeName string) {
 
 // buildMap handles the case where the space is so sparse a map is a reasonable fallback.
 // It's a rare situation but has simple code.
-func (g *Generator) buildMap(runs [][]Value, typeName string) {
+func (g *Generator) buildMap(runs [][]Value, typeName string, caseSensitive bool) {
 	g.Printf("\n")
-	g.declareNameVars(runs, typeName, "")
+	g.declareNameVars(runs, typeName, "", caseSensitive)
 	g.Printf("\nvar _%sMap = map[%s]string{\n", typeName, typeName)
 	n := 0
 	for _, values := range runs {
