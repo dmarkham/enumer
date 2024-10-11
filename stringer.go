@@ -121,7 +121,9 @@ func main() {
 	g.Printf("\n")
 	g.Printf("import (\n")
 	g.Printf("\t\"fmt\"\n")
-	g.Printf("\t\"strings\"\n")
+	if !*caseSensitive {
+		g.Printf("\t\"strings\"\n")
+	}
 	if *sql {
 		g.Printf("\t\"database/sql/driver\"\n")
 	}
