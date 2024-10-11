@@ -31,15 +31,18 @@ func _NumNoOp() {
 var _NumValues = []Num{m_2, m_1, m0, m1, m2}
 
 var _NumNameToValueMap = map[string]Num{
-	_NumName[0:3]:        m_2,
+	_NumName[0:3]:   m_2,
+	_NumName[3:6]:   m_1,
+	_NumName[6:8]:   m0,
+	_NumName[8:10]:  m1,
+	_NumName[10:12]: m2,
+}
+
+var _NumLowerNameToValueMap = map[string]Num{
 	_NumLowerName[0:3]:   m_2,
-	_NumName[3:6]:        m_1,
 	_NumLowerName[3:6]:   m_1,
-	_NumName[6:8]:        m0,
 	_NumLowerName[6:8]:   m0,
-	_NumName[8:10]:       m1,
 	_NumLowerName[8:10]:  m1,
-	_NumName[10:12]:      m2,
 	_NumLowerName[10:12]: m2,
 }
 
@@ -58,7 +61,7 @@ func NumString(s string) (Num, error) {
 		return val, nil
 	}
 
-	if val, ok := _NumNameToValueMap[strings.ToLower(s)]; ok {
+	if val, ok := _NumLowerNameToValueMap[strings.ToLower(s)]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Num values", s)

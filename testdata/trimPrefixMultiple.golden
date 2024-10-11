@@ -28,19 +28,22 @@ func _DayNoOp() {
 var _DayValues = []Day{DayMonday, NightTuesday, DayWednesday, NightThursday, DayFriday, NightSaturday, DaySunday}
 
 var _DayNameToValueMap = map[string]Day{
-	_DayName[0:6]:        DayMonday,
+	_DayName[0:6]:   DayMonday,
+	_DayName[6:13]:  NightTuesday,
+	_DayName[13:22]: DayWednesday,
+	_DayName[22:30]: NightThursday,
+	_DayName[30:36]: DayFriday,
+	_DayName[36:44]: NightSaturday,
+	_DayName[44:50]: DaySunday,
+}
+
+var _DayLowerNameToValueMap = map[string]Day{
 	_DayLowerName[0:6]:   DayMonday,
-	_DayName[6:13]:       NightTuesday,
 	_DayLowerName[6:13]:  NightTuesday,
-	_DayName[13:22]:      DayWednesday,
 	_DayLowerName[13:22]: DayWednesday,
-	_DayName[22:30]:      NightThursday,
 	_DayLowerName[22:30]: NightThursday,
-	_DayName[30:36]:      DayFriday,
 	_DayLowerName[30:36]: DayFriday,
-	_DayName[36:44]:      NightSaturday,
 	_DayLowerName[36:44]: NightSaturday,
-	_DayName[44:50]:      DaySunday,
 	_DayLowerName[44:50]: DaySunday,
 }
 
@@ -61,7 +64,7 @@ func DayString(s string) (Day, error) {
 		return val, nil
 	}
 
-	if val, ok := _DayNameToValueMap[strings.ToLower(s)]; ok {
+	if val, ok := _DayLowerNameToValueMap[strings.ToLower(s)]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Day values", s)
