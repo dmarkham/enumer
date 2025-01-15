@@ -65,6 +65,17 @@ const altStringValuesMethod = `func (%[1]s) Values() []string {
 }
 `
 
+// Arguments to format are:
+//	[1]: type name
+const validateMethod = `// Validate returns an error if the value is not listed in the enum definition.
+func (i %[1]s) Validate() error {
+	if !i.IsA%[1]s() {
+		return fmt.Errorf("%%v is not a valid value for %[1]s values", i)
+	}
+	return nil
+}
+`
+
 func (g *Generator) buildAltStringValuesMethod(typeName string) {
 	g.Printf("\n")
 	g.Printf(altStringValuesMethod, typeName)
@@ -211,4 +222,8 @@ func (i *%[1]s) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 func (g *Generator) buildYAMLMethods(runs [][]Value, typeName string, runsThreshold int) {
 	g.Printf(yamlMethods, typeName)
+}
+
+func (g *Generator) buildValidateMethod(typeName string) {
+	g.Printf(validateMethod, typeName)
 }
