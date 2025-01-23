@@ -1,6 +1,7 @@
 package main
 
 // Arguments to format are:
+//
 //	[1]: type name
 const gqlgenMethods = `
 // MarshalGQL implements the graphql.Marshaler interface for %[1]s

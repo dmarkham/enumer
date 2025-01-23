@@ -21,7 +21,7 @@ import (
 type Golden struct {
 	name  string
 	input string // input; the package clause is provided when running the test.
-	//output string // expected output.
+	// output string // expected output.
 }
 
 var golden = []Golden{
@@ -36,6 +36,7 @@ var golden = []Golden{
 var goldenJSON = []Golden{
 	{"primeJson", primeJsonIn},
 }
+
 var goldenText = []Golden{
 	{"primeText", primeTextIn},
 }
@@ -354,8 +355,8 @@ func TestGolden(t *testing.T) {
 
 func runGoldenTest(t *testing.T, test Golden,
 	generateJSON, generateYAML, generateSQL, generateText, linecomment, generateGQLGen, generateValuesMethod bool,
-	trimPrefix string, prefix string) {
-
+	trimPrefix string, prefix string,
+) {
 	var g Generator
 	file := test.name + ".go"
 	input := "package test\n" + test.input
@@ -363,7 +364,7 @@ func runGoldenTest(t *testing.T, test Golden,
 	dir := t.TempDir()
 
 	absFile := filepath.Join(dir, file)
-	err := os.WriteFile(absFile, []byte(input), 0644)
+	err := os.WriteFile(absFile, []byte(input), 0o644)
 	if err != nil {
 		t.Error(err)
 	}
