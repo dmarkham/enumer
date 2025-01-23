@@ -12,8 +12,10 @@ import (
 )
 
 // Helpers to save typing in the test cases.
-type u []uint64
-type uu [][]uint64
+type (
+	u  []uint64
+	uu [][]uint64
+)
 
 type SplitTest struct {
 	input  u
