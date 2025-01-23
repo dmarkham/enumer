@@ -244,7 +244,7 @@ type Package struct {
 
 // parsePackage analyzes the single package constructed from the patterns and tags.
 // parsePackage exits if there is an error.
-func (g *Generator) parsePackage(patterns []string, tags []string) {
+func (g *Generator) parsePackage(patterns, tags []string) {
 	cfg := &packages.Config{
 		Mode: packages.LoadSyntax,
 		// TODO: Need to think about constants in test files. Maybe write type_string_test.go
@@ -414,7 +414,7 @@ func (g *Generator) prefixValueNames(values []Value, prefix string) {
 // generate produces the String method for the named type.
 func (g *Generator) generate(typeName string,
 	includeJSON, includeYAML, includeSQL, includeText, includeGQLGen bool,
-	transformMethod string, trimPrefix string, addPrefix string, lineComment bool, includeValuesMethod bool,
+	transformMethod, trimPrefix, addPrefix string, lineComment, includeValuesMethod bool,
 ) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
@@ -695,7 +695,7 @@ func (g *Generator) declareIndexAndNameVar(run []Value, typeName string) {
 }
 
 // createIndexAndNameDecl returns the pair of declarations for the run. The caller will add "const" and "var".
-func (g *Generator) createLowerIndexAndNameDecl(run []Value, typeName string, suffix string) (string, string) {
+func (g *Generator) createLowerIndexAndNameDecl(run []Value, typeName, suffix string) (string, string) {
 	b := new(bytes.Buffer)
 	indexes := make([]int, len(run))
 	for i := range run {
@@ -717,7 +717,7 @@ func (g *Generator) createLowerIndexAndNameDecl(run []Value, typeName string, su
 }
 
 // createIndexAndNameDecl returns the pair of declarations for the run. The caller will add "const" and "var".
-func (g *Generator) createIndexAndNameDecl(run []Value, typeName string, suffix string) (string, string) {
+func (g *Generator) createIndexAndNameDecl(run []Value, typeName, suffix string) (string, string) {
 	b := new(bytes.Buffer)
 	indexes := make([]int, len(run))
 	for i := range run {
@@ -739,7 +739,7 @@ func (g *Generator) createIndexAndNameDecl(run []Value, typeName string, suffix 
 }
 
 // declareNameVars declares the concatenated names string representing all the values in the runs.
-func (g *Generator) declareNameVars(runs [][]Value, typeName string, suffix string) {
+func (g *Generator) declareNameVars(runs [][]Value, typeName, suffix string) {
 	g.Printf("const _%sName%s = \"", typeName, suffix)
 	for _, run := range runs {
 		for i := range run {

@@ -355,7 +355,7 @@ func TestGolden(t *testing.T) {
 
 func runGoldenTest(t *testing.T, test Golden,
 	generateJSON, generateYAML, generateSQL, generateText, linecomment, generateGQLGen, generateValuesMethod bool,
-	trimPrefix string, prefix string,
+	trimPrefix, prefix string,
 ) {
 	var g Generator
 	file := test.name + ".go"
