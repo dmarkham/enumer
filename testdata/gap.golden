@@ -50,21 +50,24 @@ func _GapNoOp() {
 var _GapValues = []Gap{Two, Three, Five, Six, Seven, Eight, Nine, Eleven}
 
 var _GapNameToValueMap = map[string]Gap{
-	_GapName_0[0:3]:        Two,
+	_GapName_0[0:3]:   Two,
+	_GapName_0[3:8]:   Three,
+	_GapName_1[0:4]:   Five,
+	_GapName_1[4:7]:   Six,
+	_GapName_1[7:12]:  Seven,
+	_GapName_1[12:17]: Eight,
+	_GapName_1[17:21]: Nine,
+	_GapName_2[0:6]:   Eleven,
+}
+
+var _GapLowerNameToValueMap = map[string]Gap{
 	_GapLowerName_0[0:3]:   Two,
-	_GapName_0[3:8]:        Three,
 	_GapLowerName_0[3:8]:   Three,
-	_GapName_1[0:4]:        Five,
 	_GapLowerName_1[0:4]:   Five,
-	_GapName_1[4:7]:        Six,
 	_GapLowerName_1[4:7]:   Six,
-	_GapName_1[7:12]:       Seven,
 	_GapLowerName_1[7:12]:  Seven,
-	_GapName_1[12:17]:      Eight,
 	_GapLowerName_1[12:17]: Eight,
-	_GapName_1[17:21]:      Nine,
 	_GapLowerName_1[17:21]: Nine,
-	_GapName_2[0:6]:        Eleven,
 	_GapLowerName_2[0:6]:   Eleven,
 }
 
@@ -86,7 +89,7 @@ func GapString(s string) (Gap, error) {
 		return val, nil
 	}
 
-	if val, ok := _GapNameToValueMap[strings.ToLower(s)]; ok {
+	if val, ok := _GapLowerNameToValueMap[strings.ToLower(s)]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Gap values", s)
