@@ -56,6 +56,7 @@ var (
 	trimPrefix      = flag.String("trimprefix", "", "transform each item name by removing a prefix or comma separated list of prefixes. Default: \"\"")
 	addPrefix       = flag.String("addprefix", "", "transform each item name by adding a prefix. Default: \"\"")
 	linecomment     = flag.Bool("linecomment", false, "use line comment text as printed text when present")
+	customError     = flag.Bool("customerror", false, "if true, add a custom error type. Default: false")
 )
 
 var comments arrayFlags
@@ -131,11 +132,14 @@ func main() {
 		g.Printf("\t\"io\"\n")
 		g.Printf("\t\"strconv\"\n")
 	}
+	if *customError {
+		g.Printf("\t\"errors\"\n")
+	}
 	g.Printf(")\n")
 
 	// Run generate for each type.
 	for _, typeName := range typs {
-		g.generate(typeName, *json, *yaml, *sql, *text, *gqlgen, *transformMethod, *trimPrefix, *addPrefix, *linecomment, *altValuesFunc)
+		g.generate(typeName, *json, *yaml, *sql, *text, *gqlgen, *transformMethod, *trimPrefix, *addPrefix, *linecomment, *customError, *altValuesFunc)
 	}
 
 	// Format the output.
@@ -415,7 +419,7 @@ func (g *Generator) prefixValueNames(values []Value, prefix string) {
 // generate produces the String method for the named type.
 func (g *Generator) generate(typeName string,
 	includeJSON, includeYAML, includeSQL, includeText, includeGQLGen bool,
-	transformMethod string, trimPrefix string, addPrefix string, lineComment bool, includeValuesMethod bool) {
+	transformMethod string, trimPrefix string, addPrefix string, lineComment bool, customError bool, includeValuesMethod bool) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
 		file.lineComment = lineComment
@@ -468,7 +472,7 @@ func (g *Generator) generate(typeName string,
 
 	g.buildNoOpOrderChangeDetect(runs, typeName)
 
-	g.buildBasicExtras(runs, typeName, runsThreshold)
+	g.buildBasicExtras(runs, typeName, runsThreshold, customError)
 	if includeJSON {
 		g.buildJSONMethods(runs, typeName, runsThreshold)
 	}
