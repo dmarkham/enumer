@@ -1,10 +1,8 @@
 package main
 
-import "fmt"
-
-const customInvalidError = `// ErrInvalid%[1]s is a custom error type for %[1]s
-var ErrInvalid%[1]s = errors.New("invalid value for %[1]s")
-`
+import (
+	"fmt"
+)
 
 // Arguments to format are:
 //
@@ -99,15 +97,11 @@ func (g *Generator) buildBasicExtras(runs [][]Value, typeName string, runsThresh
 	g.printNamesSlice(runs, typeName, runsThreshold)
 
 	// Print the basic extra methods
+	stringNameToValueErr := fmt.Sprintf(`fmt.Errorf("%%s does not belong to %s values", s)`, typeName)
 	if customError {
-		g.Printf(customInvalidError, typeName)
+		stringNameToValueErr = `enumer.InvalidEnumValueError`
 	}
-
-	stringNameToValueErr := `fmt.Errorf("%%s does not belong to %s values", s)`
-	if customError {
-		stringNameToValueErr = `ErrInvalid%s`
-	}
-	g.Printf(stringNameToValueMethod, typeName, fmt.Sprintf(stringNameToValueErr, typeName))
+	g.Printf(stringNameToValueMethod, typeName, stringNameToValueErr)
 
 	g.Printf(stringValuesMethod, typeName)
 	g.Printf(stringsMethod, typeName)

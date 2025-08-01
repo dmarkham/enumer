@@ -42,7 +42,7 @@ Flags:
   -yaml
         if true, yaml marshaling methods will be generated. Default: false
   -customerror
-        if true, a custom error type will be generated. Default: false
+        if true, a custom error will be returned by the `<Type>String` function. Default: false
 ```
 
 

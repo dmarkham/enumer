@@ -18,7 +18,6 @@ import (
 	"go/importer"
 	"go/token"
 	"go/types"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -56,7 +55,7 @@ var (
 	trimPrefix      = flag.String("trimprefix", "", "transform each item name by removing a prefix or comma separated list of prefixes. Default: \"\"")
 	addPrefix       = flag.String("addprefix", "", "transform each item name by adding a prefix. Default: \"\"")
 	linecomment     = flag.Bool("linecomment", false, "use line comment text as printed text when present")
-	customError     = flag.Bool("customerror", false, "if true, add a custom error type. Default: false")
+	customError     = flag.Bool("customerror", false, "if true, a custom error will be returned by the `<Type>String` function. Default: false")
 )
 
 var comments arrayFlags
@@ -133,8 +132,9 @@ func main() {
 		g.Printf("\t\"strconv\"\n")
 	}
 	if *customError {
-		g.Printf("\t\"errors\"\n")
+		g.Printf("\n\t\"github.com/dmarkham/enumer/pkg/enumer\"\n")
 	}
+
 	g.Printf(")\n")
 
 	// Run generate for each type.
@@ -153,12 +153,11 @@ func main() {
 	}
 
 	// Write to tmpfile first
-	tmpFile, err := ioutil.TempFile(dir, fmt.Sprintf("%s_enumer_", typs[0]))
+	tmpFile, err := os.CreateTemp(dir, fmt.Sprintf("%s_enumer_", typs[0]))
 	if err != nil {
 		log.Fatalf("creating temporary file for output: %s", err)
 	}
-	_, err = tmpFile.Write(src)
-	if err != nil {
+	if _, err = tmpFile.Write(src); err != nil {
 		tmpFile.Close()
 		os.Remove(tmpFile.Name())
 		log.Fatalf("writing output: %s", err)
@@ -166,8 +165,7 @@ func main() {
 	tmpFile.Close()
 
 	// Rename tmpfile to output file
-	err = os.Rename(tmpFile.Name(), outputName)
-	if err != nil {
+	if err := os.Rename(tmpFile.Name(), outputName); err != nil {
 		log.Fatalf("moving tempfile to output file: %s", err)
 	}
 }

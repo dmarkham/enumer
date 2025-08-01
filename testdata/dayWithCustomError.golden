@@ -54,9 +54,6 @@ var _DayNames = []string{
 	_DayName[62:71],
 }
 
-// ErrInvalidDay is a custom error type for Day
-var ErrInvalidDay = errors.New("invalid value for Day")
-
 // DayString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func DayString(s string) (Day, error) {
@@ -67,7 +64,7 @@ func DayString(s string) (Day, error) {
 	if val, ok := _DayNameToValueMap[strings.ToLower(s)]; ok {
 		return val, nil
 	}
-	return 0, ErrInvalidDay
+	return 0, enumer.InvalidEnumValueError
 }
 
 // DayValues returns all values of the enum

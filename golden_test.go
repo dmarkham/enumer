@@ -10,7 +10,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -367,7 +366,7 @@ func runGoldenTest(t *testing.T, test Golden,
 	file := test.name + ".go"
 	input := "package test\n" + test.input
 
-	dir, err := ioutil.TempDir("", "stringer")
+	dir, err := os.MkdirTemp("", "stringer")
 	if err != nil {
 		t.Error(err)
 	}
@@ -379,7 +378,7 @@ func runGoldenTest(t *testing.T, test Golden,
 	}()
 
 	absFile := filepath.Join(dir, file)
-	err = ioutil.WriteFile(absFile, []byte(input), 0644)
+	err = os.WriteFile(absFile, []byte(input), 0644)
 	if err != nil {
 		t.Error(err)
 	}
@@ -394,7 +393,7 @@ func runGoldenTest(t *testing.T, test Golden,
 	if got != loadGolden(test.name) {
 		// Use this to help build a golden text when changes are needed
 		//goldenFile := fmt.Sprintf("./testdata/%v.golden", test.name)
-		//err = ioutil.WriteFile(goldenFile, []byte(got), 0644)
+		//err = os.WriteFile(goldenFile, []byte(got), 0644)
 		//if err != nil {
 		//	t.Error(err)
 		//}
@@ -403,12 +402,7 @@ func runGoldenTest(t *testing.T, test Golden,
 }
 
 func loadGolden(name string) string {
-	fh, err := os.Open("testdata/" + name + ".golden")
-	if err != nil {
-		return ""
-	}
-	defer fh.Close()
-	b, err := ioutil.ReadAll(fh)
+	b, err := os.ReadFile("testdata/" + name + ".golden")
 	if err != nil {
 		return ""
 	}
