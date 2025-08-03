@@ -1,0 +1,74 @@
+
+const _TypedErrorsValueName = "TypedErrorsValueOneTypedErrorsValueTwoTypedErrorsValueThree"
+
+var _TypedErrorsValueIndex = [...]uint8{0, 19, 38, 59}
+
+const _TypedErrorsValueLowerName = "typederrorsvalueonetypederrorsvaluetwotypederrorsvaluethree"
+
+func (i TypedErrorsValue) String() string {
+	if i < 0 || i >= TypedErrorsValue(len(_TypedErrorsValueIndex)-1) {
+		return fmt.Sprintf("TypedErrorsValue(%d)", i)
+	}
+	return _TypedErrorsValueName[_TypedErrorsValueIndex[i]:_TypedErrorsValueIndex[i+1]]
+}
+
+// An "invalid array index" compiler error signifies that the constant values have changed.
+// Re-run the stringer command to generate them again.
+func _TypedErrorsValueNoOp() {
+	var x [1]struct{}
+	_ = x[TypedErrorsValueOne-(0)]
+	_ = x[TypedErrorsValueTwo-(1)]
+	_ = x[TypedErrorsValueThree-(2)]
+}
+
+var _TypedErrorsValueValues = []TypedErrorsValue{TypedErrorsValueOne, TypedErrorsValueTwo, TypedErrorsValueThree}
+
+var _TypedErrorsValueNameToValueMap = map[string]TypedErrorsValue{
+	_TypedErrorsValueName[0:19]:       TypedErrorsValueOne,
+	_TypedErrorsValueLowerName[0:19]:  TypedErrorsValueOne,
+	_TypedErrorsValueName[19:38]:      TypedErrorsValueTwo,
+	_TypedErrorsValueLowerName[19:38]: TypedErrorsValueTwo,
+	_TypedErrorsValueName[38:59]:      TypedErrorsValueThree,
+	_TypedErrorsValueLowerName[38:59]: TypedErrorsValueThree,
+}
+
+var _TypedErrorsValueNames = []string{
+	_TypedErrorsValueName[0:19],
+	_TypedErrorsValueName[19:38],
+	_TypedErrorsValueName[38:59],
+}
+
+// TypedErrorsValueString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func TypedErrorsValueString(s string) (TypedErrorsValue, error) {
+	if val, ok := _TypedErrorsValueNameToValueMap[s]; ok {
+		return val, nil
+	}
+
+	if val, ok := _TypedErrorsValueNameToValueMap[strings.ToLower(s)]; ok {
+		return val, nil
+	}
+	return 0, errors.Join(enumerrs.ErrValueInvalid, fmt.Errorf("%s does not belong to TypedErrorsValue values", s))
+}
+
+// TypedErrorsValueValues returns all values of the enum
+func TypedErrorsValueValues() []TypedErrorsValue {
+	return _TypedErrorsValueValues
+}
+
+// TypedErrorsValueStrings returns a slice of all String values of the enum
+func TypedErrorsValueStrings() []string {
+	strs := make([]string, len(_TypedErrorsValueNames))
+	copy(strs, _TypedErrorsValueNames)
+	return strs
+}
+
+// IsATypedErrorsValue returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i TypedErrorsValue) IsATypedErrorsValue() bool {
+	for _, v := range _TypedErrorsValueValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}
