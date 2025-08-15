@@ -37,6 +37,8 @@ Flags:
         transform each item name by removing a prefix or comma separated list of prefixes. Default: ""
   -type string
         comma-separated list of type names; must be set
+  -typederrors
+        if true, errors from enumerrs/ will be errors.Join()-ed for errors.Is(...) to simplify invalid value handling. Default: false
   -values
         if true, alternative string values method will be generated. Default: false
   -yaml
@@ -70,6 +72,9 @@ When Enumer is applied to a type, it will generate:
   the enum conform to the `gopkg.in/yaml.v2.Marshaler` and `gopkg.in/yaml.v2.Unmarshaler` interfaces.
 - When the flag `sql` is provided, the methods for implementing the `Scanner` and `Valuer` interfaces.
   Useful when storing the enum in a database.
+- When the flag `typederrors` is provided, the string conversion functions will return errors wrapped with
+  `errors.Join()` containing a typed error from the `enumerrs` package. This allows you to use `errors.Is()` to
+  check for specific enum validation failures.
 
 
 For example, if we have an enum type called `Pill`,
@@ -200,7 +205,7 @@ For a module-aware repo with `enumer` in the `go.mod` file, generation can be ca
 //go:generate go run github.com/dmarkham/enumer -type=YOURTYPE
 ```
 
-There are four boolean flags: `json`, `text`, `yaml` and `sql`. You can use any combination of them (i.e. `enumer -type=Pill -json -text`),
+There are five boolean flags: `json`, `text`, `yaml`, `sql`, and `typederrors`. You can use any combination of them (i.e. `enumer -type=Pill -json -text -typederrors`),
 
 For enum string representation transformation the `transform` and `trimprefix` flags
 were added (i.e. `enumer -type=MyType -json -transform=snake`).
@@ -214,6 +219,28 @@ If a name doesn't have the prefix it will be passed unchanged.
 If a prefix is provided via the `addprefix` flag, it will be added to the start of each name (after trimming and after transforming).
 
 The boolean flag `values` will additionally create an alternative string values method `Values() []string` to fullfill the `EnumValues` interface of [ent](https://entgo.io/docs/schema-fields/#enum-fields).
+
+## Typed Error Handling
+
+When using the `typederrors` flag, you can handle enum validation errors specifically using `errors.Is()`:
+
+```go
+import (
+    "errors"
+    "github.com/dmarkham/enumer/enumerrs"
+)
+
+// This will return a typed error that can be checked
+pill, err := PillString("InvalidValue")
+if err != nil {
+    if errors.Is(err, enumerrs.ErrValueInvalid) {
+        // Handle invalid enum value specifically
+        fmt.Println("Invalid pill value provided")
+    }
+    // The error also contains a descriptive message
+    fmt.Printf("Error: %v\n", err)
+}
+```
 
 ## Inspiring projects
 
