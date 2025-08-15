@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22'
+
+    - name: Build binaries
+      run: |
+        mkdir -p ./cli/build
+        CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o ./cli/build/enumer.linux-amd64 .
+        CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -a -o ./cli/build/enumer.linux-arm64 .
+        CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -a -o ./cli/build/enumer.darwin-amd64 .
+        CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -a -o ./cli/build/enumer.darwin-arm64 .
+        CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -a -o ./cli/build/enumer.windows-amd64.exe .
+
+    - name: Create archives
+      run: |
+        cd ./cli/build
+        tar czf enumer.linux-amd64.tar.gz enumer.linux-amd64
+        tar czf enumer.darwin-amd64.tar.gz enumer.darwin-amd64
+        tar czf enumer.darwin-arm64.tar.gz enumer.darwin-arm64
+        tar czf enumer.windows-amd64.exe.tar.gz enumer.windows-amd64.exe
+
+    - name: Generate checksums
+      run: |
+        cd ./cli/build
+        shasum -a 256 *.tar.gz > sha256sum.txt
+        cat sha256sum.txt
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          cli/build/enumer.linux-amd64.tar.gz
+          cli/build/enumer.darwin-amd64.tar.gz
+          cli/build/enumer.darwin-arm64.tar.gz
+          cli/build/enumer.windows-amd64.exe.tar.gz
+          cli/build/sha256sum.txt
+        generate_release_notes: true
