@@ -31,7 +31,7 @@ jobs:
       run: |
         cd ./cli/build
         tar czf enumer.linux-amd64.tar.gz enumer.linux-amd64
-`        tar czf enumer.linux-arm64.tar.gz enumer.linux-arm64
+        tar czf enumer.linux-arm64.tar.gz enumer.linux-arm64
         tar czf enumer.darwin-amd64.tar.gz enumer.darwin-amd64
         tar czf enumer.darwin-arm64.tar.gz enumer.darwin-arm64
         tar czf enumer.windows-amd64.exe.tar.gz enumer.windows-amd64.exe
