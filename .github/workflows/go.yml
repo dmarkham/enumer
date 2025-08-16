@@ -19,10 +19,38 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.21'
+        go-version: '1.22'
 
     - name: Build
       run: go build -v ./...
 
     - name: Test
       run: go test -v ./...
+
+  golden-tests:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22'
+
+    - name: Run Golden Tests
+      run: go test -v -run TestGolden
+
+  end-to-end-tests:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22'
+
+    - name: Run End-to-End Tests
+      run: go test -v -run TestEndToEnd
