@@ -5,7 +5,6 @@
 // go command is not available on android
 
 //go:build !android
-// +build !android
 
 package main
 
@@ -13,7 +12,6 @@ import (
 	"fmt"
 	"go/build"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -22,11 +20,9 @@ import (
 	"testing"
 )
 
-var (
-	// GOEXE defines the executable file name suffix (".exe" on Windows, "" on other systems).
-	// Must be defined here, cannot be read from ENVIRONMENT variables
-	GOEXE = ""
-)
+// GOEXE defines the executable file name suffix (".exe" on Windows, "" on other systems).
+// Must be defined here, cannot be read from ENVIRONMENT variables
+var GOEXE = ""
 
 func init() {
 	// Set GOEXE for Windows platform
@@ -41,15 +37,11 @@ func init() {
 // binary panics if the String method for X is not correct, including for error cases.
 
 func TestEndToEnd(t *testing.T) {
-	dir, err := ioutil.TempDir("", "stringer")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.RemoveAll(dir)
+	dir := t.TempDir()
 
 	// Create stringer in temporary directory.
 	stringer := filepath.Join(dir, fmt.Sprintf("stringer%s", GOEXE))
-	err = run("go", "build", "-o", stringer)
+	err := run("go", "build", "-o", stringer)
 	if err != nil {
 		t.Fatalf("building stringer: %s", err)
 	}

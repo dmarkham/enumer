@@ -121,6 +121,7 @@ func (g *Generator) printValueMap(runs [][]Value, typeName string, runsThreshold
 	}
 	g.Printf("}\n\n")
 }
+
 func (g *Generator) printNamesSlice(runs [][]Value, typeName string, runsThreshold int) {
 	thereAreRuns := len(runs) > 1 && len(runs) <= runsThreshold
 	g.Printf("\nvar _%sNames = []string{\n", typeName)

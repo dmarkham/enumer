@@ -10,7 +10,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -21,7 +21,7 @@ import (
 type Golden struct {
 	name  string
 	input string // input; the package clause is provided when running the test.
-	//output string // expected output.
+	// output string // expected output.
 }
 
 var golden = []Golden{
@@ -36,6 +36,7 @@ var golden = []Golden{
 var goldenJSON = []Golden{
 	{"primeJson", primeJsonIn},
 }
+
 var goldenText = []Golden{
 	{"primeText", primeTextIn},
 }
@@ -369,25 +370,16 @@ func TestGolden(t *testing.T) {
 
 func runGoldenTest(t *testing.T, test Golden,
 	generateJSON, generateYAML, generateSQL, generateText, linecomment, generateGQLGen, generateValuesMethod bool,
-	trimPrefix string, prefix string, useTypedErrors bool) {
+	trimPrefix, prefix string, useTypedErrors bool) {
 
 	var g Generator
 	file := test.name + ".go"
 	input := "package test\n" + test.input
 
-	dir, err := os.MkdirTemp("", "stringer")
-	if err != nil {
-		t.Error(err)
-	}
-	defer func() {
-		err = os.RemoveAll(dir)
-		if err != nil {
-			t.Error(err)
-		}
-	}()
+	dir := t.TempDir()
 
 	absFile := filepath.Join(dir, file)
-	err = os.WriteFile(absFile, []byte(input), 0644)
+	err := os.WriteFile(absFile, []byte(input), 0o644)
 	if err != nil {
 		t.Error(err)
 	}
@@ -399,27 +391,31 @@ func runGoldenTest(t *testing.T, test Golden,
 	}
 	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, generateText, generateGQLGen, "noop", trimPrefix, prefix, linecomment, generateValuesMethod, useTypedErrors)
 	got := string(g.format())
-	if got != loadGolden(test.name) {
+	if expected := loadGolden(t, test.name); got != expected {
 		// Use this to help build a golden text when changes are needed
-		// goldenFile := fmt.Sprintf("./testdata/%v.golden", test.name)
-		// err = os.WriteFile(goldenFile, []byte(got), 0644)
-		// if err != nil {
-		// 	t.Error(err)
-		// }
-		t.Errorf("%s: got\n====\n%s====\nexpected\n====%s", test.name, got, loadGolden(test.name))
+		//goldenFile := fmt.Sprintf("./testdata/%v.golden", test.name)
+		//err = os.WriteFile(goldenFile, []byte(got), 0644)
+		//if err != nil {
+		//	t.Error(err)
+		//}
+		t.Errorf("%s: got\n====\n%s====\nexpected\n====%s", test.name, got, expected)
 	}
 }
 
-func loadGolden(name string) string {
+func loadGolden(t *testing.T, name string) string {
+	t.Helper()
+
 	fh, err := os.Open("testdata/" + name + ".golden")
 	if err != nil {
-		return ""
+		t.Fatalf("unable to open golden file for %s: %v", name, err)
 	}
-	defer fh.Close()
-	b, err := ioutil.ReadAll(fh)
-	if err != nil {
-		return ""
-	}
-	return string(b)
 
+	defer fh.Close()
+
+	b, err := io.ReadAll(fh)
+	if err != nil {
+		t.Fatalf("unable to read golden file for %s: %v", name, err)
+	}
+
+	return string(b)
 }
