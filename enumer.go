@@ -59,8 +59,7 @@ const altStringValuesMethod = `func (%[1]s) Values() []string {
 }
 `
 
-// Arguments to format are:
-//	[1]: type name
+// Arguments to format are: [1]: type name
 const validateMethod = `// Validate returns an error if the value is not listed in the enum definition.
 func (i %[1]s) Validate() error {
 	if !i.IsA%[1]s() {
