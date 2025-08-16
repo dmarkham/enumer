@@ -4,6 +4,7 @@
 
 // go command is not available on android
 
+//go:build !android
 // +build !android
 
 package main
@@ -75,6 +76,7 @@ func TestEndToEnd(t *testing.T) {
 		// Names are known to be ASCII and long enough.
 		var typeName string
 		var transformNameMethod string
+		var useTypedErrors bool
 
 		switch name {
 		case "transform_snake.go":
@@ -110,18 +112,22 @@ func TestEndToEnd(t *testing.T) {
 		case "transform_whitespace.go":
 			typeName = "WhitespaceSeparatedValue"
 			transformNameMethod = "whitespace"
+		case "typedErrors.go":
+			typeName = "TypedErrorsValue"
+			transformNameMethod = "noop"
+			useTypedErrors = true
 		default:
 			typeName = fmt.Sprintf("%c%s", name[0]+'A'-'a', name[1:len(name)-len(".go")])
 			transformNameMethod = "noop"
 		}
 
-		stringerCompileAndRun(t, dir, stringer, typeName, name, transformNameMethod)
+		stringerCompileAndRun(t, dir, stringer, typeName, name, transformNameMethod, useTypedErrors)
 	}
 }
 
 // stringerCompileAndRun runs stringer for the named file and compiles and
 // runs the target binary in directory dir. That binary will panic if the String method is incorrect.
-func stringerCompileAndRun(t *testing.T, dir, stringer, typeName, fileName, transformNameMethod string) {
+func stringerCompileAndRun(t *testing.T, dir, stringer, typeName, fileName, transformNameMethod string, useTypedErrors bool) {
 	t.Logf("run: %s %s\n", fileName, typeName)
 	source := filepath.Join(dir, fileName)
 	err := copy(source, filepath.Join("testdata", fileName))
@@ -130,7 +136,12 @@ func stringerCompileAndRun(t *testing.T, dir, stringer, typeName, fileName, tran
 	}
 	stringSource := filepath.Join(dir, typeName+"_string.go")
 	// Run stringer in temporary directory.
-	err = run(stringer, "-type", typeName, "-output", stringSource, "-transform", transformNameMethod, source)
+	args := []string{"-type", typeName, "-output", stringSource, "-transform", transformNameMethod}
+	if useTypedErrors {
+		args = append(args, "-typederrors", "-values")
+	}
+	args = append(args, source)
+	err = run(stringer, args...)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -10,7 +10,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -82,6 +82,10 @@ var goldenFlagValue = []Golden{
 
 var goldenPflagValue = []Golden{
 	{"pflagvalue", dayIn},
+}
+
+var goldenTypedErrors = []Golden{
+	{"typedErrors", typedErrorsIn},
 }
 
 // Each example starts with "type XXX [u]int", with a single space separating them.
@@ -321,6 +325,14 @@ const (
 )
 `
 
+const typedErrorsIn = `type TypedErrorsValue int
+const (
+	TypedErrorsValueOne TypedErrorsValue = iota
+	TypedErrorsValueTwo
+	TypedErrorsValueThree
+)
+`
+
 func TestGolden(t *testing.T) {
 	for _, test := range golden {
 		runGoldenTest(t, test, generateOptions{
@@ -408,6 +420,13 @@ func TestGolden(t *testing.T) {
 			includePflagMethods: true,
 		})
 	}
+
+	for _, test := range goldenTypedErrors {
+		runGoldenTest(t, test, generateOptions{
+			transformMethod: "noop",
+			useTypedErrors:  true,
+		})
+	}
 }
 
 func runGoldenTest(t *testing.T, test Golden, opts generateOptions) {
@@ -417,7 +436,7 @@ func runGoldenTest(t *testing.T, test Golden, opts generateOptions) {
 	file := test.name + ".go"
 	input := "package test\n" + test.input
 
-	dir, err := ioutil.TempDir("", "stringer")
+	dir, err := os.MkdirTemp("", "stringer")
 	if err != nil {
 		t.Error(err)
 	}
@@ -429,7 +448,7 @@ func runGoldenTest(t *testing.T, test Golden, opts generateOptions) {
 	}()
 
 	absFile := filepath.Join(dir, file)
-	err = ioutil.WriteFile(absFile, []byte(input), 0644)
+	err = os.WriteFile(absFile, []byte(input), 0644)
 	if err != nil {
 		t.Error(err)
 	}
@@ -464,7 +483,7 @@ func loadGolden(name string) (string, error) {
 		return "", err
 	}
 	defer fh.Close()
-	b, err := ioutil.ReadAll(fh)
+	b, err := io.ReadAll(fh)
 	if err != nil {
 		return "", err
 	}

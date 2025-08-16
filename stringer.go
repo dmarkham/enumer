@@ -56,6 +56,7 @@ type generateOptions struct {
 	includeValuesMethod bool
 	includeFlagMethods  bool
 	includePflagMethods bool
+	useTypedErrors      bool
 }
 
 var (
@@ -81,6 +82,7 @@ func init() {
 	flag.StringVar(&opts.trimPrefix, "trimprefix", "", "transform each item name by removing a prefix or comma separated list of prefixes. Default: \"\"")
 	flag.StringVar(&opts.addPrefix, "addprefix", "", "transform each item name by adding a prefix. Default: \"\"")
 	flag.BoolVar(&opts.lineComment, "linecomment", false, "use line comment text as printed text when present")
+	flag.BoolVar(&opts.useTypedErrors, "typederrors", false, "if true, use typed errors for enum string conversion methods. Default: false")
 
 	flag.Var(&comments, "comment", "comments to include in generated code, can repeat. Default: \"\"")
 }
@@ -140,6 +142,10 @@ func main() {
 	g.Printf("package %s", g.pkg.name)
 	g.Printf("\n")
 	g.Printf("import (\n")
+	if opts.useTypedErrors {
+		g.Printf("\t\"errors\"\n")
+		g.Printf("\t\"github.com/dmarkham/enumer/enumerrs\"\n")
+	}
 	g.Printf("\t\"fmt\"\n")
 	g.Printf("\t\"strings\"\n")
 	if opts.includeSQL {
@@ -487,15 +493,15 @@ func (g *Generator) generate(typeName string, opts generateOptions) {
 
 	g.buildNoOpOrderChangeDetect(runs, typeName)
 
-	g.buildBasicExtras(runs, typeName, runsThreshold)
+	g.buildBasicExtras(runs, typeName, runsThreshold, opts.useTypedErrors)
 	if opts.includeJSON {
-		g.buildJSONMethods(runs, typeName, runsThreshold)
+		g.buildJSONMethods(runs, typeName, runsThreshold, opts.useTypedErrors)
 	}
 	if opts.includeText {
-		g.buildTextMethods(runs, typeName, runsThreshold)
+		g.buildTextMethods(runs, typeName, runsThreshold, opts.useTypedErrors)
 	}
 	if opts.includeYAML {
-		g.buildYAMLMethods(runs, typeName, runsThreshold)
+		g.buildYAMLMethods(runs, typeName, runsThreshold, opts.useTypedErrors)
 	}
 	if opts.includeSQL {
 		g.addValueAndScanMethod(typeName)
