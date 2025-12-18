@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"slices"
+)
 
 // Arguments to format are: [1]: type name [2]: complete error expression
 const stringNameToValueMethod = `// %[1]sString retrieves an enum value from the enum constants string name.
@@ -36,12 +39,7 @@ func %[1]sStrings() []string {
 // Arguments to format are: [1]: type name
 const stringBelongsMethodLoop = `// IsA%[1]s returns "true" if the value is listed in the enum definition. "false" otherwise
 func (i %[1]s) IsA%[1]s() bool {
-	for _, v := range _%[1]sValues {
-		if i == v {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(_%[1]sValues, i)
 }
 `
 
