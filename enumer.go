@@ -218,10 +218,10 @@ func (g *Generator) buildYAMLMethods(runs [][]Value, typeName string, runsThresh
 
 // Arguments to format are: [1]: type name
 const flagValueMethodSet = `
-// Set allows flag and pflag libraries to set a value dinamically.
+// Set allows flag and pflag libraries to set a value dynamically.
 func (i *%[1]s) Set(value string) error {
 	var err error
-	*i, err = %[1]sString(s)
+	*i, err = %[1]sString(value)
 	return err
 }
 `

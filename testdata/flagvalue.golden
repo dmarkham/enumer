@@ -89,9 +89,9 @@ func (i Day) IsADay() bool {
 	return false
 }
 
-// Set allows flag and pflag libraries to set a value dinamically.
+// Set allows flag and pflag libraries to set a value dynamically.
 func (i *Day) Set(value string) error {
 	var err error
-	*i, err = DayString(s)
+	*i, err = DayString(value)
 	return err
 }
