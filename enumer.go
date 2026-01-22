@@ -10,7 +10,7 @@ func %[1]sString(s string) (%[1]s, error) {
 		return val, nil
 	}
 
-	if val, ok := _%[1]sNameToValueMap[strings.ToLower(s)]; ok {
+	if val, ok := _%[1]sLowerNameToValueMap[strings.ToLower(s)]; ok {
 		return val, nil
 	}
 	return 0, %[2]s
@@ -78,6 +78,7 @@ func (g *Generator) buildBasicExtras(runs [][]Value, typeName string, runsThresh
 
 	// Print the map between name and value
 	g.printValueMap(runs, typeName, runsThreshold)
+	g.printLowerValueMap(runs, typeName, runsThreshold)
 
 	// Print the slice of names
 	g.printNamesSlice(runs, typeName, runsThreshold)
@@ -115,12 +116,34 @@ func (g *Generator) printValueMap(runs [][]Value, typeName string, runsThreshold
 
 		for _, value := range values {
 			g.Printf("\t_%sName%s[%d:%d]: %s,\n", typeName, runID, n, n+len(value.name), value.originalName)
+			n += len(value.name)
+		}
+	}
+	g.Printf("}\n\n")
+}
+
+func (g *Generator) printLowerValueMap(runs [][]Value, typeName string, runsThreshold int) {
+	thereAreRuns := len(runs) > 1 && len(runs) <= runsThreshold
+	g.Printf("\nvar _%sLowerNameToValueMap = map[string]%s{\n", typeName, typeName)
+
+	var n int
+	var runID string
+	for i, values := range runs {
+		if thereAreRuns {
+			runID = "_" + fmt.Sprintf("%d", i)
+			n = 0
+		} else {
+			runID = ""
+		}
+
+		for _, value := range values {
 			g.Printf("\t_%sLowerName%s[%d:%d]: %s,\n", typeName, runID, n, n+len(value.name), value.originalName)
 			n += len(value.name)
 		}
 	}
 	g.Printf("}\n\n")
 }
+
 func (g *Generator) printNamesSlice(runs [][]Value, typeName string, runsThreshold int) {
 	thereAreRuns := len(runs) > 1 && len(runs) <= runsThreshold
 	g.Printf("\nvar _%sNames = []string{\n", typeName)
