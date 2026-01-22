@@ -10,7 +10,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -74,6 +74,14 @@ var goldenTrimAndAddPrefix = []Golden{
 
 var goldenLinecomment = []Golden{
 	{"dayWithLinecomment", linecommentIn},
+}
+
+var goldenFlagValue = []Golden{
+	{"flagvalue", dayIn},
+}
+
+var goldenPflagValue = []Golden{
+	{"pflagvalue", dayIn},
 }
 
 var goldenTypedErrors = []Golden{
@@ -327,49 +335,102 @@ const (
 
 func TestGolden(t *testing.T) {
 	for _, test := range golden {
-		runGoldenTest(t, test, false, false, false, false, false, false, true, "", "", false)
+		runGoldenTest(t, test, generateOptions{
+			transformMethod:     "noop",
+			includeValuesMethod: true,
+		})
 	}
 	for _, test := range goldenJSON {
-		runGoldenTest(t, test, true, false, false, false, false, false, false, "", "", false)
+		runGoldenTest(t, test, generateOptions{
+			includeJSON:     true,
+			transformMethod: "noop",
+		})
 	}
 	for _, test := range goldenText {
-		runGoldenTest(t, test, false, false, false, true, false, false, false, "", "", false)
+		runGoldenTest(t, test, generateOptions{
+			includeText:     true,
+			transformMethod: "noop",
+		})
 	}
 	for _, test := range goldenYAML {
-		runGoldenTest(t, test, false, true, false, false, false, false, false, "", "", false)
+		runGoldenTest(t, test, generateOptions{
+			includeYAML:     true,
+			transformMethod: "noop",
+		})
 	}
 	for _, test := range goldenSQL {
-		runGoldenTest(t, test, false, false, true, false, false, false, false, "", "", false)
+		runGoldenTest(t, test, generateOptions{
+			includeSQL:      true,
+			transformMethod: "noop",
+		})
 	}
 	for _, test := range goldenJSONAndSQL {
-		runGoldenTest(t, test, true, false, true, false, false, false, false, "", "", false)
+		runGoldenTest(t, test, generateOptions{
+			includeJSON:     true,
+			includeSQL:      true,
+			transformMethod: "noop",
+		})
 	}
 	for _, test := range goldenGQLGen {
-		runGoldenTest(t, test, false, false, false, false, false, true, false, "", "", false)
+		runGoldenTest(t, test, generateOptions{
+			includeGQLGen:   true,
+			transformMethod: "noop",
+		})
 	}
 	for _, test := range goldenTrimPrefix {
-		runGoldenTest(t, test, false, false, false, false, false, false, false, "Day", "", false)
+		runGoldenTest(t, test, generateOptions{
+			trimPrefix:      "Day",
+			transformMethod: "noop",
+		})
 	}
 	for _, test := range goldenTrimPrefixMultiple {
-		runGoldenTest(t, test, false, false, false, false, false, false, false, "Day,Night", "", false)
+		runGoldenTest(t, test, generateOptions{
+			trimPrefix:      "Day,Night",
+			transformMethod: "noop",
+		})
 	}
 	for _, test := range goldenWithPrefix {
-		runGoldenTest(t, test, false, false, false, false, false, false, false, "", "Day", false)
+		runGoldenTest(t, test, generateOptions{
+			addPrefix:       "Day",
+			transformMethod: "noop",
+		})
 	}
 	for _, test := range goldenTrimAndAddPrefix {
-		runGoldenTest(t, test, false, false, false, false, false, false, false, "Day", "Night", false)
+		runGoldenTest(t, test, generateOptions{
+			trimPrefix:      "Day",
+			addPrefix:       "Night",
+			transformMethod: "noop",
+		})
 	}
 	for _, test := range goldenLinecomment {
-		runGoldenTest(t, test, false, false, false, false, true, false, false, "", "", false)
+		runGoldenTest(t, test, generateOptions{
+			transformMethod: "noop",
+			lineComment:     true,
+		})
 	}
+	for _, test := range goldenFlagValue {
+		runGoldenTest(t, test, generateOptions{
+			transformMethod:    "noop",
+			includeFlagMethods: true,
+		})
+	}
+	for _, test := range goldenPflagValue {
+		runGoldenTest(t, test, generateOptions{
+			transformMethod:     "noop",
+			includePflagMethods: true,
+		})
+	}
+
 	for _, test := range goldenTypedErrors {
-		runGoldenTest(t, test, false, false, false, false, false, false, false, "", "", true)
+		runGoldenTest(t, test, generateOptions{
+			transformMethod: "noop",
+			useTypedErrors:  true,
+		})
 	}
 }
 
-func runGoldenTest(t *testing.T, test Golden,
-	generateJSON, generateYAML, generateSQL, generateText, linecomment, generateGQLGen, generateValuesMethod bool,
-	trimPrefix string, prefix string, useTypedErrors bool) {
+func runGoldenTest(t *testing.T, test Golden, opts generateOptions) {
+	t.Helper()
 
 	var g Generator
 	file := test.name + ".go"
@@ -397,29 +458,35 @@ func runGoldenTest(t *testing.T, test Golden,
 	if len(tokens) != 3 {
 		t.Fatalf("%s: need type declaration on first line", test.name)
 	}
-	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, generateText, generateGQLGen, "noop", trimPrefix, prefix, linecomment, generateValuesMethod, useTypedErrors)
+	g.generate(tokens[1], opts)
+
 	got := string(g.format())
-	if got != loadGolden(test.name) {
+	expected, err := loadGolden(test.name)
+	if err != nil {
+		t.Fatalf("unexpected error while loading golden %q: %v", test.name, err)
+	}
+
+	if got != expected {
 		// Use this to help build a golden text when changes are needed
-		// goldenFile := fmt.Sprintf("./testdata/%v.golden", test.name)
-		// err = os.WriteFile(goldenFile, []byte(got), 0644)
-		// if err != nil {
-		// 	t.Error(err)
-		// }
-		t.Errorf("%s: got\n====\n%s====\nexpected\n====%s", test.name, got, loadGolden(test.name))
+		//goldenFile := fmt.Sprintf("./testdata/%v.golden", test.name)
+		//err = ioutil.WriteFile(goldenFile, []byte(got), 0644)
+		//if err != nil {
+		//	t.Error(err)
+		//}
+		t.Errorf("%s: got\n====\n%s====\nexpected\n====%s", test.name, got, expected)
 	}
 }
 
-func loadGolden(name string) string {
+func loadGolden(name string) (string, error) {
 	fh, err := os.Open("testdata/" + name + ".golden")
 	if err != nil {
-		return ""
+		return "", err
 	}
 	defer fh.Close()
-	b, err := ioutil.ReadAll(fh)
+	b, err := io.ReadAll(fh)
 	if err != nil {
-		return ""
+		return "", err
 	}
-	return string(b)
+	return string(b), nil
 
 }
