@@ -31,6 +31,38 @@ const scanMethod = `func (i *%[1]s) Scan(value interface{}) error {
 	*i = val
 	return nil
 }
+
+`
+const nullableImplementation = `
+type Null%[1]s struct {
+	%[1]s      %[1]s
+	Valid      bool
+}
+
+func NewNull%[1]s(val interface{}) (x Null%[1]s) {
+	x.Scan(val) // yes, we ignore this error, it will just be an invalid value.
+	return
+}
+
+// Scan implements the Scanner interface.
+func (x *Null%[1]s) Scan(value interface{}) (err error) {
+	if value == nil {
+		x.%[1]s, x.Valid = %[1]s(0), false
+		return
+	}
+
+	err = x.%[1]s.Scan(value)
+	x.Valid = (err == nil)
+	return
+}
+
+// Value implements the driver Valuer interface.
+func (x Null%[1]s) Value() (driver.Value, error) {
+	if !x.Valid {
+		return nil, nil
+	}
+	return x.%[1]s.String(), nil
+}
 `
 
 func (g *Generator) addValueAndScanMethod(typeName string) {
@@ -38,4 +70,6 @@ func (g *Generator) addValueAndScanMethod(typeName string) {
 	g.Printf(valueMethod, typeName)
 	g.Printf("\n\n")
 	g.Printf(scanMethod, typeName)
+	g.Printf("\n\n")
+	g.Printf(nullableImplementation, typeName)
 }
