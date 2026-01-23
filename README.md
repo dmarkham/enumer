@@ -188,6 +188,8 @@ name := MyTypeValue.String() // name => "my_type_value"
 - snake-upper
 - kebab
 - kebab-upper
+- dot (dot.case)
+- dot-upper (DOT.CASE)
 - lower (lowercase)
 - upper (UPPERCASE)
 - title (TitleCase)
