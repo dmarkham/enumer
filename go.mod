@@ -1,4 +1,4 @@
-module github.com/dmarkham/enumer
+module github.com/ryanfkeepers/enumer-str
 
 require (
 	github.com/pascaldekloe/name v1.0.0

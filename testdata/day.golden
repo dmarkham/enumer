@@ -1,94 +1,37 @@
 
-const _DayName = "MondayTuesdayWednesdayThursdayFridaySaturdaySunday"
+const _DayConcat = "FridayMondaySaturdaySundayThursdayTuesdayWednesday"
 
-var _DayIndex = [...]uint8{0, 6, 13, 22, 30, 36, 44, 50}
+var _DayIndex = [...]uint8{0, 6, 12, 20, 26, 34, 41, 50}
 
-const _DayLowerName = "mondaytuesdaywednesdaythursdayfridaysaturdaysunday"
-
-func (i Day) String() string {
-	if i < 0 || i >= Day(len(_DayIndex)-1) {
-		return fmt.Sprintf("Day(%d)", i)
-	}
-	return _DayName[_DayIndex[i]:_DayIndex[i+1]]
-}
-
-func (Day) Values() []string {
-	return DayStrings()
-}
-
-// An "invalid array index" compiler error signifies that the constant values have changed.
-// Re-run the stringer command to generate them again.
-func _DayNoOp() {
-	var x [1]struct{}
-	_ = x[Monday-(0)]
-	_ = x[Tuesday-(1)]
-	_ = x[Wednesday-(2)]
-	_ = x[Thursday-(3)]
-	_ = x[Friday-(4)]
-	_ = x[Saturday-(5)]
-	_ = x[Sunday-(6)]
-}
-
-var _DayValues = []Day{Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday}
+var _DayValues = []Day{Friday, Monday, Saturday, Sunday, Thursday, Tuesday, Wednesday}
 
 var _DayNameToValueMap = map[string]Day{
-	_DayName[0:6]:        Monday,
-	_DayLowerName[0:6]:   Monday,
-	_DayName[6:13]:       Tuesday,
-	_DayLowerName[6:13]:  Tuesday,
-	_DayName[13:22]:      Wednesday,
-	_DayLowerName[13:22]: Wednesday,
-	_DayName[22:30]:      Thursday,
-	_DayLowerName[22:30]: Thursday,
-	_DayName[30:36]:      Friday,
-	_DayLowerName[30:36]: Friday,
-	_DayName[36:44]:      Saturday,
-	_DayLowerName[36:44]: Saturday,
-	_DayName[44:50]:      Sunday,
-	_DayLowerName[44:50]: Sunday,
-}
-
-var _DayNames = []string{
-	_DayName[0:6],
-	_DayName[6:13],
-	_DayName[13:22],
-	_DayName[22:30],
-	_DayName[30:36],
-	_DayName[36:44],
-	_DayName[44:50],
-}
-
-// DayString retrieves an enum value from the enum constants string name.
-// Throws an error if the param is not part of the enum.
-func DayString(s string) (Day, error) {
-	if val, ok := _DayNameToValueMap[s]; ok {
-		return val, nil
-	}
-
-	if val, ok := _DayNameToValueMap[strings.ToLower(s)]; ok {
-		return val, nil
-	}
-	return 0, fmt.Errorf("%s does not belong to Day values", s)
+    _DayConcat[0:6]:   Friday,
+    _DayConcat[6:12]:  Monday,
+    _DayConcat[12:20]: Saturday,
+    _DayConcat[20:26]: Sunday,
+    _DayConcat[26:34]: Thursday,
+    _DayConcat[34:41]: Tuesday,
+    _DayConcat[41:50]: Wednesday,
 }
 
 // DayValues returns all values of the enum
 func DayValues() []Day {
-	return _DayValues
+    return _DayValues
 }
 
-// DayStrings returns a slice of all String values of the enum
-func DayStrings() []string {
-	strs := make([]string, len(_DayNames))
-	copy(strs, _DayNames)
-	return strs
+// IsValid returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Day) IsValid() bool {
+    return IsAValidDay(string(i))
 }
 
-// IsADay returns "true" if the value is listed in the enum definition. "false" otherwise
-func (i Day) IsADay() bool {
-	for _, v := range _DayValues {
-		if i == v {
-			return true
-		}
-	}
-	return false
+// IsAValidDay returns "true" if the value is listed in the enum definition. "false" otherwise
+func IsAValidDay(s string) bool {
+    for _, v := range _DayValues {
+        if s == string(v) {
+            return true
+        }
+    }
+
+    return false
 }

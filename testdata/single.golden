@@ -1,0 +1,31 @@
+
+const _SingleConcat = "Str"
+
+var _SingleIndex = [...]uint8{0, 3}
+
+var _SingleValues = []Single{Str}
+
+var _SingleNameToValueMap = map[string]Single{
+        _SingleConcat[0:3]: Str,
+}
+
+// SingleValues returns all values of the enum
+func SingleValues() []Single {
+        return _SingleValues
+}
+
+// IsValid returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Single) IsValid() bool {
+        return IsAValidSingle(string(i))
+}
+
+// IsAValidSingle returns "true" if the value is listed in the enum definition. "false" otherwise
+func IsAValidSingle(s string) bool {
+        for _, v := range _SingleValues {
+                if s == string(v) {
+                        return true
+                }
+        }
+
+        return false
+}

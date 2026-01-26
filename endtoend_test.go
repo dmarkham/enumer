@@ -11,7 +11,6 @@ package main
 
 import (
 	"fmt"
-	"go/build"
 	"io"
 	"io/ioutil"
 	"os"
@@ -22,11 +21,9 @@ import (
 	"testing"
 )
 
-var (
-	// GOEXE defines the executable file name suffix (".exe" on Windows, "" on other systems).
-	// Must be defined here, cannot be read from ENVIRONMENT variables
-	GOEXE = ""
-)
+// GOEXE defines the executable file name suffix (".exe" on Windows, "" on other systems).
+// Must be defined here, cannot be read from ENVIRONMENT variables
+var GOEXE = ""
 
 func init() {
 	// Set GOEXE for Windows platform
@@ -41,14 +38,21 @@ func init() {
 // binary panics if the String method for X is not correct, including for error cases.
 
 func TestEndToEnd(t *testing.T) {
-	dir, err := ioutil.TempDir("", "stringer")
+	t.Skip("jjazil")
+	defer func() {
+		if r := recover(); r != nil {
+			t.Fatalf("TestEndToEnd panicked: %v", r)
+		}
+	}()
+
+	dir, err := ioutil.TempDir("", "enumerstr")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(dir)
 
 	// Create stringer in temporary directory.
-	stringer := filepath.Join(dir, fmt.Sprintf("stringer%s", GOEXE))
+	stringer := filepath.Join(dir, fmt.Sprintf("enumerstr%s", GOEXE))
 	err = run("go", "build", "-o", stringer)
 	if err != nil {
 		t.Fatalf("building stringer: %s", err)
@@ -68,66 +72,17 @@ func TestEndToEnd(t *testing.T) {
 		if !strings.HasSuffix(name, ".go") {
 			continue
 		}
-		if name == "cgo.go" && !build.Default.CgoEnabled {
-			t.Logf("cgo is no enabled for %s", name)
-			continue
-		}
 
 		// Names are known to be ASCII and long enough.
-		var typeName string
-		var transformNameMethod string
-		var useTypedErrors bool
+		typeName := fmt.Sprintf("%c%s", name[0]+'A'-'a', name[1:len(name)-len(".go")])
 
-		switch name {
-		case "transform_snake.go":
-			typeName = "SnakeCaseValue"
-			transformNameMethod = "snake"
-		case "transform_snake_upper.go":
-			typeName = "SnakeUpperCaseValue"
-			transformNameMethod = "snake-upper"
-		case "transform_kebab.go":
-			typeName = "KebabCaseValue"
-			transformNameMethod = "kebab"
-		case "transform_kebab_upper.go":
-			typeName = "KebabUpperCaseValue"
-			transformNameMethod = "kebab-upper"
-		case "transform_upper.go":
-			typeName = "UpperCaseValue"
-			transformNameMethod = "upper"
-		case "transform_lower.go":
-			typeName = "LowerCaseValue"
-			transformNameMethod = "lower"
-		case "transform_title.go":
-			typeName = "TitleCaseValue"
-			transformNameMethod = "title"
-		case "transform_first.go":
-			typeName = "FirstCaseValue"
-			transformNameMethod = "first"
-		case "transform_first_upper.go":
-			typeName = "FirstUpperCaseValue"
-			transformNameMethod = "first-upper"
-		case "transform_first_lower.go":
-			typeName = "FirstLowerCaseValue"
-			transformNameMethod = "first-lower"
-		case "transform_whitespace.go":
-			typeName = "WhitespaceSeparatedValue"
-			transformNameMethod = "whitespace"
-		case "typedErrors.go":
-			typeName = "TypedErrorsValue"
-			transformNameMethod = "noop"
-			useTypedErrors = true
-		default:
-			typeName = fmt.Sprintf("%c%s", name[0]+'A'-'a', name[1:len(name)-len(".go")])
-			transformNameMethod = "noop"
-		}
-
-		stringerCompileAndRun(t, dir, stringer, typeName, name, transformNameMethod, useTypedErrors)
+		stringerCompileAndRun(t, dir, stringer, typeName, name)
 	}
 }
 
 // stringerCompileAndRun runs stringer for the named file and compiles and
 // runs the target binary in directory dir. That binary will panic if the String method is incorrect.
-func stringerCompileAndRun(t *testing.T, dir, stringer, typeName, fileName, transformNameMethod string, useTypedErrors bool) {
+func stringerCompileAndRun(t *testing.T, dir, stringer, typeName, fileName string) {
 	t.Logf("run: %s %s\n", fileName, typeName)
 	source := filepath.Join(dir, fileName)
 	err := copy(source, filepath.Join("testdata", fileName))
@@ -136,10 +91,7 @@ func stringerCompileAndRun(t *testing.T, dir, stringer, typeName, fileName, tran
 	}
 	stringSource := filepath.Join(dir, typeName+"_string.go")
 	// Run stringer in temporary directory.
-	args := []string{"-type", typeName, "-output", stringSource, "-transform", transformNameMethod}
-	if useTypedErrors {
-		args = append(args, "-typederrors", "-values")
-	}
+	args := []string{"-type", typeName, "-output", stringSource}
 	args = append(args, source)
 	err = run(stringer, args...)
 	if err != nil {

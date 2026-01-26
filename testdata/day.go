@@ -2,52 +2,32 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Simple test: enumeration of type int starting at 0.
-
 package main
 
-import "fmt"
-
-type Day int
+type Day string
 
 const (
-	Monday Day = iota
-	Tuesday
-	Wednesday
-	Thursday
-	Friday
-	Saturday
-	Sunday
+	Monday    Day = "monday"
+	Tuesday   Day = "tuesday"
+	Wednesday Day = "wednesday"
+	Thursday  Day = "thursday"
+	Friday    Day = "friday"
+	Saturday  Day = "saturday"
+	Sunday    Day = "sunday"
 )
 
 func main() {
-	ck(Monday, "Monday")
-	ck(Tuesday, "Tuesday")
-	ck(Wednesday, "Wednesday")
-	ck(Thursday, "Thursday")
-	ck(Friday, "Friday")
-	ck(Saturday, "Saturday")
-	ck(Sunday, "Sunday")
-	ck(-127, "Day(-127)")
-	ck(127, "Day(127)")
-	ckDayString(Sunday, "Sunday")
-	ckDayString(Sunday, "sunday")
-
+	ck(Monday, "monday")
+	ck(Tuesday, "tuesday")
+	ck(Wednesday, "wednesday")
+	ck(Thursday, "thursday")
+	ck(Friday, "friday")
+	ck(Saturday, "saturday")
+	ck(Sunday, "sunday")
 }
 
 func ck(day Day, str string) {
-	if fmt.Sprint(day) != str {
+	if string(day) != str {
 		panic("day.go: " + str)
-	}
-}
-
-func ckDayString(day Day, str string) {
-	d, err := DayString(str)
-	if err != nil {
-		panic("day.go: " + err.Error())
-	}
-	if d != day {
-		panic("day.go: " + str)
-
 	}
 }
