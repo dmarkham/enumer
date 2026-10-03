@@ -136,6 +136,8 @@ Given a constant named `MyTypeValue`:
 | `snake-upper` | `MY_TYPE_VALUE` |
 | `kebab` | `my-type-value` |
 | `kebab-upper` | `MY-TYPE-VALUE` |
+| `dot` | `my.type.value` |
+| `dot-upper` | `MY.TYPE.VALUE` |
 | `whitespace` | `my type value` |
 | `lower` | `mytypevalue` |
 | `upper` | `MYTYPEVALUE` |
@@ -145,8 +147,8 @@ Given a constant named `MyTypeValue`:
 | `first-upper` | `M` |
 | `first-lower` | `m` |
 
-Word splitting only works from CamelCase. `snake_upper`, `kebab_upper`, `first_upper`, and
-`first_lower` are accepted as aliases of the hyphenated names.
+Word splitting only works from CamelCase. `snake_upper`, `kebab_upper`, `dot_upper`, `first_upper`,
+and `first_lower` are accepted as aliases of the hyphenated names.
 
 ### Line comments
 
