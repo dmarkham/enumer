@@ -91,6 +91,12 @@ func TestEndToEnd(t *testing.T) {
 		case "transform_kebab_upper.go":
 			typeName = "KebabUpperCaseValue"
 			transformNameMethod = "kebab-upper"
+		case "transform_dot.go":
+			typeName = "DotCaseValue"
+			transformNameMethod = "dot"
+		case "transform_dot_upper.go":
+			typeName = "DotUpperCaseValue"
+			transformNameMethod = "dot-upper"
 		case "transform_upper.go":
 			typeName = "UpperCaseValue"
 			transformNameMethod = "upper"
