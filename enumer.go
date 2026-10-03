@@ -59,6 +59,19 @@ const altStringValuesMethod = `func (%[1]s) Values() []string {
 }
 `
 
+// Arguments to format are:
+//
+//	[1]: type name
+//	[2]: error expression returned for a value not in the enum
+const validateMethod = `// Validate returns an error if the value is not listed in the enum definition.
+func (i %[1]s) Validate() error {
+	if !i.IsA%[1]s() {
+		return %[2]s
+	}
+	return nil
+}
+`
+
 func (g *Generator) buildAltStringValuesMethod(typeName string) {
 	g.Printf("\n")
 	g.Printf(altStringValuesMethod, typeName)
@@ -226,6 +239,14 @@ func (g *Generator) buildYAMLMethods(runs [][]Value, typeName string, runsThresh
 	// For now, just use the standard template
 	// We rely on the %[1]sString method to provide typed errors when enabled
 	g.Printf(yamlMethods, typeName)
+}
+
+func (g *Generator) buildValidateMethod(typeName string, useTypedErrors bool) {
+	errorCode := fmt.Sprintf(`fmt.Errorf("%%v does not belong to %s values", i)`, typeName)
+	if useTypedErrors {
+		errorCode = fmt.Sprintf(`errors.Join(enumerrs.ErrValueInvalid, fmt.Errorf("%%v does not belong to %s values", i))`, typeName)
+	}
+	g.Printf(validateMethod, typeName, errorCode)
 }
 
 // Arguments to format are: [1]: type name

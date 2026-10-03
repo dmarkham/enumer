@@ -76,6 +76,14 @@ var goldenLinecomment = []Golden{
 	{"dayWithLinecomment", linecommentIn},
 }
 
+var goldenValidate = []Golden{
+	{"validate", dayIn},
+}
+
+var goldenValidateTypedErrors = []Golden{
+	{"validateTypedErrors", dayIn},
+}
+
 var goldenFlagValue = []Golden{
 	{"flagvalue", dayIn},
 }
@@ -406,6 +414,19 @@ func TestGolden(t *testing.T) {
 		runGoldenTest(t, test, generateOptions{
 			transformMethod: "noop",
 			lineComment:     true,
+		})
+	}
+	for _, test := range goldenValidate {
+		runGoldenTest(t, test, generateOptions{
+			transformMethod:       "noop",
+			includeValidateMethod: true,
+		})
+	}
+	for _, test := range goldenValidateTypedErrors {
+		runGoldenTest(t, test, generateOptions{
+			transformMethod:       "noop",
+			includeValidateMethod: true,
+			useTypedErrors:        true,
 		})
 	}
 	for _, test := range goldenFlagValue {
