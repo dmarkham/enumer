@@ -24,11 +24,14 @@ func _TypedErrorsValueNoOp() {
 var _TypedErrorsValueValues = []TypedErrorsValue{TypedErrorsValueOne, TypedErrorsValueTwo, TypedErrorsValueThree}
 
 var _TypedErrorsValueNameToValueMap = map[string]TypedErrorsValue{
-	_TypedErrorsValueName[0:19]:       TypedErrorsValueOne,
+	_TypedErrorsValueName[0:19]:  TypedErrorsValueOne,
+	_TypedErrorsValueName[19:38]: TypedErrorsValueTwo,
+	_TypedErrorsValueName[38:59]: TypedErrorsValueThree,
+}
+
+var _TypedErrorsValueLowerNameToValueMap = map[string]TypedErrorsValue{
 	_TypedErrorsValueLowerName[0:19]:  TypedErrorsValueOne,
-	_TypedErrorsValueName[19:38]:      TypedErrorsValueTwo,
 	_TypedErrorsValueLowerName[19:38]: TypedErrorsValueTwo,
-	_TypedErrorsValueName[38:59]:      TypedErrorsValueThree,
 	_TypedErrorsValueLowerName[38:59]: TypedErrorsValueThree,
 }
 
@@ -45,7 +48,7 @@ func TypedErrorsValueString(s string) (TypedErrorsValue, error) {
 		return val, nil
 	}
 
-	if val, ok := _TypedErrorsValueNameToValueMap[strings.ToLower(s)]; ok {
+	if val, ok := _TypedErrorsValueLowerNameToValueMap[strings.ToLower(s)]; ok {
 		return val, nil
 	}
 	return 0, errors.Join(enumerrs.ErrValueInvalid, fmt.Errorf("%s does not belong to TypedErrorsValue values", s))

@@ -47,31 +47,34 @@ func _PrimeNoOp() {
 var _PrimeValues = []Prime{p2, p3, p5, p7, p11, p13, p17, p19, p23, p29, p37, p41, p43}
 
 var _PrimeNameToValueMap = map[string]Prime{
-	_PrimeName[0:2]:        p2,
+	_PrimeName[0:2]:   p2,
+	_PrimeName[2:4]:   p3,
+	_PrimeName[4:6]:   p5,
+	_PrimeName[6:8]:   p7,
+	_PrimeName[8:11]:  p11,
+	_PrimeName[11:14]: p13,
+	_PrimeName[14:17]: p17,
+	_PrimeName[17:20]: p19,
+	_PrimeName[20:23]: p23,
+	_PrimeName[23:26]: p29,
+	_PrimeName[26:29]: p37,
+	_PrimeName[29:32]: p41,
+	_PrimeName[32:35]: p43,
+}
+
+var _PrimeLowerNameToValueMap = map[string]Prime{
 	_PrimeLowerName[0:2]:   p2,
-	_PrimeName[2:4]:        p3,
 	_PrimeLowerName[2:4]:   p3,
-	_PrimeName[4:6]:        p5,
 	_PrimeLowerName[4:6]:   p5,
-	_PrimeName[6:8]:        p7,
 	_PrimeLowerName[6:8]:   p7,
-	_PrimeName[8:11]:       p11,
 	_PrimeLowerName[8:11]:  p11,
-	_PrimeName[11:14]:      p13,
 	_PrimeLowerName[11:14]: p13,
-	_PrimeName[14:17]:      p17,
 	_PrimeLowerName[14:17]: p17,
-	_PrimeName[17:20]:      p19,
 	_PrimeLowerName[17:20]: p19,
-	_PrimeName[20:23]:      p23,
 	_PrimeLowerName[20:23]: p23,
-	_PrimeName[23:26]:      p29,
 	_PrimeLowerName[23:26]: p29,
-	_PrimeName[26:29]:      p37,
 	_PrimeLowerName[26:29]: p37,
-	_PrimeName[29:32]:      p41,
 	_PrimeLowerName[29:32]: p41,
-	_PrimeName[32:35]:      p43,
 	_PrimeLowerName[32:35]: p43,
 }
 
@@ -98,7 +101,7 @@ func PrimeString(s string) (Prime, error) {
 		return val, nil
 	}
 
-	if val, ok := _PrimeNameToValueMap[strings.ToLower(s)]; ok {
+	if val, ok := _PrimeLowerNameToValueMap[strings.ToLower(s)]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Prime values", s)
