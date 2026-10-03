@@ -1,7 +1,6 @@
 # Enumer
 
 [![GoDoc](https://godoc.org/github.com/dmarkham/enumer?status.svg)](https://pkg.go.dev/github.com/dmarkham/enumer)
-[![Go Report Card](https://goreportcard.com/badge/github.com/dmarkham/enumer)](https://goreportcard.com/report/github.com/dmarkham/enumer)
 [![GitHub Release](https://img.shields.io/github/release/dmarkham/enumer.svg)](https://github.com/dmarkham/enumer/releases)
 
 Enumer generates Go code that adds useful methods to enums (constants with a specific type).
@@ -37,25 +36,33 @@ It generates the same `String()` method plus the extras below, so existing code 
 
 ## Install
 
-Pick one:
+Enumer needs Go 1.25 or newer.
+
+The recommended setup pins enumer in `go.mod` as a tool dependency, so `go generate` works on a
+fresh clone with no separate install:
 
 ```sh
-# Run it on demand from go:generate. No install needed.
+go get -tool github.com/dmarkham/enumer@latest
+```
+
+```go
+//go:generate go tool enumer -type=Pill
+```
+
+[examples/gomods](examples/gomods) is a runnable module set up this way.
+
+Two other options:
+
+```sh
+# Run on demand from go:generate without touching go.mod.
 //go:generate go run github.com/dmarkham/enumer@latest -type=Pill
 
-# Or install a binary on your PATH.
+# Install a binary on your PATH.
 go install github.com/dmarkham/enumer@latest
 ```
 
 Prebuilt binaries for Linux, macOS, and Windows are on the
 [releases page](https://github.com/dmarkham/enumer/releases).
-
-If you prefer to pin the version in `go.mod`, add it as a tool dependency and `go mod tidy`:
-
-```sh
-go get -tool github.com/dmarkham/enumer@latest
-//go:generate go tool enumer -type=Pill
-```
 
 ## Usage
 
@@ -192,8 +199,6 @@ Several types at once with a custom file name:
 ```sh
 enumer -type=Pill,Day -output=enums_gen.go
 ```
-
-A runnable module is in [examples/gomods](examples/gomods).
 
 ## History
 
