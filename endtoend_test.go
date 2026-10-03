@@ -68,7 +68,7 @@ func TestEndToEnd(t *testing.T) {
 		// Names are known to be ASCII and long enough.
 		var typeName string
 		var transformNameMethod string
-		var useTypedErrors bool
+		var extraFlags []string
 
 		switch name {
 		case "transform_snake.go":
@@ -83,6 +83,12 @@ func TestEndToEnd(t *testing.T) {
 		case "transform_kebab_upper.go":
 			typeName = "KebabUpperCaseValue"
 			transformNameMethod = "kebab-upper"
+		case "transform_dot.go":
+			typeName = "DotCaseValue"
+			transformNameMethod = "dot"
+		case "transform_dot_upper.go":
+			typeName = "DotUpperCaseValue"
+			transformNameMethod = "dot-upper"
 		case "transform_upper.go":
 			typeName = "UpperCaseValue"
 			transformNameMethod = "upper"
@@ -107,19 +113,27 @@ func TestEndToEnd(t *testing.T) {
 		case "typedErrors.go":
 			typeName = "TypedErrorsValue"
 			transformNameMethod = "noop"
-			useTypedErrors = true
+			extraFlags = []string{"-typederrors", "-values"}
+		case "validate.go":
+			typeName = "Color"
+			transformNameMethod = "noop"
+			extraFlags = []string{"-validate"}
+		case "validateTypedErrors.go":
+			typeName = "Priority"
+			transformNameMethod = "noop"
+			extraFlags = []string{"-validate", "-typederrors"}
 		default:
 			typeName = fmt.Sprintf("%c%s", name[0]+'A'-'a', name[1:len(name)-len(".go")])
 			transformNameMethod = "noop"
 		}
 
-		stringerCompileAndRun(t, dir, stringer, typeName, name, transformNameMethod, useTypedErrors)
+		stringerCompileAndRun(t, dir, stringer, typeName, name, transformNameMethod, extraFlags...)
 	}
 }
 
 // stringerCompileAndRun runs stringer for the named file and compiles and
 // runs the target binary in directory dir. That binary will panic if the String method is incorrect.
-func stringerCompileAndRun(t *testing.T, dir, stringer, typeName, fileName, transformNameMethod string, useTypedErrors bool) {
+func stringerCompileAndRun(t *testing.T, dir, stringer, typeName, fileName, transformNameMethod string, extraFlags ...string) {
 	t.Logf("run: %s %s\n", fileName, typeName)
 	source := filepath.Join(dir, fileName)
 	err := copy(source, filepath.Join("testdata", fileName))
@@ -129,9 +143,7 @@ func stringerCompileAndRun(t *testing.T, dir, stringer, typeName, fileName, tran
 	stringSource := filepath.Join(dir, typeName+"_string.go")
 	// Run stringer in temporary directory.
 	args := []string{"-type", typeName, "-output", stringSource, "-transform", transformNameMethod}
-	if useTypedErrors {
-		args = append(args, "-typederrors", "-values")
-	}
+	args = append(args, extraFlags...)
 	args = append(args, source)
 	err = run(stringer, args...)
 	if err != nil {

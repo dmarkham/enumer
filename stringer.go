@@ -43,19 +43,20 @@ func (af *arrayFlags) Set(value string) error {
 }
 
 type generateOptions struct {
-	includeJSON         bool
-	includeYAML         bool
-	includeSQL          bool
-	includeText         bool
-	includeGQLGen       bool
-	transformMethod     string
-	trimPrefix          string
-	addPrefix           string
-	lineComment         bool
-	includeValuesMethod bool
-	includeFlagMethods  bool
-	includePflagMethods bool
-	useTypedErrors      bool
+	includeJSON           bool
+	includeYAML           bool
+	includeSQL            bool
+	includeText           bool
+	includeGQLGen         bool
+	transformMethod       string
+	trimPrefix            string
+	addPrefix             string
+	lineComment           bool
+	includeValuesMethod   bool
+	includeValidateMethod bool
+	includeFlagMethods    bool
+	includePflagMethods   bool
+	useTypedErrors        bool
 }
 
 var (
@@ -74,9 +75,10 @@ func init() {
 	flag.BoolVar(&opts.includeText, "text", false, "if true, text marshaling methods will be generated. Default: false")
 	flag.BoolVar(&opts.includeGQLGen, "gqlgen", false, "if true, GraphQL marshaling methods for gqlgen will be generated. Default: false")
 	flag.BoolVar(&opts.includeValuesMethod, "values", false, "if true, alternative string values method will be generated. Default: false")
+	flag.BoolVar(&opts.includeValidateMethod, "validate", false, "if true, a Validate() error method will be generated. Default: false")
 	flag.BoolVar(&opts.includeFlagMethods, "flag.value", false, "if true, ensure that the enumeration type implements stdlib flag.Value interface. Default: false")
 	flag.BoolVar(&opts.includePflagMethods, "pflag.value", false, "if true, ensure that the enumeration type implements pflag.Value interface, see: https://pkg.go.dev/github.com/spf13/pflag#Value  Default: false")
-	flag.StringVar(&output, "output", "", "output file name; default srcdir/<type>_string.go")
+	flag.StringVar(&output, "output", "", "output file name; default srcdir/<type>_enumer.go")
 	flag.StringVar(&opts.transformMethod, "transform", "noop", "enum item name transformation method. Default: noop")
 	flag.StringVar(&opts.trimPrefix, "trimprefix", "", "transform each item name by removing a prefix or comma separated list of prefixes. Default: \"\"")
 	flag.StringVar(&opts.addPrefix, "addprefix", "", "transform each item name by adding a prefix. Default: \"\"")
@@ -369,6 +371,14 @@ func (g *Generator) transformValueNames(values []Value, transformMethod string) 
 		fn = func(s string) string {
 			return strings.ToUpper(name.Delimit(s, '-'))
 		}
+	case "dot":
+		fn = func(s string) string {
+			return strings.ToLower(name.Delimit(s, '.'))
+		}
+	case "dot_upper", "dot-upper":
+		fn = func(s string) string {
+			return strings.ToUpper(name.Delimit(s, '.'))
+		}
 	case "upper":
 		fn = func(s string) string {
 			return strings.ToUpper(s)
@@ -488,6 +498,9 @@ func (g *Generator) generate(typeName string, opts generateOptions) {
 	}
 	if opts.includeValuesMethod {
 		g.buildAltStringValuesMethod(typeName)
+	}
+	if opts.includeValidateMethod {
+		g.buildValidateMethod(typeName, opts.useTypedErrors)
 	}
 
 	g.buildNoOpOrderChangeDetect(runs, typeName)

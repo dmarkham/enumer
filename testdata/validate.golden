@@ -12,39 +12,47 @@ func (i Day) String() string {
 	return _DayName[_DayIndex[i]:_DayIndex[i+1]]
 }
 
+// Validate returns an error if the value is not listed in the enum definition.
+func (i Day) Validate() error {
+	if !i.IsADay() {
+		return fmt.Errorf("%v does not belong to Day values", i)
+	}
+	return nil
+}
+
 // An "invalid array index" compiler error signifies that the constant values have changed.
 // Re-run the stringer command to generate them again.
 func _DayNoOp() {
 	var x [1]struct{}
-	_ = x[DayMonday-(0)]
-	_ = x[DayTuesday-(1)]
-	_ = x[DayWednesday-(2)]
-	_ = x[DayThursday-(3)]
-	_ = x[DayFriday-(4)]
-	_ = x[DaySaturday-(5)]
-	_ = x[DaySunday-(6)]
+	_ = x[Monday-(0)]
+	_ = x[Tuesday-(1)]
+	_ = x[Wednesday-(2)]
+	_ = x[Thursday-(3)]
+	_ = x[Friday-(4)]
+	_ = x[Saturday-(5)]
+	_ = x[Sunday-(6)]
 }
 
-var _DayValues = []Day{DayMonday, DayTuesday, DayWednesday, DayThursday, DayFriday, DaySaturday, DaySunday}
+var _DayValues = []Day{Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday}
 
 var _DayNameToValueMap = map[string]Day{
-	_DayName[0:6]:   DayMonday,
-	_DayName[6:13]:  DayTuesday,
-	_DayName[13:22]: DayWednesday,
-	_DayName[22:30]: DayThursday,
-	_DayName[30:36]: DayFriday,
-	_DayName[36:44]: DaySaturday,
-	_DayName[44:50]: DaySunday,
+	_DayName[0:6]:   Monday,
+	_DayName[6:13]:  Tuesday,
+	_DayName[13:22]: Wednesday,
+	_DayName[22:30]: Thursday,
+	_DayName[30:36]: Friday,
+	_DayName[36:44]: Saturday,
+	_DayName[44:50]: Sunday,
 }
 
 var _DayLowerNameToValueMap = map[string]Day{
-	_DayLowerName[0:6]:   DayMonday,
-	_DayLowerName[6:13]:  DayTuesday,
-	_DayLowerName[13:22]: DayWednesday,
-	_DayLowerName[22:30]: DayThursday,
-	_DayLowerName[30:36]: DayFriday,
-	_DayLowerName[36:44]: DaySaturday,
-	_DayLowerName[44:50]: DaySunday,
+	_DayLowerName[0:6]:   Monday,
+	_DayLowerName[6:13]:  Tuesday,
+	_DayLowerName[13:22]: Wednesday,
+	_DayLowerName[22:30]: Thursday,
+	_DayLowerName[30:36]: Friday,
+	_DayLowerName[36:44]: Saturday,
+	_DayLowerName[44:50]: Sunday,
 }
 
 var _DayNames = []string{

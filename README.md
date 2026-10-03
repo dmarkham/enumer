@@ -1,85 +1,14 @@
-# Enumer [![GoDoc](https://godoc.org/github.com/dmarkham/enumer?status.svg)](https://godoc.org/github.com/dmarkham/enumer) [![Go Report Card](https://goreportcard.com/badge/github.com/dmarkham/enumer)](https://goreportcard.com/report/github.com/dmarkham/enumer) [![GitHub Release](https://img.shields.io/github/release/dmarkham/enumer.svg)](https://github.com/dmarkham/enumer/releases)
+# Enumer
 
-Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).
-It started as a fork of [Rob Pike’s Stringer tool](https://godoc.org/golang.org/x/tools/cmd/stringer)
-maintained by [Álvaro López Espinosa](https://github.com/alvaroloes/enumer). 
-This was again forked here as (https://github.com/dmarkham/enumer) picking up where Álvaro left off.
+[![GoDoc](https://godoc.org/github.com/dmarkham/enumer?status.svg)](https://pkg.go.dev/github.com/dmarkham/enumer)
+[![GitHub Release](https://img.shields.io/github/release/dmarkham/enumer.svg)](https://github.com/dmarkham/enumer/releases)
 
+Enumer generates Go code that adds useful methods to enums (constants with a specific type).
 
-```
-$ enumer --help
-Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).
-Usage of enumer:
-        Enumer [flags] -type T [directory]
-        Enumer [flags] -type T files... # Must be a single package
-For more information, see:
-        http://godoc.org/github.com/dmarkham/enumer
-Flags:
-  -addprefix string
-        transform each item name by adding a prefix. Default: ""
-  -comment value
-        comments to include in generated code, can repeat. Default: ""
-  -gqlgen
-        if true, GraphQL marshaling methods for gqlgen will be generated. Default: false
-  -json
-        if true, json marshaling methods will be generated. Default: false
-  -linecomment
-        use line comment text as printed text when present
-  -output string
-        output file name; default srcdir/<type>_string.go
-  -sql
-        if true, the Scanner and Valuer interface will be implemented.
-  -text
-        if true, text marshaling methods will be generated. Default: false
-  -transform string
-        enum item name transformation method. Default: noop (default "noop")
-  -trimprefix string
-        transform each item name by removing a prefix or comma separated list of prefixes. Default: ""
-  -type string
-        comma-separated list of type names; must be set
-  -typederrors
-        if true, errors from enumerrs/ will be errors.Join()-ed for errors.Is(...) to simplify invalid value handling. Default: false
-  -values
-        if true, alternative string values method will be generated. Default: false
-  -yaml
-        if true, yaml marshaling methods will be generated. Default: false
-```
-
-
-## Generated functions and methods
-
-When Enumer is applied to a type, it will generate:
-
-- The following basic methods/functions:
-
-  - Method `String()`: returns the string representation of the enum value. This makes the enum conform
-    the `Stringer` interface, so whenever you print an enum value, you'll get the string name instead of a number.
-  - Function `<Type>String(s string)`: returns the enum value from its string representation. This is useful
-    when you need to read enum values from command line arguments, from a configuration file, or
-    from a REST API request... In short, from those places where using the real enum value (an integer) would
-    be almost meaningless or hard to trace or use by a human. `s` string is Case Insensitive.
-  - Function `<Type>Values()`: returns a slice with all the values of the enum
-  - Function `<Type>Strings()`: returns a slice with all the Strings of the enum
-  - Method `IsA<Type>()`: returns true only if the current value is among the values of the enum. Useful for validations.
-
-- When the flag `json` is provided, two additional methods will be generated, `MarshalJSON()` and `UnmarshalJSON()`. These make
-  the enum conform to the `json.Marshaler` and `json.Unmarshaler` interfaces. Very useful to use it in JSON APIs.
-- When the flag `text` is provided, two additional methods will be generated, `MarshalText()` and `UnmarshalText()`. These make
-  the enum conform to the `encoding.TextMarshaler` and `encoding.TextUnmarshaler` interfaces.
-  **Note:** If you use your enum values as keys in a map and you encode the map as _JSON_, you need this flag set to true to properly
-  convert the map keys to json (strings). If not, the numeric values will be used instead
-- When the flag `yaml` is provided, two additional methods will be generated, `MarshalYAML()` and `UnmarshalYAML()`. These make
-  the enum conform to the `gopkg.in/yaml.v2.Marshaler` and `gopkg.in/yaml.v2.Unmarshaler` interfaces.
-- When the flag `sql` is provided, the methods for implementing the `Scanner` and `Valuer` interfaces.
-  Useful when storing the enum in a database.
-- When the flag `typederrors` is provided, the string conversion functions will return errors wrapped with
-  `errors.Join()` containing a typed error from the `enumerrs` package. This allows you to use `errors.Is()` to
-  check for specific enum validation failures.
-
-
-For example, if we have an enum type called `Pill`,
+Given this:
 
 ```go
+//go:generate go run github.com/dmarkham/enumer@latest -type=Pill -json
 type Pill int
 
 const (
@@ -91,159 +20,191 @@ const (
 )
 ```
 
-executing `enumer -type=Pill -json` will generate a new file with four basic methods and two extra for JSON:
+`go generate` writes `pill_enumer.go` and you can do this:
 
 ```go
-func (i Pill) String() string {
-	//...
-}
-
-func PillString(s string) (Pill, error) {
-	//...
-}
-
-func PillValues() []Pill {
-	//...
-}
-
-func PillStrings() []string {
-	//...
-}
-
-func (i Pill) IsAPill() bool {
-	//...
-}
-
-func (i Pill) MarshalJSON() ([]byte, error) {
-	//...
-}
-
-func (i *Pill) UnmarshalJSON(data []byte) error {
-	//...
-}
+fmt.Println(Aspirin)               // Aspirin
+p, err := PillString("ibuprofen")  // p == Ibuprofen (case-insensitive)
+PillValues()                       // [Placebo Aspirin Ibuprofen Paracetamol]
+PillStrings()                      // [Placebo Aspirin Ibuprofen Paracetamol]
+Pill(42).IsAPill()                 // false
+json.Marshal(Aspirin)              // "Aspirin"
 ```
 
-From now on, we can:
+Enumer is a drop-in replacement for [stringer](https://pkg.go.dev/golang.org/x/tools/cmd/stringer).
+It generates the same `String()` method plus the extras below, so existing code keeps working.
+
+## Install
+
+Enumer needs Go 1.25 or newer.
+
+The recommended setup pins enumer in `go.mod` as a tool dependency, so `go generate` works on a
+fresh clone with no separate install:
+
+```sh
+go get -tool github.com/dmarkham/enumer@latest
+```
 
 ```go
-// Convert any Pill value to string
-var aspirinString string = Aspirin.String()
-// (or use it in any place where a Stringer is accepted)
-fmt.Println("I need ", Paracetamol) // Will print "I need Paracetamol"
-
-// Convert a string with the enum name to the corresponding enum value
-pill, err := PillString("Ibuprofen") // "ibuprofen" will also work.
-if err != nil {
-    fmt.Println("Unrecognized pill: ", err)
-    return
-}
-// Now pill == Ibuprofen
-
-// Get all the values of the string
-allPills := PillValues()
-fmt.Println(allPills) // Will print [Placebo Aspirin Ibuprofen Paracetamol]
-
-// Check if a value belongs to the Pill enum values
-var notAPill Pill = 42
-if (notAPill.IsAPill()) {
-	fmt.Println(notAPill, "is not a value of the Pill enum")
-}
-
-// Marshal/unmarshal to/from json strings, either directly or automatically when
-// the enum is a field of a struct
-pillJSON := Aspirin.MarshalJSON()
-// Now pillJSON == `"Aspirin"`
+//go:generate go tool enumer -type=Pill
 ```
 
-The generated code is exactly the same as the Stringer tool plus the mentioned additions, so you can use
-**Enumer** where you are already using **Stringer** without any code change.
+[examples/gomods](examples/gomods) is a runnable module set up this way.
 
-## Transforming the string representation of the enum value
+Two other options:
 
-By default, Enumer uses the same name of the enum value for generating the string representation (usually CamelCase in Go).
+```sh
+# Run on demand from go:generate without touching go.mod.
+//go:generate go run github.com/dmarkham/enumer@latest -type=Pill
+
+# Install a binary on your PATH.
+go install github.com/dmarkham/enumer@latest
+```
+
+Prebuilt binaries for Linux, macOS, and Windows are on the
+[releases page](https://github.com/dmarkham/enumer/releases).
+
+## Usage
+
+```
+enumer [flags] -type T [directory]
+enumer [flags] -type T files...   # files must be in a single package
+```
+
+`-type` is required and takes a comma-separated list of type names. Everything else is optional.
+Output goes to `<type>_enumer.go` in the source directory, lowercased, unless you pass `-output`.
+
+### Always generated
+
+| Name | What it does |
+|---|---|
+| `func (i T) String() string` | Name of the value. Unknown values print as `T(42)`. |
+| `func TString(s string) (T, error)` | Value from its name. Matches exact name first, then lowercase. |
+| `func TValues() []T` | All values, in declaration order. Aliases are skipped. |
+| `func TStrings() []string` | All names, in declaration order. |
+| `func (i T) IsAT() bool` | True if the value is one of the declared constants. |
+
+### Encoding flags
+
+Each flag adds the methods for one encoding. Combine as many as you need.
+
+| Flag | Methods added | Interface |
+|---|---|---|
+| `-json` | `MarshalJSON`, `UnmarshalJSON` | `encoding/json` |
+| `-text` | `MarshalText`, `UnmarshalText` | `encoding` |
+| `-yaml` | `MarshalYAML`, `UnmarshalYAML` | `gopkg.in/yaml.v2` style, also accepted by yaml.v3 |
+| `-sql` | `Value`, `Scan` | `database/sql/driver` |
+| `-gqlgen` | `MarshalGQL`, `UnmarshalGQL` | [gqlgen](https://gqlgen.com) |
+
+All of them store the enum as its string name. Unmarshaling an unknown name returns an error.
+
+Use `-text` if the enum is a map key you encode as JSON. Without it, `encoding/json` writes the
+numeric value as the key.
+
+`Scan` accepts `string`, `[]byte`, or any `fmt.Stringer`. A `nil` value leaves the receiver unchanged.
+
+### Other flags
+
+| Flag | What it does |
+|---|---|
+| `-values` | Adds `Values() []string`, which [ent](https://entgo.io/docs/schema-fields/#enum-fields) uses for enum fields. |
+| `-validate` | Adds `Validate() error`, which returns an error when the value is not a declared constant. |
+| `-flag.value` | Adds `Set(string) error` so the type satisfies `flag.Value`. |
+| `-pflag.value` | Adds `Set` and `Type() string` so the type satisfies [pflag.Value](https://pkg.go.dev/github.com/spf13/pflag#Value). `Type` returns all names joined by `\|`. |
+| `-typederrors` | Wraps conversion errors with `enumerrs.ErrValueInvalid`. See [Typed errors](#typed-errors). |
+| `-linecomment` | Uses the constant's trailing line comment as its name. |
+| `-comment` | Adds a comment line to the top of the generated file. Repeatable. |
+| `-output` | Output file name. |
+
+## Changing the string names
+
+By default the string name is the Go identifier. Three flags adjust it, applied in this order:
+
+1. `-trimprefix` removes a prefix. Pass a comma-separated list to try several. Names without the prefix are left alone.
+2. `-transform` rewrites the case. See the table below.
+3. `-addprefix` prepends a string.
+
+The result is what `String()` returns, what `TString()` accepts, and what every encoding uses.
+
+### Transforms
+
+Given a constant named `MyTypeValue`:
+
+| `-transform` | Result |
+|---|---|
+| `noop` (default) | `MyTypeValue` |
+| `snake` | `my_type_value` |
+| `snake-upper` | `MY_TYPE_VALUE` |
+| `kebab` | `my-type-value` |
+| `kebab-upper` | `MY-TYPE-VALUE` |
+| `dot` | `my.type.value` |
+| `dot-upper` | `MY.TYPE.VALUE` |
+| `whitespace` | `my type value` |
+| `lower` | `mytypevalue` |
+| `upper` | `MYTYPEVALUE` |
+| `title` | `MyTypeValue` (first letter uppercased, rest unchanged) |
+| `title-lower` | `myTypeValue` (first letter lowercased, rest unchanged) |
+| `first` | `M` |
+| `first-upper` | `M` |
+| `first-lower` | `m` |
+
+Word splitting only works from CamelCase. `snake_upper`, `kebab_upper`, `dot_upper`, `first_upper`,
+and `first_lower` are accepted as aliases of the hyphenated names.
+
+### Line comments
+
+With `-linecomment`, a constant's trailing comment replaces its name. Constants without one keep
+their identifier.
 
 ```go
-type MyType int
-
- ...
-
-name := MyTypeValue.String() // name => "MyTypeValue"
-```
-
-Sometimes you need to use some other string representation format than CamelCase (i.e. in JSON).
-
-To transform it from CamelCase to another format, you can use the `transform` flag.
-
-For example, the command `enumer -type=MyType -json -transform=snake` would generate the following string representation:
-
-```go
-name := MyTypeValue.String() // name => "my_type_value"
-```
-
-**Note**: The transformation only works from CamelCase to snake_case or kebab-case, not the other way around.
-
-### Transformers
-
-- snake
-- snake-upper
-- kebab
-- kebab-upper
-- lower (lowercase)
-- upper (UPPERCASE)
-- title (TitleCase)
-- title-lower (titleCase)
-- first (Use first character of string)
-- first-lower (same as first only lower case)
-- first-upper (same as first only upper case)
-- whitespace
-
-## How to use
-
-For a module-aware repo with `enumer` in the `go.mod` file, generation can be called by adding the following to a `.go` source file:
-
-```golang
-//go:generate go run github.com/dmarkham/enumer -type=YOURTYPE
-```
-
-There are five boolean flags: `json`, `text`, `yaml`, `sql`, and `typederrors`. You can use any combination of them (i.e. `enumer -type=Pill -json -text -typederrors`),
-
-For enum string representation transformation the `transform` and `trimprefix` flags
-were added (i.e. `enumer -type=MyType -json -transform=snake`).
-Possible transform values are listed above in the [transformers](#transformers) section.
-The default value for `transform` flag is `noop` which means no transformation will be performed.
-
-If a prefix is provided via the `trimprefix` flag, it will be trimmed from the start of each name (before
-it is transformed). You can trim multiple prefixes by passing a comma separated list.
-If a name doesn't have the prefix it will be passed unchanged.
-
-If a prefix is provided via the `addprefix` flag, it will be added to the start of each name (after trimming and after transforming).
-
-The boolean flag `values` will additionally create an alternative string values method `Values() []string` to fullfill the `EnumValues` interface of [ent](https://entgo.io/docs/schema-fields/#enum-fields).
-
-## Typed Error Handling
-
-When using the `typederrors` flag, you can handle enum validation errors specifically using `errors.Is()`:
-
-```go
-import (
-    "errors"
-    "github.com/dmarkham/enumer/enumerrs"
+const (
+	Monday Day = iota // lunes
+	Tuesday
+	Friday // viernes
 )
+```
 
-// This will return a typed error that can be checked
-pill, err := PillString("InvalidValue")
-if err != nil {
-    if errors.Is(err, enumerrs.ErrValueInvalid) {
-        // Handle invalid enum value specifically
-        fmt.Println("Invalid pill value provided")
-    }
-    // The error also contains a descriptive message
-    fmt.Printf("Error: %v\n", err)
+`Monday.String()` returns `lunes`, `Tuesday.String()` returns `Tuesday`.
+
+## Typed errors
+
+With `-typederrors`, `TString()`, `Validate()` and the unmarshal methods return an error that matches
+`enumerrs.ErrValueInvalid` under `errors.Is`. The message still names the bad input.
+
+```go
+import "github.com/dmarkham/enumer/enumerrs"
+
+p, err := PillString("Vitamin")
+if errors.Is(err, enumerrs.ErrValueInvalid) {
+	// "Vitamin does not belong to Pill values"
 }
 ```
 
-## Inspiring projects
+This makes `github.com/dmarkham/enumer` a runtime dependency of your module, since the generated
+code imports `enumerrs`.
 
-- [Álvaro López Espinosa](https://github.com/alvaroloes/enumer)
-- [Stringer](https://godoc.org/golang.org/x/tools/cmd/stringer)
-- [jsonenums](https://github.com/campoy/jsonenums)
+## Examples
+
+Snake-case JSON for an API:
+
+```sh
+enumer -type=Status -json -transform=snake
+```
+
+Strip a Go-style prefix and store in a database:
+
+```sh
+enumer -type=Color -trimprefix=Color -sql -text
+```
+
+Several types at once with a custom file name:
+
+```sh
+enumer -type=Pill,Day -output=enums_gen.go
+```
+
+## History
+
+Enumer started as a fork of Rob Pike's stringer, was extended by
+[Álvaro López Espinosa](https://github.com/alvaroloes/enumer), and continues here.
+[jsonenums](https://github.com/campoy/jsonenums) inspired the JSON support.
