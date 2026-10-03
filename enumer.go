@@ -10,7 +10,7 @@ func %[1]sString(s string) (%[1]s, error) {
 		return val, nil
 	}
 
-	if val, ok := _%[1]sNameToValueMap[strings.ToLower(s)]; ok {
+	if val, ok := _%[1]sLowerNameToValueMap[strings.ToLower(s)]; ok {
 		return val, nil
 	}
 	return 0, %[2]s
@@ -99,9 +99,21 @@ func (g *Generator) buildBasicExtras(runs [][]Value, typeName string, runsThresh
 	}
 }
 
+// printValueMap prints the map from exact string name to value, and a second
+// map from lower-cased name to value. Keeping them separate means a name that
+// differs from another only by case is still found by its exact spelling.
 func (g *Generator) printValueMap(runs [][]Value, typeName string, runsThreshold int) {
+	g.printNameToValueMap(runs, typeName, runsThreshold, "_%sNameToValueMap", "_%sName")
+	g.printNameToValueMap(runs, typeName, runsThreshold, "_%sLowerNameToValueMap", "_%sLowerName")
+}
+
+// printNameToValueMap prints one map literal named by mapNameFmt whose keys
+// are slices of the string constant named by strNameFmt.
+func (g *Generator) printNameToValueMap(runs [][]Value, typeName string, runsThreshold int, mapNameFmt, strNameFmt string) {
 	thereAreRuns := len(runs) > 1 && len(runs) <= runsThreshold
-	g.Printf("\nvar _%sNameToValueMap = map[string]%s{\n", typeName, typeName)
+	mapName := fmt.Sprintf(mapNameFmt, typeName)
+	strName := fmt.Sprintf(strNameFmt, typeName)
+	g.Printf("\nvar %s = map[string]%s{\n", mapName, typeName)
 
 	var n int
 	var runID string
@@ -114,13 +126,13 @@ func (g *Generator) printValueMap(runs [][]Value, typeName string, runsThreshold
 		}
 
 		for _, value := range values {
-			g.Printf("\t_%sName%s[%d:%d]: %s,\n", typeName, runID, n, n+len(value.name), value.originalName)
-			g.Printf("\t_%sLowerName%s[%d:%d]: %s,\n", typeName, runID, n, n+len(value.name), value.originalName)
+			g.Printf("\t%s%s[%d:%d]: %s,\n", strName, runID, n, n+len(value.name), value.originalName)
 			n += len(value.name)
 		}
 	}
 	g.Printf("}\n\n")
 }
+
 func (g *Generator) printNamesSlice(runs [][]Value, typeName string, runsThreshold int) {
 	thereAreRuns := len(runs) > 1 && len(runs) <= runsThreshold
 	g.Printf("\nvar _%sNames = []string{\n", typeName)
