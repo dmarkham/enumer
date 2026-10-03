@@ -77,7 +77,7 @@ func init() {
 	flag.BoolVar(&opts.includeValuesMethod, "values", false, "if true, alternative string values method will be generated. Default: false")
 	flag.BoolVar(&opts.includeFlagMethods, "flag.value", false, "if true, ensure that the enumeration type implements stdlib flag.Value interface. Default: false")
 	flag.BoolVar(&opts.includePflagMethods, "pflag.value", false, "if true, ensure that the enumeration type implements pflag.Value interface, see: https://pkg.go.dev/github.com/spf13/pflag#Value  Default: false")
-	flag.StringVar(&output, "output", "", "output file name; default srcdir/<type>_string.go")
+	flag.StringVar(&output, "output", "", "output file name; default srcdir/<type>_enumer.go")
 	flag.StringVar(&opts.transformMethod, "transform", "noop", "enum item name transformation method. Default: noop")
 	flag.StringVar(&opts.trimPrefix, "trimprefix", "", "transform each item name by removing a prefix or comma separated list of prefixes. Default: \"\"")
 	flag.StringVar(&opts.addPrefix, "addprefix", "", "transform each item name by adding a prefix. Default: \"\"")
