@@ -108,6 +108,7 @@ numeric value as the key.
 | Flag | What it does |
 |---|---|
 | `-values` | Adds `Values() []string`, which [ent](https://entgo.io/docs/schema-fields/#enum-fields) uses for enum fields. |
+| `-validate` | Adds `Validate() error`, which returns an error when the value is not a declared constant. |
 | `-flag.value` | Adds `Set(string) error` so the type satisfies `flag.Value`. |
 | `-pflag.value` | Adds `Set` and `Type() string` so the type satisfies [pflag.Value](https://pkg.go.dev/github.com/spf13/pflag#Value). `Type` returns all names joined by `\|`. |
 | `-typederrors` | Wraps conversion errors with `enumerrs.ErrValueInvalid`. See [Typed errors](#typed-errors). |
@@ -167,7 +168,7 @@ const (
 
 ## Typed errors
 
-With `-typederrors`, `TString()` and the unmarshal methods return an error that matches
+With `-typederrors`, `TString()`, `Validate()` and the unmarshal methods return an error that matches
 `enumerrs.ErrValueInvalid` under `errors.Is`. The message still names the bad input.
 
 ```go
